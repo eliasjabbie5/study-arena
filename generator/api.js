@@ -247,9 +247,8 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 
           if (!res.ok) {
             var errBody = await res.text();
-            lastError = "Claude API (" + modelToTry + " - HTTP " + res.status + "): " + errBody;
+            lastError = "HTTP " + res.status + " on " + modelToTry + ": " + errBody;
             console.error(lastError);
-            // Only retry on 404 model not found; if it's 400, 401, 429, etc., fail fast with clear message
             if (res.status === 404) {
               continue;
             }
@@ -261,15 +260,16 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
           localStorage.setItem("sa_model_claude", modelToTry);
           break;
         } catch (callErr) {
-          // If not a 404 retry, throw immediately
-          if (!callErr.message.includes("404") || mIdx === candidateModels.length - 1) {
-            throw callErr;
+          var msg = callErr.message || String(callErr);
+          lastError = msg;
+          if (!msg.includes("404") || mIdx === candidateModels.length - 1) {
+            throw new Error(msg);
           }
         }
       }
 
       if (!rawResponse) {
-        throw new Error(lastError || "Failed to generate with Claude.");
+        throw new Error(lastError ? ("Claude error: " + lastError) : "Failed to generate with Claude.");
       }
 
     } else if (provider === "openai") {
