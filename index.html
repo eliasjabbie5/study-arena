@@ -1399,18 +1399,59 @@
 
     @media (max-width: 640px) {
       .nav {
-        padding: 8px 16px;
+        padding: 6px 12px;
+        gap: 8px;
+      }
+      .nav-left {
+        gap: 8px;
+        min-width: 0;
+      }
+      .logo-text {
+        font-size: 14px;
+      }
+      .nav-tab {
+        padding: 0 8px;
+        font-size: 13px;
+        gap: 4px;
+      }
+      .nav-demo-link {
+        display: none;
       }
       .wrap {
-        padding: 16px 16px 0;
+        padding: 12px 16px 0;
+      }
+      .workspace {
+        gap: 12px;
+      }
+      .col-pitch {
+        gap: 8px;
+      }
+      .hero-title {
+        font-size: 28px;
+        line-height: 1.08;
+      }
+      .hero-sub {
+        font-size: 14px;
+        line-height: 1.4;
       }
       .tool-panel,
       .sample-card,
       .arena-card {
-        padding: 16px;
+        padding: 12px;
+        gap: 12px;
       }
-      .logo-text {
-        font-size: 15px;
+      .step-block {
+        gap: 8px;
+        padding-bottom: 12px;
+      }
+      .dropzone {
+        min-height: 84px;
+        padding: 12px;
+        gap: 4px;
+      }
+      .ai-help-box {
+        padding: 8px;
+        gap: 4px;
       }
     }
 
@@ -1447,7 +1488,7 @@
       </div>
 
       <div class="nav-actions">
-        <a href="dist/ethics.html" class="btn-ghost">Try demo</a>
+        <a href="dist/ethics.html" class="btn-ghost nav-demo-link">Try demo</a>
         <button type="button" class="btn-ghost theme-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle light and dark theme" title="Toggle light and dark theme">
           <svg class="ic i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
           <svg class="ic i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
@@ -1714,9 +1755,9 @@
     <iframe id="arena-player-iframe" title="Study Arena Player" sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"></iframe>
   </div>
 
-  <script src="generator/engine_bundle.js?v=2.7"></script>
-  <script src="generator/compiler.js?v=2.7"></script>
-  <script src="generator/api.js?v=2.7"></script>
+  <script src="generator/engine_bundle.js?v=2.8"></script>
+  <script src="generator/compiler.js?v=2.8"></script>
+  <script src="generator/api.js?v=2.8"></script>
 
   <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";

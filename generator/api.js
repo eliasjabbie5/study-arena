@@ -343,6 +343,51 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
             deepExplanation: "Asymmetric information makes external equity the most expensive signal, so firms use internal cash first.",
             trick: false,
             src: "Slide 14"
+          },
+          {
+            type: "mcq",
+            zone: "wacc",
+            topic: "WACC Formula",
+            question: "A firm's equity beta is 1.2, the risk-free rate is 3%, and the expected market return is 8%. Using CAPM, what is its cost of equity?",
+            options: [
+              ["9.0%, calculated as 3% + 1.2 * (8% - 3%).","Correct. The market risk premium is (8% - 3%) = 5%, multiplied by beta 1.2 gives 6% + 3% = 9.0%."],
+              ["12.6%, calculated as 3% + 1.2 * 8%.","Trap: confuses the expected market return (Rm) with the market risk premium (Rm - Rf)."],
+              ["8.0%, equal to the expected return on the market portfolio.","Trap: ignores the firm's beta of 1.2 above the market average of 1.0."],
+              ["6.0%, calculated as 1.2 * (8% - 3%).","Trap: omits the risk-free rate Rf."]
+            ],
+            correctIndex: 0,
+            deepExplanation: "CAPM is Re = Rf + Beta * (Rm - Rf). Always subtract Rf from Rm before multiplying by Beta.",
+            trick: true,
+            src: "Slide 6"
+          },
+          {
+            type: "mcq",
+            zone: "mm",
+            topic: "Capital Structure",
+            question: "Under Modigliani-Miller Proposition I without taxes or distress costs, what happens to total firm value if management replaces 20% of its equity with low-interest debt?",
+            options: [
+              ["Total firm value stays unchanged because cash flows from operating assets do not change.","Correct. In frictionless markets, slicing operating cash flows differently does not alter total value."],
+              ["Total firm value rises because cheaper debt lowers the weighted average cost of capital.","Trap: as leverage rises, equity becomes riskier and Re rises enough to offset the cheaper debt."],
+              ["Total firm value falls because debt covenants restrict future capital expenditures.","Trap: MM Proposition I assumes frictionless capital markets with no agency or distress costs."],
+              ["Total firm value rises by the face value of the newly issued debt.","Trap: debt proceeds retire equity dollar-for-dollar in a recapitalization."]
+            ],
+            correctIndex: 0,
+            deepExplanation: "Without taxes, WACC is constant across leverage levels because Re increases linearly with D/E.",
+            trick: true,
+            src: "Slide 10"
+          },
+          {
+            type: "short",
+            zone: "mm",
+            topic: "Capital Structure",
+            question: "Explain how Static Trade-Off Theory determines a firm's optimal debt ratio when both corporate taxes and financial distress costs exist.",
+            rubric: [
+              { point: "Identifies the interest tax shield benefit of debt", keywords: "tax shield|interest|deductible|tax" },
+              { point: "Identifies costs of financial distress or bankruptcy", keywords: "distress|bankruptcy|default|agency" },
+              { point: "States that optimal leverage equates marginal benefit and marginal cost", keywords: "marginal|balance|trade-off|optimal" }
+            ],
+            modelAnswer: "Static Trade-Off Theory balances the present value of interest tax shields against the present value of financial distress and agency costs. A firm increases debt until the marginal tax shield benefit of the last dollar of debt equals its marginal expected distress cost.",
+            src: "Slide 12"
           }
         ]
       };
