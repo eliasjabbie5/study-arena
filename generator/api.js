@@ -178,46 +178,47 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Checking available Claude models for your API key...", 30);
-      var authorizedModels = await this.fetchClaudeModels(apiKey);
-      console.log("Authorized Claude models for key:", authorizedModels);
+      onProgress("Checking budget-friendly Claude models...", 30);
+      var allModels = await this.fetchClaudeModels(apiKey);
+      console.log("All account models:", allModels);
+
+      // SAFETY FILTER: Never auto-fallback to expensive heavy models (Fable, Opus, Mythos)
+      var safeModels = allModels.filter(function(m) {
+        var lower = m.toLowerCase();
+        return !lower.includes("fable") && !lower.includes("opus") && !lower.includes("mythos");
+      });
 
       var selectedModel = localStorage.getItem("sa_model_claude");
       var candidateModels = [];
 
-      if (authorizedModels.length > 0) {
-        if (selectedModel && authorizedModels.includes(selectedModel)) {
-          candidateModels.push(selectedModel);
+      // If user explicitly picked a model, allow it
+      if (selectedModel && allModels.includes(selectedModel)) {
+        candidateModels.push(selectedModel);
+      }
+
+      // Prioritize cheap, high-speed models (Haiku first to protect budget!)
+      var budgetPriority = [
+        "claude-3-5-haiku-latest",
+        "claude-3-5-haiku-20241022",
+        "claude-3-haiku-20240307",
+        "claude-3-5-sonnet-latest",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620"
+      ];
+
+      budgetPriority.forEach(function(p) {
+        if (safeModels.includes(p) && !candidateModels.includes(p)) {
+          candidateModels.push(p);
         }
-        // Prioritize Sonnet 3.5, then Haiku 3.5, then Haiku 3
-        var preferredOrder = [
-          "claude-3-5-sonnet-latest",
-          "claude-3-5-sonnet-20241022",
-          "claude-3-5-sonnet-20240620",
-          "claude-3-5-haiku-latest",
-          "claude-3-5-haiku-20241022",
-          "claude-3-haiku-20240307",
-          "claude-3-opus-20240229"
-        ];
-        preferredOrder.forEach(function(p) {
-          if (authorizedModels.includes(p) && !candidateModels.includes(p)) {
-            candidateModels.push(p);
-          }
-        });
-        // Add any remaining authorized models
-        authorizedModels.forEach(function(m) {
-          if (!candidateModels.includes(m)) candidateModels.push(m);
-        });
-      } else {
-        // Fallback candidates if list models endpoint isn't supported
-        candidateModels = [
-          selectedModel,
-          "claude-3-5-sonnet-latest",
-          "claude-3-5-haiku-latest",
-          "claude-3-haiku-20240307",
-          "claude-3-5-sonnet-20241022",
-          "claude-3-5-sonnet-20240620"
-        ].filter(Boolean);
+      });
+
+      // Only add other safe models
+      safeModels.forEach(function(m) {
+        if (!candidateModels.includes(m)) candidateModels.push(m);
+      });
+
+      if (candidateModels.length === 0) {
+        candidateModels = ["claude-3-5-haiku-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-latest"];
       }
 
       var lastError = null;
