@@ -423,7 +423,40 @@ function summary(){
 
 /* ---------- exam state and helpers ---------- */
 var EX=null,clockT=null;
-function exById(id){return EXAMS.filter(function(e){return e.id===id})[0]}
+
+function getExamsList(){
+  if(typeof EXAMS!=="undefined"&&Array.isArray(EXAMS)&&EXAMS.length>0)return EXAMS;
+  var writtenQs=Q.filter(function(q){return q.t==="essay"||q.t==="short"});
+  if(!writtenQs.length)writtenQs=Q.slice(0,5);
+  var paperQs=writtenQs.slice(0,5).map(function(q,idx){
+    var pts=q.t==="essay"?6:(q.t==="short"?4:4);
+    var rubList=(q.rub&&q.rub.length)?q.rub:[{p:"Demonstrates core framework application and analytical rigor",k:"framework|analysis|correct|model"}];
+    return {
+      n:String(idx+1),
+      pts:pts,
+      kind:"text",
+      q:q.q,
+      rub:rubList,
+      model:q.model||(q.deep?q.deep:"Comprehensive analysis applying the relevant theoretical frameworks and quantitative methods.")
+    };
+  });
+  var tot=paperQs.reduce(function(sum,q){return sum+q.pts},0)||20;
+  return [{
+    id:"p1",
+    title:"Paper 1: Comprehensive Syllabus Examination",
+    sub:"Synthesized from course curriculum",
+    blurb:"Written response paper testing conceptual understanding, critical trade-offs, and practical application under timed conditions.",
+    meta:[["Course",CONFIG.title||"Course Examination"],["Calculator","Approved Standard"],["Material","Closed Book"],["Time","45 Minutes"]],
+    cs:{
+      title:"Course Synthesis Problem",
+      html:"<p>Apply the theoretical and analytical principles learned throughout this course to provide complete, rigorous answers to the following questions under timed conditions.</p>"
+    },
+    qs:paperQs,
+    totalPts:tot
+  }];
+}
+
+function exById(id){return getExamsList().filter(function(e){return e.id===id})[0]}
 function draftKey(id){return KEY+"-draft-"+id}
 function loadDraft(id){try{return JSON.parse(localStorage.getItem(draftKey(id))||"{}")}catch(e){return {}}}
 function saveDraft(id,d){try{localStorage.setItem(draftKey(id),JSON.stringify(d))}catch(e){}}
@@ -435,16 +468,28 @@ function bestExam(id){return (S.exams||[]).filter(function(x){return x.p===id}).
 
 function exams(){
   stopClock();G=null;EX=null;view="exams";
-  var h=header("exams")+'<div class="sec-h"><h2>Mock exams</h2><span class="hint">Paper-style, '+CONFIG.examTotal+' points, answers written in full</span></div>'+
-   '<div class="card"><p>These are written in the format of '+esc(CONFIG.examFormat)+': you write full answers, a stopwatch runs, and everything is marked at the end against a rubric (by an automated rubric evaluator when available, otherwise by an offline keyword check). The multiple-choice game is great for facts; this is for practising how to <b>write</b> under exam conditions. Try it closed-book.</p></div><div class="papers">';
-  EXAMS.forEach(function(e){
+  var exTotal=CONFIG.examTotal||20;
+  var exFormat=CONFIG.examFormat||"University Academic Standards";
+  var list=getExamsList();
+  var h=header("exams")+'<div class="sec-h"><h2>Mock exams</h2><span class="hint">Paper-style, '+exTotal+' points, answers written in full</span></div>'+
+   '<div class="card" style="margin-bottom:16px;"><p>These are written in the format of '+esc(exFormat)+': you write full answers, a stopwatch runs, and everything is marked at the end against a rubric (by an automated rubric evaluator when available, otherwise by an offline keyword check). The multiple-choice game is great for facts; this is for practising how to <b>write</b> under exam conditions. Try it closed-book.</p></div>'+
+   '<div class="card paper-card" style="border: 1px solid var(--line); border-left: 3px solid var(--accent); margin-bottom:16px;">'+
+     '<div class="mono">DIAGNOSTIC TEST HALL</div>'+
+     '<h3>Timed Diagnostic Mock Exam</h3>'+
+     '<p>Complete a timed 18-question simulation drawn from across the syllabus (multiple-choice scenario traps, short answers, and essay papers) with live proctor telemetry.</p>'+
+     '<div class="btns"><button class="btn" id="start-tab-mock">Launch Timed Diagnostic Mock &rarr;</button></div>'+
+   '</div>'+
+   '<div class="papers">';
+  list.forEach(function(e){
+    var pTotal=e.totalPts||exTotal;
     var l=lastExam(e.id),n=(S.exams||[]).filter(function(x){return x.p===e.id}).length,d=loadDraft(e.id),hasD=Object.keys(d.a||{}).some(function(k){return d.a[k]});
     h+='<div class="card paper-card"><div class="mono">'+esc(e.sub)+'</div><h3>'+esc(e.title)+'</h3><p>'+esc(e.blurb)+'</p>'+
-     '<p class="hint">'+e.qs.length+' questions \u00b7 '+CONFIG.examTotal+' points'+(l?' \u00b7 last score <b>'+l.s+'/'+CONFIG.examTotal+'</b> (best '+bestExam(e.id)+') \u00b7 '+n+' attempt'+(n>1?'s':''):' \u00b7 not attempted yet')+'</p>'+
+     '<p class="hint">'+e.qs.length+' questions \u00b7 '+pTotal+' points'+(l?' \u00b7 last score <b>'+l.s+'/'+pTotal+'</b> (best '+bestExam(e.id)+') \u00b7 '+n+' attempt'+(n>1?'s':''):' \u00b7 not attempted yet')+'</p>'+
      '<div class="btns"><button class="btn" data-ex="'+e.id+'">'+(hasD?'Resume draft':'Start paper')+'</button>'+(hasD?'<button class="btn ghost" data-new="'+e.id+'">Start over</button>':'')+'</div></div>';
   });
   h+='</div>';
   app.innerHTML=h;wireNav();
+  var tmBtn=$("#start-tab-mock");if(tmBtn)tmBtn.onclick=startMock;
   app.querySelectorAll("[data-ex]").forEach(function(b){b.onclick=function(){startExam(b.dataset.ex)}});
   app.querySelectorAll("[data-new]").forEach(function(b){b.onclick=function(){clearDraft(b.dataset.new);startExam(b.dataset.new)}});
   window.scrollTo(0,0);
@@ -453,10 +498,11 @@ function exams(){
 function startExam(id){
   document.body.classList.add("exam-hall-active");
   stopClock();var e=exById(id),d=loadDraft(id);
+  var pTotal=e.totalPts||CONFIG.examTotal||20;
   EX={e:e,a:d.a||{},m:d.m||{},sec:d.sec||0};G=null;view="exam";
-  var h=header("exams")+'<div class="paper"><div class="paper-head"><div><div class="mono">Exam paper \u00b7 '+esc(e.title)+'</div><h2>'+esc(CONFIG.examName)+'</h2></div>'+
+  var h=header("exams")+'<div class="paper"><div class="paper-head"><div><div class="mono">Exam paper \u00b7 '+esc(e.title)+'</div><h2>'+esc(CONFIG.examName||CONFIG.title||"Final Examination")+'</h2></div>'+
    '<div class="clock" aria-live="off"><span class="mono">Time</span><b id="clock" class="tnum">'+fmtClock(EX.sec)+'</b></div></div>'+
-   '<table class="cover">'+e.meta.map(function(m){return '<tr><th>'+esc(m[0])+'</th><td>'+esc(m[1])+'</td></tr>'}).join("")+'<tr><th>Total</th><td>'+CONFIG.examTotal+' points</td></tr></table>'+
+   '<table class="cover">'+e.meta.map(function(m){return '<tr><th>'+esc(m[0])+'</th><td>'+esc(m[1])+'</td></tr>'}).join("")+'<tr><th>Total</th><td>'+pTotal+' points</td></tr></table>'+
    '<p class="hint">Write complete answers: name the author or theory, define it, give an example and apply it. Your draft is saved on this device as you type.</p>';
   h+='<details class="casebox"'+'><summary>'+esc(e.cs.title)+' (open to read; used in questions 6a and 6b)</summary><div class="casetext">'+e.cs.html+'</div></details>';
   e.qs.forEach(function(q){
@@ -539,15 +585,17 @@ async function submitExam(){
     total+=sc;
   });
   total=Math.round(total*10)/10;
-  S.exams=(S.exams||[]).concat([{p:e.id,s:total,m:CONFIG.examTotal,t:Date.now(),sec:sec,d:rows.map(function(x){return {n:x.q.n,s:x.sc,m:x.q.pts}})}]).slice(-30);
+  var pTotal=e.totalPts||CONFIG.examTotal||20;
+  S.exams=(S.exams||[]).concat([{p:e.id,s:total,m:pTotal,t:Date.now(),sec:sec,d:rows.map(function(x){return {n:x.q.n,s:x.sc,m:x.q.pts}})}]).slice(-30);
   S.u=Date.now();save();clearDraft(e.id);
   showExamResult(e,rows,total,sec,g);
 }
 
 function showExamResult(e,rows,total,sec,g){
   view="examres";
-  var pc=total/CONFIG.examTotal,verdict=pc>=0.85?"Excellent":pc>=0.7?"Solid pass":pc>=0.5?"Pass, with gaps":"Not there yet";
-  var h=header("exams")+'<div class="res"><div><div class="mono">'+esc(e.title)+' \u00b7 '+esc(e.sub)+' \u00b7 time '+fmtClock(sec)+'</div><h2>'+total+' / '+CONFIG.examTotal+' \u00b7 '+verdict+'</h2>'+
+  var pTotal=e.totalPts||CONFIG.examTotal||20;
+  var pc=total/pTotal,verdict=pc>=0.85?"Excellent":pc>=0.7?"Solid pass":pc>=0.5?"Pass, with gaps":"Not there yet";
+  var h=header("exams")+'<div class="res"><div><div class="mono">'+esc(e.title)+' \u00b7 '+esc(e.sub)+' \u00b7 time '+fmtClock(sec)+'</div><h2>'+total+' / '+pTotal+' \u00b7 '+verdict+'</h2>'+
    '<p class="hint" style="margin:6px 0 0">'+(g.src==="ai"?"Evaluated against exam rubric criteria. Marking is an estimate: professors may weigh nuances differently.":"Keyword check (offline). Treat as a rough guide and compare each answer with the model answer.")+(g.note?' '+esc(g.note):'')+'</p></div>';
   h+='<div class="tbar" aria-hidden="true"><i class="g" style="width:'+pc*100+'%"></i></div>';
   h+='<div class="scoretable"><div class="mono">Question</div><div class="mono">Score</div>'+rows.map(function(x){return '<div>'+x.q.n+'</div><div class="tnum">'+x.sc+' / '+x.q.pts+'</div>'}).join("")+'</div>';

@@ -48,10 +48,51 @@ window.StudyArenaCompiler = {
         [1000, "Distinction Honors"]
       ];
     }
+    config.examName = config.examName || config.title || "Course Final Examination";
+    config.examFormat = config.examFormat || "University Academic Examination Standards";
+    config.examTotal = config.examTotal || 20;
+
     var zones = data.zones;
     var chapters = data.chapters || [];
     var questions = data.questions || [];
     var exams = data.exams || [];
+
+    if (!exams || !Array.isArray(exams) || exams.length === 0) {
+      var written = questions.filter(function(q) { return q.type === 'short' || q.type === 'essay'; });
+      if (!written.length) written = questions.slice(0, 5);
+      var pQs = written.slice(0, 5).map(function(q, i) {
+        var pts = q.type === 'essay' ? 6 : 4;
+        var rbs = (q.rubric && q.rubric.length) ? q.rubric.map(function(r) {
+          return { p: r.point || r.p || "Demonstrates core analytical rigor", k: r.keywords || r.k || "model|analysis" };
+        }) : [{ p: "Demonstrates core analytical rigor and framework mastery", k: "framework|model|analysis" }];
+        return {
+          n: String(i + 1),
+          pts: pts,
+          kind: "text",
+          q: q.question || "Discuss the strategic and quantitative implications.",
+          rub: rbs,
+          model: q.modelAnswer || q.deepExplanation || "Comprehensive analysis applying relevant course frameworks."
+        };
+      });
+      exams = [{
+        id: "p1",
+        title: "Paper 1: Comprehensive Syllabus Examination",
+        sub: "Synthesized from course curriculum",
+        blurb: "Written response paper testing conceptual understanding, critical trade-offs, and practical application under timed conditions.",
+        meta: [
+          ["Course", config.title || "Course Examination"],
+          ["Calculator", "Approved Standard"],
+          ["Material", "Closed Book"],
+          ["Time", "45 Minutes"]
+        ],
+        cs: {
+          title: "Course Synthesis Problem",
+          html: "<p>Apply the theoretical and analytical principles learned throughout this course to provide complete, rigorous answers to the following questions under timed conditions.</p>"
+        },
+        qs: pQs,
+        totalPts: pQs.reduce(function(acc, x) { return acc + x.pts; }, 0) || 20
+      }];
+    }
 
     // 1. config.js
     var configJs = "var CONFIG = " + JSON.stringify(config, null, 2) + ";\n";
