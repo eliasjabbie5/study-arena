@@ -9,115 +9,201 @@
       var t = localStorage.getItem('study_arena_theme') || 'light';
       document.documentElement.setAttribute('data-theme', t);
     })();
-  </script>
+    </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
   <style>
+
     :root {
-      --f-serif: "Playfair Display", Georgia, serif;
-      --f-sans: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+      --f-serif: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --f-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --radius-card: 28px;
+      --radius-pill: 9999px;
+      --radius-control: 10px;
+      --radius-badge: 4px;
+
       --r-sm: 6px;
       --r-md: 10px;
-      --r-lg: 16px;
+      --r-lg: 28px;
       --r-full: 9999px;
     }
 
-    /* LIGHT THEME: Warm Linen & Editorial Forest */
+    /* LIGHT THEME: Apple White Gallery & Craft Tactile Paper */
     :root[data-theme="light"] {
-      --bg: #FBFBF9;
-      --surface: #FFFFFF;
-      --surface-2: #F3F4F1;
-      --line: #E2E5E0;
-      --line-subtle: #ECEFEA;
-      --control-border: #6E7B74;
-      --ink: #111815;
-      --ink-2: #48544D;
-      --ink-3: #65736B;
-      --accent: #0B7A4F;
-      --accent-hover: #08603E;
-      --accent-soft: #E5F3EC;
-      --btn-ink: #FFFFFF;
-      --danger: #B42318;
-      --danger-soft: #FDECEA;
-      --danger-line: #E4A9A3;
-      --nav-bg: rgba(251, 251, 249, 0.92);
-      --overlay: rgba(17, 24, 21, 0.55);
-      --card-shadow: 0 1px 3px rgba(17, 24, 21, 0.05), 0 16px 36px -12px rgba(17, 24, 21, 0.08);
+      --bg-canvas: #FFFFFF;
+      --bg-studio: #F5F5F7;
+      --bg-card: #FFFFFF;
+      --bg-nav: rgba(255, 255, 255, 0.88);
+
+      --border-hairline: 0.5px solid rgba(0, 0, 0, 0.08);
+      --border-control: 1px solid rgba(0, 0, 0, 0.12);
+      --border-focus: 1px solid #0071E3;
+
+      --text-ink: #1D1D1F;
+      --text-graphite: #424245;
+      --text-steel: #86868B;
+
+      --accent-cta: #0071E3;
+      --accent-cta-hover: #0077ED;
+      --accent-cta-text: #FFFFFF;
+      --accent-pill-bg: #E8F2FF;
+      --accent-pill-text: #0066CC;
+
+      --trap-danger-bg: #FFF1F0;
+      --trap-danger-border: #FFCCC7;
+      --trap-danger-text: #CF1322;
+      --correct-bg: #F6FFED;
+      --correct-border: #B7EB8F;
+      --correct-text: #389E0D;
+
+      --shadow-float: rgba(0, 0, 0, 0.02) 0px 40px 30px, 
+                      rgba(0, 0, 0, 0.04) 0px 20px 20px, 
+                      rgba(0, 0, 0, 0.06) 0px 4px 10px;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --overlay: rgba(29, 29, 31, 0.55);
+
+      /* Compatibility aliases */
+      --bg: var(--bg-canvas);
+      --surface: var(--bg-card);
+      --surface-2: var(--bg-studio);
+      --line: rgba(0, 0, 0, 0.08);
+      --line-subtle: rgba(0, 0, 0, 0.04);
+      --control-border: rgba(0, 0, 0, 0.14);
+      --ink: var(--text-ink);
+      --ink-2: var(--text-graphite);
+      --ink-3: var(--text-steel);
+      --accent: var(--accent-cta);
+      --accent-hover: var(--accent-cta-hover);
+      --accent-soft: var(--accent-pill-bg);
+      --btn-ink: var(--accent-cta-text);
+      --danger: var(--trap-danger-text);
+      --danger-soft: var(--trap-danger-bg);
+      --danger-line: var(--trap-danger-border);
+      --nav-bg: var(--bg-nav);
+      --card-shadow: var(--shadow-float);
       color-scheme: light;
     }
 
-    /* DARK THEME: Obsidian & Mint Accents */
+    /* DARK THEME: Linear Midnight Precision Instrument */
     :root[data-theme="dark"] {
-      --bg: #090C0B;
-      --surface: #111613;
-      --surface-2: #161D19;
-      --line: #222B25;
-      --line-subtle: #19201C;
-      --control-border: #67766E;
-      --ink: #EEF2EF;
-      --ink-2: #A3AFA8;
-      --ink-3: #829188;
-      --accent: #3DDC84;
-      --accent-hover: #5CE69A;
-      --accent-soft: #12281D;
-      --btn-ink: #04130B;
-      --danger: #F97066;
-      --danger-soft: #2A1513;
-      --danger-line: #7A2E27;
-      --nav-bg: rgba(9, 12, 11, 0.90);
-      --overlay: rgba(2, 5, 3, 0.82);
-      --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.4), 0 20px 40px -12px rgba(0, 0, 0, 0.7);
+      --bg-canvas: #08090A;
+      --bg-studio: #0F1011;
+      --bg-card: #161718;
+      --bg-nav: rgba(8, 9, 10, 0.88);
+
+      --border-hairline: 0.5px solid #23252A;
+      --border-control: 1px solid #383B3F;
+      --border-focus: 1px solid #E4F222;
+
+      --text-ink: #FFFFFF;
+      --text-graphite: #D0D6E0;
+      --text-steel: #8A8F98;
+
+      --accent-cta: #E4F222;
+      --accent-cta-hover: #EEFA38;
+      --accent-cta-text: #08090A;
+      --accent-pill-bg: rgba(228, 242, 34, 0.12);
+      --accent-pill-text: #E4F222;
+
+      --trap-danger-bg: rgba(235, 87, 87, 0.12);
+      --trap-danger-border: rgba(235, 87, 87, 0.3);
+      --trap-danger-text: #FF7875;
+      --correct-bg: rgba(39, 166, 68, 0.12);
+      --correct-border: rgba(39, 166, 68, 0.3);
+      --correct-text: #49AA19;
+
+      --shadow-float: rgba(0, 0, 0, 0.6) 0px 20px 40px -10px, 
+                      0 0 0 1px #23252A;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.5);
+      --overlay: rgba(0, 0, 0, 0.85);
+
+      /* Compatibility aliases */
+      --bg: var(--bg-canvas);
+      --surface: var(--bg-card);
+      --surface-2: var(--bg-studio);
+      --line: #23252A;
+      --line-subtle: #191B1F;
+      --control-border: #383B3F;
+      --ink: var(--text-ink);
+      --ink-2: var(--text-graphite);
+      --ink-3: var(--text-steel);
+      --accent: var(--accent-cta);
+      --accent-hover: var(--accent-cta-hover);
+      --accent-soft: var(--accent-pill-bg);
+      --btn-ink: var(--accent-cta-text);
+      --danger: var(--trap-danger-text);
+      --danger-soft: var(--trap-danger-bg);
+      --danger-line: var(--trap-danger-border);
+      --nav-bg: var(--bg-nav);
+      --card-shadow: var(--shadow-float);
       color-scheme: dark;
     }
 
     * { box-sizing: border-box; }
     html {
-      background-color: var(--bg);
-      color: var(--ink);
+      background-color: var(--bg-canvas);
+      color: var(--text-ink);
       transition: background-color 200ms ease, color 200ms ease;
+      scroll-behavior: smooth;
     }
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--f-sans);
-      font-size: 15px;
-      line-height: 1.6;
-      color: var(--ink);
-      background-color: var(--bg);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.011em;
+      color: var(--text-ink);
+      background-color: var(--bg-canvas);
       -webkit-font-smoothing: antialiased;
       overflow-x: hidden;
     }
 
     /* TYPOGRAPHY */
-    h1, h2, h3, h4 { margin: 0; font-family: var(--f-sans); color: var(--ink); }
-    .serif-title { font-family: var(--f-serif); font-weight: 600; letter-spacing: -0.02em; line-height: 1.15; }
-    .serif-italic { font-family: var(--f-serif); font-style: italic; font-weight: 400; }
-    .mono { font-family: var(--f-mono); font-size: 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+    h1, h2, h3, h4 { margin: 0; color: var(--text-ink); }
+    .serif-title {
+      font-family: var(--f-serif);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+    .serif-italic {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 400;
+    }
+    .mono {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
     .tnum { font-variant-numeric: tabular-nums; }
 
-    /* LAYOUT */
+    /* LAYOUT CONTAINER */
     .container {
       width: 100%;
-      max-width: 1240px;
+      max-width: 1200px;
       margin: 0 auto;
       padding: 0 24px;
     }
 
-    /* STICKY EDITORIAL NAVBAR */
+    /* COMPACT 48PX EDITORIAL TOP NAV */
     .editorial-nav {
       position: sticky;
       top: 0;
       z-index: 100;
-      background: var(--nav-bg);
-      backdrop-filter: blur(16px);
-      -webkit-backdrop-filter: blur(16px);
+      background: var(--bg-nav);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       border-bottom: 1px solid var(--line);
       transition: border-color 200ms ease;
     }
@@ -125,7 +211,7 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      height: 64px;
+      height: 48px;
       gap: 16px;
     }
     .brand-mark {
@@ -133,62 +219,62 @@
       align-items: center;
       gap: 10px;
       text-decoration: none;
-      color: var(--ink);
+      color: var(--text-ink);
     }
     .brand-logo-sq {
-      width: 28px;
-      height: 28px;
-      background: var(--ink);
-      color: var(--bg);
+      width: 26px;
+      height: 26px;
+      background: var(--text-ink);
+      color: var(--bg-canvas);
       display: grid;
       place-items: center;
       font-family: var(--f-mono);
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 700;
-      border-radius: var(--r-sm);
+      border-radius: var(--radius-badge);
     }
     .brand-text {
-      font-weight: 700;
-      font-size: 15px;
-      letter-spacing: -0.01em;
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.02em;
     }
     .brand-badge {
       font-family: var(--f-mono);
       font-size: 10px;
-      padding: 2px 7px;
-      border-radius: var(--r-full);
+      padding: 2px 6px;
+      border-radius: var(--radius-badge);
       background: var(--surface-2);
       border: 1px solid var(--line);
-      color: var(--ink-3);
+      color: var(--text-steel);
     }
 
     .nav-tabs-group {
       display: flex;
       background: var(--surface-2);
       padding: 3px;
-      border-radius: var(--r-full);
+      border-radius: var(--radius-pill);
       border: 1px solid var(--line);
     }
     .nav-tab {
       background: none;
       border: none;
-      padding: 6px 14px;
+      padding: 5px 14px;
       font-family: var(--f-sans);
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 500;
-      color: var(--ink-2);
-      border-radius: var(--r-full);
+      color: var(--text-graphite);
+      border-radius: var(--radius-pill);
       cursor: pointer;
-      transition: all 150ms var(--ease-out);
+      transition: all 140ms var(--ease-out);
     }
     .nav-tab.active {
       background: var(--surface);
-      color: var(--ink);
+      color: var(--text-ink);
       font-weight: 600;
       box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
     .nav-tab:hover:not(.active) {
-      color: var(--ink);
+      color: var(--text-ink);
     }
 
     .nav-right-actions {
@@ -199,23 +285,19 @@
     .provider-pill {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       background: var(--surface);
       border: 1px solid var(--line);
-      padding: 6px 12px;
-      border-radius: var(--r-full);
-      font-size: 12px;
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
       font-family: var(--f-mono);
-      color: var(--ink);
+      color: var(--text-ink);
       cursor: pointer;
-      transition: transform 120ms var(--ease-out), border-color 150ms ease;
+      transition: transform 120ms var(--ease-out), border-color 140ms ease;
     }
-    .provider-pill:hover {
-      border-color: var(--control-border);
-    }
-    .provider-pill:active {
-      transform: scale(0.97);
-    }
+    .provider-pill:hover { border-color: var(--control-border); }
+    .provider-pill:active { transform: scale(0.97); }
     .dot-status {
       width: 7px;
       height: 7px;
@@ -223,80 +305,146 @@
       background: #E57A00;
     }
     .dot-status.configured {
-      background: #0B7A4F;
+      background: #27A644;
     }
+
     .theme-btn {
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       display: grid;
       place-items: center;
-      border-radius: var(--r-full);
+      border-radius: 50%;
       background: var(--surface);
       border: 1px solid var(--line);
-      color: var(--ink-2);
+      color: var(--text-graphite);
       cursor: pointer;
       transition: transform 120ms var(--ease-out);
     }
-    .theme-btn:active {
-      transform: scale(0.94);
-    }
+    .theme-btn:active { transform: scale(0.94); }
 
-    /* HERO SECTION (EDITORIAL ZENARATE & LATENTE STYLE) */
+    /* HIGH-CONVERSION CTA & BUTTONS */
+    .btn-primary {
+      background: var(--accent-cta);
+      color: var(--accent-cta-text);
+      border: none;
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+      transition: transform 140ms var(--ease-out), background-color 150ms ease, box-shadow 140ms ease;
+    }
+    .btn-primary:hover {
+      background: var(--accent-cta-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+    }
+    [data-theme="dark"] .btn-primary:hover {
+      box-shadow: 0 4px 16px rgba(228, 242, 34, 0.35);
+    }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-ink);
+      border: 1px solid var(--control-border);
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      transition: all 140ms var(--ease-out);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-ink);
+      background: var(--surface-2);
+      transform: translateY(-1px);
+    }
+    .btn-ghost:active { transform: scale(0.98); }
+
+    /* SCREEN 1: HERO GALLERY STAGE */
     .hero-section {
-      padding: 72px 0 48px;
+      padding: 96px 0 56px;
       text-align: center;
     }
     .hero-eyebrow {
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 20px;
+      margin-bottom: 24px;
       font-family: var(--f-mono);
       font-size: 11px;
-      color: var(--ink-3);
-      padding: 4px 12px;
-      background: var(--surface);
+      color: var(--text-steel);
+      padding: 5px 14px;
+      background: var(--surface-2);
       border: 1px solid var(--line);
-      border-radius: var(--r-full);
+      border-radius: var(--radius-pill);
     }
     .hero-heading {
-      font-size: clamp(38px, 5.2vw, 68px);
-      max-width: 960px;
+      font-family: var(--f-serif);
+      font-weight: 500;
+      font-size: clamp(38px, 5.6vw, 64px);
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      max-width: 900px;
       margin: 0 auto 20px;
-      line-height: 1.1;
+      color: var(--text-ink);
     }
     .hero-sub {
       font-size: clamp(16px, 1.8vw, 19px);
-      max-width: 680px;
+      max-width: 660px;
       margin: 0 auto 36px;
-      color: var(--ink-2);
+      color: var(--text-graphite);
       line-height: 1.5;
+      letter-spacing: -0.011em;
     }
-
-    /* FLOATING SCHOOL BADGES (ZENARATE INSPIRATION) */
-    .school-proof-row {
+    .hero-action-cluster {
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 12px;
+      gap: 14px;
       flex-wrap: wrap;
-      margin-bottom: 56px;
+      margin-bottom: 44px;
     }
-    .school-pill {
-      font-size: 12px;
-      font-weight: 500;
-      color: var(--ink-3);
+    .proof-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+    .proof-pill {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
       padding: 4px 12px;
-      border-radius: var(--r-full);
+      border-radius: var(--radius-pill);
       background: var(--surface-2);
       border: 1px solid var(--line);
+      letter-spacing: 0.04em;
     }
 
-    /* INTERACTIVE EXAM CAROUSEL (GOOD TIMES & LATENTE INSPIRATION) */
-    .carousel-section {
-      margin-bottom: 72px;
+    /* SCREEN 1: INTERACTIVE HERO DEMO CARD */
+    .interactive-hero-section {
+      margin-bottom: 96px;
     }
-    .carousel-header {
+    .interactive-header {
       display: flex;
       align-items: flex-end;
       justify-content: space-between;
@@ -308,32 +456,31 @@
       gap: 8px;
     }
     .carousel-arrow {
-      width: 40px;
-      height: 40px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: var(--surface);
       border: 1px solid var(--line);
-      color: var(--ink);
+      color: var(--text-ink);
       display: grid;
       place-items: center;
       cursor: pointer;
+      font-size: 15px;
       transition: all 120ms var(--ease-out);
     }
     .carousel-arrow:hover {
       border-color: var(--control-border);
       background: var(--surface-2);
-    }
-    .carousel-arrow:active {
-      transform: scale(0.95);
+      transform: scale(1.05);
     }
 
     .carousel-track {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      gap: 20px;
+      gap: 24px;
       transition: transform 300ms var(--ease-out);
     }
-    @media (max-width: 900px) {
+    @media (max-width: 960px) {
       .carousel-track {
         grid-template-columns: 1fr;
       }
@@ -341,11 +488,11 @@
     .exam-card {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: var(--r-lg);
-      padding: 24px;
+      border-radius: var(--radius-card);
+      padding: 30px;
       display: flex;
       flex-direction: column;
-      box-shadow: var(--card-shadow);
+      box-shadow: var(--shadow-float);
       transition: transform 180ms var(--ease-out), border-color 180ms ease;
     }
     .exam-card:hover {
@@ -361,81 +508,207 @@
     .card-badge {
       font-family: var(--f-mono);
       font-size: 11px;
-      padding: 3px 9px;
-      border-radius: var(--r-sm);
+      padding: 3px 8px;
+      border-radius: var(--radius-badge);
       background: var(--surface-2);
-      color: var(--ink-2);
+      color: var(--text-steel);
       border: 1px solid var(--line);
     }
     .card-trap-tag {
       font-family: var(--f-mono);
       font-size: 11px;
-      color: var(--accent);
+      color: var(--accent-cta);
       font-weight: 600;
     }
     .exam-card-title {
       font-family: var(--f-serif);
-      font-size: 21px;
-      font-weight: 600;
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
       margin-bottom: 10px;
       line-height: 1.25;
+      color: var(--text-ink);
     }
     .exam-card-case {
       font-size: 14px;
-      color: var(--ink-2);
-      margin-bottom: 18px;
-      line-height: 1.5;
+      color: var(--text-graphite);
+      margin-bottom: 20px;
+      line-height: 1.55;
     }
     .exam-card-options {
       display: grid;
-      gap: 8px;
+      gap: 10px;
       margin-top: auto;
     }
     .exam-card-opt {
-      padding: 10px 12px;
-      border-radius: var(--r-md);
+      padding: 12px 14px;
+      border-radius: var(--radius-control);
       background: var(--surface-2);
       border: 1px solid var(--line);
+      font-family: var(--f-sans);
       font-size: 13px;
-      color: var(--ink);
+      color: var(--text-ink);
       text-align: left;
       cursor: pointer;
+      line-height: 1.45;
       transition: all 120ms ease;
     }
     .exam-card-opt:hover {
       border-color: var(--control-border);
+      transform: translateY(-1px);
     }
     .exam-card-opt.correct {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+      border-color: var(--correct-border);
+      background: var(--correct-bg);
+      color: var(--correct-text);
       font-weight: 600;
     }
     .exam-card-opt.trap {
-      border-color: var(--danger-line);
-      background: var(--danger-soft);
+      border-color: var(--trap-danger-border);
+      background: var(--trap-danger-bg);
+      color: var(--trap-danger-text);
     }
     .exam-card-debrief {
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: var(--r-md);
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius-control);
       background: var(--surface-2);
       border: 1px solid var(--line);
-      font-size: 12px;
-      color: var(--ink-2);
+      font-size: 13px;
+      color: var(--text-graphite);
       line-height: 1.5;
     }
 
-    /* THE GENERATOR CONSOLE (THE MAIN TOOL ENGINE) */
+    /* SCREEN 1: PRODUCT BLUEPRINT / FEATURE BAND */
+    .feature-band {
+      background: var(--bg-studio);
+      padding: 96px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 96px;
+    }
+    .feature-band-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 56px;
+    }
+    .feature-band-head h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(28px, 3.8vw, 42px);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+    }
+    .feature-band-head p {
+      font-size: 16px;
+      color: var(--text-graphite);
+      margin: 0;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-float);
+      transition: transform 180ms var(--ease-out), border-color 180ms ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--control-border);
+    }
+    .feature-tag {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      color: var(--accent-pill-text);
+      background: var(--accent-pill-bg);
+      padding: 3px 8px;
+      border-radius: var(--radius-badge);
+      align-self: flex-start;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .feature-title {
+      font-family: var(--f-serif);
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text-ink);
+    }
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-graphite);
+      margin: 0;
+    }
+
+    /* BOTTOM CONVERSION CALLOUT */
+    .cta-banner-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 56px 40px;
+      text-align: center;
+      box-shadow: var(--shadow-float);
+      margin-bottom: 96px;
+      position: relative;
+    }
+    .cta-banner-card h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+    .cta-banner-card p {
+      font-size: 16px;
+      color: var(--text-graphite);
+      max-width: 580px;
+      margin: 0 auto 28px;
+    }
+
+    /* SCREEN 2: GENERATION CONSOLE */
     .console-section {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: 20px;
-      padding: 36px;
-      box-shadow: var(--card-shadow);
+      border-radius: var(--radius-card);
+      padding: 40px;
+      box-shadow: var(--shadow-float);
       margin-bottom: 64px;
     }
     @media (max-width: 640px) {
-      .console-section { padding: 20px 16px; border-radius: 14px; }
+      .console-section { padding: 24px 18px; border-radius: 20px; }
+    }
+    .back-nav-bar {
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-graphite);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .back-btn:hover {
+      color: var(--text-ink);
+      border-color: var(--control-border);
+      transform: translateX(-2px);
     }
     .console-header {
       display: flex;
@@ -449,118 +722,125 @@
     }
     .console-title-group h2 {
       font-family: var(--f-serif);
-      font-size: 28px;
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
       margin-bottom: 4px;
     }
     .console-title-group p {
       margin: 0;
-      color: var(--ink-2);
-      font-size: 14px;
+      font-size: 13px;
+      color: var(--text-steel);
     }
 
-    /* TABS */
-    .mode-tab-group {
-      display: inline-flex;
+    /* SUBJECT PRESETS CHIPS */
+    .presets-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .preset-label {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
+      margin-right: 4px;
+    }
+    .preset-chip {
+      font-size: 12px;
+      font-family: var(--f-sans);
+      font-weight: 500;
+      color: var(--text-graphite);
+      padding: 5px 12px;
       background: var(--surface-2);
       border: 1px solid var(--line);
-      padding: 4px;
-      border-radius: var(--r-md);
-      gap: 4px;
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .preset-chip:hover {
+      border-color: var(--control-border);
+      color: var(--text-ink);
+      transform: translateY(-1px);
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
     }
     .mode-tab-btn {
-      background: none;
-      border: none;
       padding: 8px 16px;
-      font-family: var(--f-sans);
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
       font-size: 13px;
       font-weight: 500;
-      color: var(--ink-2);
-      border-radius: var(--r-sm);
+      color: var(--text-graphite);
       cursor: pointer;
       transition: all 120ms ease;
     }
     .mode-tab-btn.active {
-      background: var(--surface);
-      color: var(--ink);
+      background: var(--text-ink);
+      color: var(--bg-canvas);
+      border-color: var(--text-ink);
       font-weight: 600;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
     }
 
-    /* DROPZONE & INPUTS */
     .dropzone-box {
       border: 1.5px dashed var(--line);
-      border-radius: var(--r-md);
-      padding: 32px 20px;
+      border-radius: var(--radius-card);
+      padding: 48px 24px;
       text-align: center;
       cursor: pointer;
       background: var(--surface-2);
       transition: all 150ms var(--ease-out);
     }
-    .dropzone-box:hover, .dropzone-box.drag-over {
-      border-color: var(--accent);
-      background: var(--accent-soft);
+    .dropzone-box:hover {
+      border-color: var(--accent-cta);
+      background: var(--accent-pill-bg);
     }
-    .dropzone-title {
-      font-weight: 600;
-      font-size: 15px;
-      margin-bottom: 6px;
-    }
-    .dropzone-sub {
-      font-size: 13px;
-      color: var(--ink-3);
-    }
-
     .notes-textarea {
       width: 100%;
-      min-height: 140px;
-      padding: 14px;
-      border-radius: var(--r-md);
+      min-height: 180px;
+      padding: 16px;
+      border-radius: var(--radius-control);
       border: 1px solid var(--line);
       background: var(--surface-2);
-      color: var(--ink);
+      color: var(--text-ink);
       font-family: var(--f-sans);
       font-size: 14px;
-      line-height: 1.5;
+      line-height: 1.6;
       resize: vertical;
+      transition: border-color 150ms ease;
     }
     .notes-textarea:focus {
       outline: none;
-      border-color: var(--accent);
+      border-color: var(--accent-cta);
       background: var(--surface);
     }
 
-    /* ANNALS DRAWER */
-    .annals-wrapper {
-      margin: 18px 0;
-      border: 1px solid var(--line);
-      border-radius: var(--r-md);
-      overflow: hidden;
-      background: var(--surface);
-    }
     .annals-toggle-btn {
-      width: 100%;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
       background: none;
       border: none;
-      padding: 12px 16px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
       cursor: pointer;
-      font-family: var(--f-sans);
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--ink-2);
+      margin-top: 14px;
+      padding: 4px 0;
     }
+    .annals-toggle-btn:hover { color: var(--text-ink); }
     .annals-content {
-      padding: 0 16px 16px;
       display: none;
-    }
-    .annals-content.open {
-      display: block;
+      margin-top: 10px;
     }
 
-    /* CONSOLE CONTROLS ROW */
-    .console-controls-row {
+    .console-controls-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -570,181 +850,131 @@
       padding-top: 20px;
       border-top: 1px solid var(--line);
     }
-    .model-selector-group {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
     .model-select {
-      background: var(--surface-2);
+      padding: 9px 14px;
+      border-radius: var(--radius-pill);
       border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 8px 12px;
-      border-radius: var(--r-sm);
-      font-family: var(--f-sans);
+      background: var(--surface-2);
+      color: var(--text-ink);
       font-size: 13px;
-      cursor: pointer;
-    }
-
-    /* PRIMARY BUTTONS WITH EMIL ACTIVE PRESS PHYSICS */
-    .btn-primary {
-      background: var(--accent);
-      color: var(--btn-ink);
-      border: none;
-      padding: 12px 24px;
-      border-radius: var(--r-sm);
       font-family: var(--f-sans);
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: 500;
       cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      transition: transform 120ms var(--ease-out), background-color 150ms ease;
-    }
-    .btn-primary:hover {
-      background: var(--accent-hover);
-    }
-    .btn-primary:active {
-      transform: scale(0.97);
-    }
-    .btn-primary:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      transform: none;
     }
 
-    .btn-ghost {
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 12px 20px;
-      border-radius: var(--r-sm);
-      font-family: var(--f-sans);
-      font-weight: 600;
-      font-size: 14px;
-      cursor: pointer;
-      transition: transform 120ms var(--ease-out), border-color 150ms ease;
-    }
-    .btn-ghost:hover {
-      border-color: var(--control-border);
-    }
-    .btn-ghost:active {
-      transform: scale(0.97);
-    }
-
-    /* STEPPER CARD */
+    /* TELEMETRY STEPPER & RESULTS */
     .stepper-card {
       display: none;
-      margin-top: 20px;
-      padding: 20px;
-      border-radius: var(--r-md);
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: var(--radius-card);
       background: var(--surface-2);
       border: 1px solid var(--line);
     }
-    .stepper-card.active {
-      display: flex;
-      align-items: center;
-      gap: 16px;
+    .prog-track {
+      width: 100%;
+      height: 6px;
+      background: var(--line);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 12px 0;
     }
-    .stepper-spinner {
-      width: 24px;
-      height: 24px;
-      border: 2px solid var(--line);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.8s linear infinite;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* RESULT CARD */
     .result-card {
       display: none;
       margin-top: 24px;
-      padding: 24px;
-      border-radius: var(--r-md);
-      background: var(--accent-soft);
-      border: 1px solid var(--accent);
-    }
-    .result-card.active {
-      display: block;
-    }
-    .result-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 12px;
-      margin-bottom: 16px;
+      padding: 32px;
+      border-radius: var(--radius-card);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      text-align: center;
     }
     .result-stats-row {
       display: flex;
+      justify-content: center;
       gap: 16px;
+      margin-top: 16px;
       flex-wrap: wrap;
-      font-family: var(--f-mono);
-      font-size: 12px;
-      margin-bottom: 20px;
     }
 
-    /* SAVED ARENAS VIEW */
-    .arenas-grid, .saved-grid {
+    /* SCREEN 3: SAVED ARENAS VIEW */
+    .saved-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .saved-header h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(26px, 3.6vw, 38px);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      margin-bottom: 6px;
+    }
+    .saved-header p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-steel);
+    }
+
+    .arenas-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-      gap: 20px;
-      margin-top: 24px;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
     }
     @media (max-width: 640px) {
-      .arenas-grid, .saved-grid {
-        grid-template-columns: 1fr;
-        gap: 16px;
-      }
+      .arenas-grid { grid-template-columns: 1fr; }
     }
-    .arena-card, .saved-card {
+    .arena-card {
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: var(--r-lg);
-      padding: 24px;
+      border-radius: var(--radius-card);
+      padding: 28px;
+      box-shadow: var(--shadow-float);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 16px;
-      box-shadow: var(--card-shadow);
-      transition: transform 160ms var(--ease-out), border-color 160ms ease;
+      gap: 18px;
+      transition: transform 180ms var(--ease-out), border-color 180ms ease;
     }
-    .arena-card:hover, .saved-card:hover {
-      border-color: var(--control-border);
+    .arena-card:hover {
       transform: translateY(-2px);
+      border-color: var(--control-border);
     }
     .arena-card-head {
       display: flex;
       align-items: flex-start;
       justify-content: space-between;
       gap: 12px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .arena-card-head h3 {
       font-family: var(--f-serif);
-      font-size: 20px;
-      font-weight: 600;
-      line-height: 1.25;
+      font-size: 21px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
       margin: 0;
-      color: var(--ink);
+      color: var(--text-ink);
     }
     .arena-date {
       font-family: var(--f-mono);
-      font-size: 11px;
-      color: var(--ink-3);
+      font-size: 10px;
+      color: var(--text-steel);
       white-space: nowrap;
       padding: 3px 8px;
       background: var(--surface-2);
       border: 1px solid var(--line);
-      border-radius: var(--r-sm);
+      border-radius: var(--radius-badge);
     }
     .arena-sub {
       margin: 0;
-      font-size: 13px;
-      color: var(--ink-2);
-      line-height: 1.45;
+      font-size: 14px;
+      color: var(--text-graphite);
+      line-height: 1.5;
     }
     .arena-metrics {
       display: flex;
@@ -757,24 +987,24 @@
     .arena-metrics span {
       font-family: var(--f-mono);
       font-size: 11px;
-      color: var(--ink-2);
-      padding: 4px 9px;
+      color: var(--text-graphite);
+      padding: 4px 10px;
       background: var(--surface-2);
-      border-radius: var(--r-sm);
+      border-radius: var(--radius-badge);
       border: 1px solid var(--line);
     }
     .arena-actions {
       display: flex;
-      gap: 8px;
+      gap: 10px;
       flex-wrap: wrap;
       align-items: center;
     }
     .btn-play {
-      background: var(--accent);
-      color: var(--btn-ink);
+      background: var(--accent-cta);
+      color: var(--accent-cta-text);
       border: none;
-      padding: 9px 18px;
-      border-radius: var(--r-sm);
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
       font-family: var(--f-sans);
       font-weight: 600;
       font-size: 13px;
@@ -786,59 +1016,44 @@
       transition: transform 120ms var(--ease-out), background-color 150ms ease;
     }
     .btn-play:hover {
-      background: var(--accent-hover);
-    }
-    .btn-play:active {
-      transform: scale(0.97);
+      background: var(--accent-cta-hover);
+      transform: translateY(-1px);
     }
     .btn-download {
       background: var(--surface-2);
       border: 1px solid var(--line);
-      color: var(--ink);
-      padding: 9px 14px;
-      border-radius: var(--r-sm);
+      color: var(--text-ink);
+      padding: 8px 14px;
+      border-radius: var(--radius-pill);
       font-family: var(--f-sans);
-      font-weight: 600;
+      font-weight: 500;
       font-size: 13px;
       cursor: pointer;
       transition: border-color 150ms ease, transform 120ms ease;
     }
     .btn-download:hover {
       border-color: var(--control-border);
+      transform: translateY(-1px);
     }
-    .btn-download:active {
-      transform: scale(0.97);
-    }
-    .chip {
-      font-family: var(--f-mono);
-      font-size: 11px;
-      padding: 3px 8px;
-      border-radius: var(--r-sm);
-      background: var(--surface-2);
-      border: 1px solid var(--line);
-      color: var(--ink-2);
-      white-space: nowrap;
-    }
-
     .empty-saved {
       text-align: center;
-      padding: 48px 24px;
+      padding: 64px 24px;
       background: var(--surface);
       border: 1.5px dashed var(--line);
-      border-radius: var(--r-lg);
+      border-radius: var(--radius-card);
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      max-width: 600px;
+      max-width: 620px;
       margin: 32px auto;
     }
 
-    /* COLOSSAL OUIDO-STYLE FOOTER */
+    /* FOOTER */
     .editorial-footer {
       border-top: 1px solid var(--line);
-      padding: 64px 0 36px;
-      background: var(--bg);
+      padding: 80px 0 40px;
+      background: var(--bg-canvas);
     }
     .footer-huge-mark {
       font-family: var(--f-sans);
@@ -846,8 +1061,8 @@
       font-weight: 800;
       letter-spacing: -0.04em;
       line-height: 0.9;
-      color: var(--ink);
-      opacity: 0.12;
+      color: var(--text-ink);
+      opacity: 0.08;
       user-select: none;
       margin-bottom: 24px;
     }
@@ -857,10 +1072,10 @@
       flex-wrap: wrap;
       gap: 24px;
       font-size: 13px;
-      color: var(--ink-3);
+      color: var(--text-steel);
     }
 
-    /* MODAL (BYOK & PLAYER) */
+    /* MODALS */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -872,42 +1087,38 @@
       place-items: center;
       padding: 20px;
     }
-    .modal-overlay.open {
-      display: grid;
-    }
+    .modal-overlay.open { display: grid; }
     .modal-box {
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: var(--r-lg);
-      padding: 28px;
-      box-shadow: var(--card-shadow);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      box-shadow: var(--shadow-float);
       position: relative;
     }
     .modal-close {
       position: absolute;
-      top: 16px;
-      right: 16px;
+      top: 18px;
+      right: 18px;
       background: none;
       border: none;
-      font-size: 20px;
-      color: var(--ink-2);
+      font-size: 22px;
+      color: var(--text-steel);
       cursor: pointer;
     }
-
-    /* FULLSCREEN PLAYER MODAL */
     .player-modal-box {
       width: 100%;
       height: 94vh;
-      max-width: 1280px;
+      max-width: 1320px;
       background: var(--surface);
       border: 1px solid var(--line);
-      border-radius: var(--r-lg);
+      border-radius: var(--radius-card);
       display: flex;
       flex-direction: column;
       overflow: hidden;
-      box-shadow: var(--card-shadow);
+      box-shadow: var(--shadow-float);
     }
     .player-header {
       display: flex;
@@ -923,30 +1134,31 @@
       border: none;
       background: var(--surface);
     }
-
-    /* ERROR CARD */
     .error-card {
       display: none;
       margin-top: 20px;
-      padding: 16px;
-      border-radius: var(--r-md);
-      background: var(--danger-soft);
-      border: 1px solid var(--danger-line);
-      color: var(--danger);
+      padding: 18px;
+      border-radius: var(--radius-control);
+      background: var(--trap-danger-bg);
+      border: 1px solid var(--trap-danger-border);
+      color: var(--trap-danger-text);
       font-size: 14px;
     }
+
   </style>
 </head>
 <body>
 
-  <!-- STICKY EDITORIAL NAVBAR -->
-  <header class="editorial-nav">
+  <!-- COMPACT 48PX EDITORIAL TOP NAV -->
+  <nav class="editorial-nav">
     <div class="container nav-inner">
-      <a href="index.html" class="brand-mark" onclick="switchMainView('landing'); return false;">
-        <div class="brand-logo-sq">SA</div>
-        <div class="brand-text">Study Arena</div>
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="index.html" class="brand-mark" onclick="switchMainView('landing'); return false;">
+          <div class="brand-logo-sq">SA</div>
+          <span class="brand-text">Study Arena</span>
+        </a>
         <span class="brand-badge">ED. 2026</span>
-      </a>
+      </div>
 
       <div class="nav-tabs-group">
         <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
@@ -957,19 +1169,20 @@
       </div>
 
       <div class="nav-right-actions">
-        <button type="button" class="btn-primary" id="nav-try-btn" style="padding:7px 16px; font-size:13px;" onclick="switchMainView('generator')">
-          Try Now
+        <button type="button" class="btn-primary" id="nav-try-btn" onclick="switchMainView('generator')">
+          Try Now &rarr;
         </button>
+
         <button type="button" class="provider-pill" id="key-label" onclick="openKeyModal()">
           <span class="dot-status" id="key-ind"></span>
           <span id="active-prov-name">CLAUDE</span>
         </button>
 
-        <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle theme">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <button type="button" class="theme-btn" onclick="toggleTheme()" aria-label="Toggle visual theme">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="5"></circle>
-            <line x1="12" y1="1" x2="1" y2="3"></line>
-            <line x1="12" y1="21" x2="1" y2="23"></line>
+            <line x1="12" y1="1" x2="12" y2="3"></line>
+            <line x1="12" y1="21" x2="12" y2="23"></line>
             <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
             <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
             <line x1="1" y1="12" x2="3" y2="12"></line>
@@ -980,382 +1193,405 @@
         </button>
       </div>
     </div>
-  </header>
+  </nav>
 
-  <main class="container">
 
-    <!-- CREATE VIEW -->
+  <main>
+
+    <!-- SCREEN 1: THE PRODUCT GALLERY (LANDING VIEW) -->
     <div id="view-landing" class="main-view active">
-
-      <!-- HERO SECTION -->
+      <!-- HERO LAUNCH STAGE -->
       <section class="hero-section">
-        <div class="hero-eyebrow">
-          <span>ACADEMIC EXAM SIMULATOR</span>
-          <span style="opacity:0.4">|</span>
-          <span>CLIENT-SIDE BYOK</span>
-        </div>
-        <h1 class="hero-heading serif-title">
-          Turn 80-page slide decks into <span class="serif-italic">playable exam arenas</span>.
-        </h1>
-        <p class="hero-sub">
-          Practice the exact multi-logical traps professors test. Drop your lecture slides, extract core tensions, and master your final before morning.
-        </p>
-
-        <!-- TOPIC PILLS -->
-        <div class="school-proof-row">
-          <span class="school-pill">Corporate Finance</span>
-          <span class="school-pill">Managerial Economics</span>
-          <span class="school-pill">Strategic Management</span>
-          <span class="school-pill">Business Ethics &amp; Governance</span>
-          <span class="school-pill">Operations &amp; Supply Chain</span>
-        </div>
-
-        <!-- PRIMARY CALL TO ACTION -->
-        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:32px;">
-          <button type="button" class="btn-primary" style="padding:15px 36px; font-size:16px; border-radius:var(--r-md);" onclick="switchMainView('generator')">
-            <span>Try Now</span>
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-              <line x1="5" y1="12" x2="19" y2="12"></line>
-              <polyline points="12 5 19 12 12 19"></polyline>
-            </svg>
-          </button>
-          <button type="button" class="btn-ghost" style="padding:15px 26px; font-size:15px; border-radius:var(--r-md);" onclick="loadPreloadedMock()">
-            Try Pre-loaded Demo
-          </button>
-        </div>
-      </section>
-
-      <!-- INTERACTIVE CAROUSEL (GOOD TIMES & LATENTE INSPIRATION) -->
-      <section class="carousel-section">
-        <div class="carousel-header">
-          <div>
-            <h3 class="serif-title" style="font-size:22px; margin-bottom:4px;">Sample Exam Traps</h3>
-            <p style="margin:0; font-size:13px; color:var(--ink-2);">Click an option to see how the exam compiler evaluates subtle trade-offs.</p>
+        <div class="container">
+          <div class="hero-eyebrow">
+            <span>ACADEMIC RIGOR ENGINE &middot; ED. 2026</span>
           </div>
-          <div class="carousel-nav-btns">
-            <button type="button" class="carousel-arrow" id="carousel-prev" aria-label="Previous trap">&larr;</button>
-            <button type="button" class="carousel-arrow" id="carousel-next" aria-label="Next trap">&rarr;</button>
-          </div>
-        </div>
+          <h1 class="hero-heading">
+            Don't let exam traps catch you off guard.
+          </h1>
+          <p class="hero-sub">
+            Transform syllabi, lecture slides, and past papers into battle-tested scenario simulations with per-option distractor analysis.
+          </p>
 
-        <div class="carousel-track" id="exam-carousel-track">
-          <!-- CARD 1 -->
-          <article class="exam-card">
-            <div class="exam-card-meta">
-              <span class="card-badge">FINANCE &middot; WACC</span>
-              <span class="card-trap-tag">TRAP QUESTION</span>
-            </div>
-            <div class="exam-card-title">The Debt Tax Shield Trap</div>
-            <div class="exam-card-case">
-              NovaTech GmbH has a market debt-to-value ratio of 40%. The CFO argues issuing 20M EUR in new senior notes will lower WACC due to the interest tax shield.
-            </div>
-            <div class="exam-card-options">
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Ignores distress costs. As debt rises beyond optimal leverage, bankruptcy risk spikes cost of equity.')">
-                A. Agree: Higher leverage always decreases WACC monotonically.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Correct trade-off: Trade-Off Theory balances tax shields against expected bankruptcy distress costs.')">
-                B. Disagree: Beyond target leverage, financial distress costs outweigh tax benefits.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Misapplies Pecking Order. Pecking Order explains funding sequence, not optimal debt ratio.')">
-                C. Disagree: Pecking order forbids all senior note issuances.
-              </button>
-            </div>
-            <div class="exam-card-debrief" style="display:none;"></div>
-          </article>
-
-          <!-- CARD 2 -->
-          <article class="exam-card">
-            <div class="exam-card-meta">
-              <span class="card-badge">ETHICS &middot; GOVERNANCE</span>
-              <span class="card-trap-tag">DILEMMA ROUND</span>
-            </div>
-            <div class="exam-card-title">The Internal Audit Escrow</div>
-            <div class="exam-card-case">
-              A plant controller notices hazardous emission logs were suppressed during an ISO audit. The VP asks for a 90-day grace period to fix it quietly.
-            </div>
-            <div class="exam-card-options">
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Procedural violation. External audits cannot be concealed without personal regulatory liability.')">
-                A. Grant 90 days: Managerial goodwill resolves plant morale.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Complies with mandatory reporting: Document finding through audit committee channels immediately.')">
-                B. Escalate immediately to the Board Audit Committee.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Breaches duty of loyalty. Whistleblowing must follow internal audit committee exhaustion first.')">
-                C. Post logs directly to public environmental journals.
-              </button>
-            </div>
-            <div class="exam-card-debrief" style="display:none;"></div>
-          </article>
-
-          <!-- CARD 3 -->
-          <article class="exam-card">
-            <div class="exam-card-meta">
-              <span class="card-badge">STRATEGY &middot; PESTEL</span>
-              <span class="card-trap-tag">CASE QUESTION</span>
-            </div>
-            <div class="exam-card-title">Platform Moat Erosion</div>
-            <div class="exam-card-case">
-              A ride-hailing incumbent faces a multi-homing surge where both drivers and passengers use competing apps simultaneously.
-            </div>
-            <div class="exam-card-options">
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Subsidies burn cash reserves without creating sticky structural switching barriers.')">
-                A. Double driver bonuses: Temporary cash incentives solve multi-homing.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Structural lock-in: Build high-frequency bundle utilities (subscriptions, payment accounts).')">
-                B. Bundle proprietary services to raise consumer switching costs.
-              </button>
-              <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Fails Porter Five Forces. Exclusive contracts invite antitrust scrutiny in bilateral markets.')">
-                C. Impose exclusivity covenants prohibiting competitor app use.
-              </button>
-            </div>
-            <div class="exam-card-debrief" style="display:none;"></div>
-          </article>
-        </div>
-      </section>
-
-      <!-- 3-STEP VALUE SECTION ON LANDING -->
-      <section style="margin-bottom:80px; padding: 48px 0; border-top: 1px solid var(--line);">
-        <div style="text-align:center; max-width:640px; margin: 0 auto 36px;">
-          <h3 class="serif-title" style="font-size:26px; margin-bottom:8px;">How Study Arena Works</h3>
-          <p style="margin:0; color:var(--ink-2); font-size:14px;">From raw slide deck to interactive practice exam in under 60 seconds.</p>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
-          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
-            <div class="mono" style="color:var(--accent); margin-bottom:8px;">01 &middot; INGEST</div>
-            <h4 style="font-size:17px; margin-bottom:6px;">Upload Slides or Readings</h4>
-            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">Drop your course deck (.PDF). Text is extracted directly in your browser with zero server data storage.</p>
-          </div>
-          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
-            <div class="mono" style="color:var(--accent); margin-bottom:8px;">02 &middot; COMPILE</div>
-            <h4 style="font-size:17px; margin-bottom:6px;">Multi-Logical Question Traps</h4>
-            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">The compiler identifies core dilemmas, realistic managerial constraints, and plausible distractors professors test.</p>
-          </div>
-          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
-            <div class="mono" style="color:var(--accent); margin-bottom:8px;">03 &middot; SIMULATE</div>
-            <h4 style="font-size:17px; margin-bottom:6px;">Play the Game Offline</h4>
-            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">Get an interactive standalone HTML game. Play on your laptop or phone, track XP, and review full rubrics.</p>
-          </div>
-        </div>
-
-        <div style="text-align:center; margin-top:40px;">
-          <button type="button" class="btn-primary" style="padding:14px 32px; font-size:15px;" onclick="switchMainView('generator')">
-            Get Started - Open Generation Console
-          </button>
-        </div>
-      </section>
-
-    </div>
-
-    <!-- ==================== SCREEN 2: GENERATION CONSOLE ==================== -->
-    <div id="view-generator" class="main-view" style="display:none; padding: 36px 0;">
-      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
-        <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="switchMainView('landing')">
-          &larr; Back to Overview
-        </button>
-        <div class="mono" style="color:var(--ink-3); font-size:11px;">
-          SCREEN 2 OF 2 &middot; WORKSPACE CONSOLE
-        </div>
-      </div>
-
-      <!-- THE ARENA GENERATION CONSOLE -->
-      <section class="console-section" id="generator-console">
-        <div class="console-header">
-          <div class="console-title-group">
-            <h2 class="serif-title">The Generation Console</h2>
-            <p>Upload lecture slides or paste course readings to compile your custom exam simulator.</p>
-          </div>
-
-          <div class="mode-tab-group">
-            <button type="button" class="mode-tab-btn active" id="tab-mode-upload" onclick="switchTab('upload')">Upload Deck (PDF)</button>
-            <button type="button" class="mode-tab-btn" id="tab-mode-paste" onclick="switchTab('paste')">Paste Notes / Case</button>
-          </div>
-        </div>
-
-        <!-- UPLOAD PANE -->
-        <div id="pane-upload">
-          <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()">
-            <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFileSelect(event)">
-            <div class="dropzone-title">Drop your lecture slide deck (.PDF) here</div>
-            <div class="dropzone-sub">Extracted 100% locally in your browser via PDF.js &middot; Never uploaded to an intermediate server</div>
-            <div id="dz-filename" class="mono" style="margin-top:10px; color:var(--accent); display:none;"></div>
-          </div>
-        </div>
-
-        <!-- PASTE PANE -->
-        <div id="pane-paste" style="display:none;">
-          <textarea class="notes-textarea" id="notes-input" placeholder="Paste lecture slide transcripts, syllabus chapters, or case study dilemmas here..."></textarea>
-        </div>
-
-        <!-- PROFESSOR ANNALS DRAWER -->
-        <div class="annals-wrapper">
-          <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
-            <span>Optional: Professor exam style &amp; grading criteria</span>
-            <span id="annals-arrow">&darr;</span>
-          </button>
-          <div class="annals-content" id="annals-box">
-            <textarea class="notes-textarea" id="annals-input" style="min-height:90px;" placeholder="e.g. Professor insists on Trade-Off Theory, heavily penalizes answers that ignore liquidity constraints, likes 3-point bulleted recommendations."></textarea>
-          </div>
-        </div>
-
-        <!-- CONTROLS & MODEL SELECTION -->
-        <div class="console-controls-row">
-          <div class="model-selector-group">
-            <span class="mono" style="color:var(--ink-3);">Model:</span>
-            <select class="model-select" id="model-select">
-              <option value="claude-sonnet-4-6">Claude 3.5 Sonnet (Recommended &middot; High Rigor)</option>
-              <option value="claude-haiku-4-5-20251001">Claude 3.5 Haiku (Fast Revision)</option>
-              <option value="gpt-4o">ChatGPT GPT-4o</option>
-              <option value="gpt-4o-mini">ChatGPT GPT-4o Mini</option>
-              <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-            </select>
-            <span class="mono" style="color:var(--ink-3); font-size:11px;">Est: $0.02 - $0.05 / arena</span>
-          </div>
-
-          <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button type="button" class="btn-ghost" onclick="loadPreloadedMock()">
-              Try Pre-loaded Finance Demo
+          <div class="hero-action-cluster">
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
             </button>
-            <button type="button" class="btn-primary" id="gen-btn" onclick="generateArena()">
-              <span>Generate Study Arena</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </button>
+            <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
+              Play Live Sample &darr;
+            </a>
+          </div>
+
+          <div class="proof-row">
+            <span class="proof-pill">Corporate Finance</span>
+            <span class="proof-pill">Managerial Economics</span>
+            <span class="proof-pill">Strategic Management</span>
+            <span class="proof-pill">Operations &middot; Supply Chain</span>
+            <span class="proof-pill">Contract Law</span>
           </div>
         </div>
+      </section>
 
-        <!-- LIVE GENERATION STEPPER -->
-        <div class="stepper-card" id="stepper">
-          <div class="stepper-spinner"></div>
-          <div style="flex:1;">
-            <div id="prog-msg" style="font-weight:600; font-size:14px; margin-bottom:4px;">Reading course notes...</div>
-            <div style="height:4px; background:var(--line); border-radius:var(--r-full); overflow:hidden;">
-              <div id="prog-fill" style="width:15%; height:100%; background:var(--accent); transition:width 300ms ease;"></div>
-            </div>
-          </div>
-          <div id="prog-elapsed" class="mono tnum" style="color:var(--ink-3);">00:00</div>
-        </div>
-
-        <!-- ERROR CARD -->
-        <div class="error-card" id="error-card">
-          <div id="error-summary-title" style="font-weight:600; margin-bottom:4px;">Generation Error</div>
-          <div id="error-summary-body" style="margin-bottom:8px;"></div>
-          <details style="font-family:var(--f-mono); font-size:11px; white-space:pre-wrap;" id="error-details"></details>
-        </div>
-
-        <!-- RESULT CARD -->
-        <div class="result-card" id="result-card">
-          <div class="result-header">
+      <!-- INTERACTIVE HERO SIMULATION (THE IMMEDIATE AHA MOMENT) -->
+      <section class="interactive-hero-section" id="interactive-demo">
+        <div class="container">
+          <div class="interactive-header">
             <div>
-              <h3 class="serif-title" style="font-size:22px; margin-bottom:4px;">Study Arena Ready and Saved</h3>
-              <p style="margin:0; font-size:13px; color:var(--ink-2);">Your course is compiled and archived in your browser storage.</p>
+              <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">Interactive Forensics Preview</div>
+              <h3 class="serif-title" style="font-size:24px; margin:0;">Sample Exam Scenario Traps</h3>
             </div>
-            <div style="display:flex; gap:10px;">
-              <button type="button" class="btn-ghost" onclick="downloadGeneratedArena()">Download .html</button>
-              <button type="button" class="btn-primary" id="btn-play-main" onclick="playGeneratedArena()">Play Arena</button>
+            <div class="carousel-nav-btns">
+              <button type="button" class="carousel-arrow" id="carousel-prev" aria-label="Previous trap">&larr;</button>
+              <button type="button" class="carousel-arrow" id="carousel-next" aria-label="Next trap">&rarr;</button>
             </div>
           </div>
-          <div class="result-stats-row" id="result-stats"></div>
-        </div>
 
+          <div class="carousel-track" id="exam-carousel-track">
+            <!-- CARD 1 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">FINANCE &middot; WACC</span>
+                <span class="card-trap-tag">TRAP QUESTION</span>
+              </div>
+              <div class="exam-card-title">The Debt Tax Shield Trap</div>
+              <div class="exam-card-case">
+                NovaTech GmbH has a market debt-to-value ratio of 40%. The CFO argues issuing 20M EUR in new senior notes will lower WACC due to the interest tax shield.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Ignores distress costs. As debt rises beyond optimal leverage, bankruptcy risk spikes cost of equity.')">
+                  A. Agree: Higher leverage always decreases WACC monotonically.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Correct trade-off: Trade-Off Theory balances tax shields against expected bankruptcy distress costs.')">
+                  B. Disagree: Beyond target leverage, financial distress costs outweigh tax benefits.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Misapplies Pecking Order. Pecking Order explains funding sequence, not optimal debt ratio.')">
+                  C. Disagree: Pecking order forbids all senior note issuances.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+
+            <!-- CARD 2 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">ETHICS &middot; GOVERNANCE</span>
+                <span class="card-trap-tag">DILEMMA ROUND</span>
+              </div>
+              <div class="exam-card-title">The Internal Audit Escrow</div>
+              <div class="exam-card-case">
+                A plant controller notices hazardous emission logs were suppressed during an ISO audit. The VP asks for a 90-day grace period to fix it quietly.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Procedural violation. External audits cannot be concealed without personal regulatory liability.')">
+                  A. Grant 90 days: Managerial goodwill resolves plant morale.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Complies with mandatory reporting: Document finding through audit committee channels immediately.')">
+                  B. Escalate immediately to the Board Audit Committee.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Breaches duty of loyalty. Whistleblowing must follow internal audit committee exhaustion first.')">
+                  C. Post logs directly to public environmental journals.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+
+            <!-- CARD 3 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">STRATEGY &middot; PESTEL</span>
+                <span class="card-trap-tag">CASE QUESTION</span>
+              </div>
+              <div class="exam-card-title">Platform Moat Erosion</div>
+              <div class="exam-card-case">
+                A ride-hailing incumbent faces a multi-homing surge where both drivers and passengers use competing apps simultaneously.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Subsidies burn cash reserves without creating sticky structural switching barriers.')">
+                  A. Double driver bonuses: Temporary cash incentives solve multi-homing.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Structural lock-in: Build high-frequency bundle utilities (subscriptions, payment accounts).')">
+                  B. Bundle proprietary services to raise consumer switching costs.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Fails Porter Five Forces. Exclusive contracts invite antitrust scrutiny in bilateral markets.')">
+                  C. Impose exclusivity covenants prohibiting competitor app use.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+          </div>
+        </div>
       </section>
 
+      <!-- PRODUCT BLUEPRINT / FEATURE BAND (STUDIO MIST FULL-WIDTH BAND) -->
+      <section class="feature-band">
+        <div class="container">
+          <div class="feature-band-head">
+            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">Academic Architecture</div>
+            <h2>Built for Cognitive Mastery, Not Shallow Rote Memorization</h2>
+            <p>Every scenario is engineered with realistic distractors to train deep decision-making under exam pressure.</p>
+          </div>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <span class="feature-tag">DEEP ERROR ANALYSIS</span>
+              <h3 class="feature-title">Distractor Forensics</h3>
+              <p class="feature-desc">Exposes why plausible but incorrect options feel tempting. Learn the exact cognitive traps and misapplied heuristics professors design into exams.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-tag">100% LOCAL &middot; ZERO KNOWLEDGE</span>
+              <h3 class="feature-title">Zero-Knowledge Privacy</h3>
+              <p class="feature-desc">Pure client-side BYOK model. Your course slides, proprietary notes, and exam papers are parsed in browser memory and never stored on remote servers.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-tag">PROGRESSIVE RIGOR</span>
+              <h3 class="feature-title">Multi-Zone Simulation</h3>
+              <p class="feature-desc">Advance through sequential difficulty tiers from foundational conceptual models to brutal, multi-variable scenario traps with mock exams.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONVERSION CALLOUT CARD -->
+      <section style="margin-bottom:96px;">
+        <div class="container">
+          <div class="cta-banner-card">
+            <h2>Ready to simulate your course?</h2>
+            <p>Generate a complete offline-ready study arena in under 60 seconds with your own API key.</p>
+            <button type="button" class="btn-primary" style="padding:14px 36px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
     </div>
 
-    <!-- SAVED ARENAS VIEW -->
-    <div id="view-saved" style="display:none; padding: 48px 0;">
-      <div style="display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:16px; margin-bottom:24px;">
-        <div>
-          <h2 class="serif-title" style="font-size:32px; margin-bottom:6px;">Saved Study Arenas</h2>
-          <p style="margin:0; color:var(--ink-2); font-size:14px;">All previously generated courses stored locally on this machine.</p>
-        </div>
-        <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">Create New Arena</button>
-      </div>
 
-      <div id="saved-arenas-container">
-        <!-- Injected via JavaScript -->
+    <!-- SCREEN 2: THE GENERATION CONSOLE -->
+    <div id="view-generator" class="main-view" style="display:none; padding: 48px 0 80px;">
+      <div class="container">
+        <div class="back-nav-bar">
+          <button type="button" class="back-btn" onclick="switchMainView('landing')">
+            &larr; Back to Overview
+          </button>
+        </div>
+
+        <section class="console-section" id="generator-console">
+          <div class="console-header">
+            <div class="console-title-group">
+              <h2>Arena Generator</h2>
+              <p>Compile syllabi and lecture slides into an interactive, offline exam simulator.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadPreloadedMock()">
+                Load Sample Notes
+              </button>
+            </div>
+          </div>
+
+          <!-- SUBJECT PRESETS CHIPS -->
+          <div class="presets-row">
+            <span class="preset-label">Quick Presets:</span>
+            <button type="button" class="preset-chip" onclick="document.getElementById('notes-input').value='Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.'; switchTab('paste');">
+              Corporate Finance
+            </button>
+            <button type="button" class="preset-chip" onclick="document.getElementById('notes-input').value='Managerial Economics: Oligopoly & Game Theory\nNash Equilibrium, Bertrand vs Cournot Competition, Price Elasticity of Demand, and First-Mover Advantages.'; switchTab('paste');">
+              Managerial Economics
+            </button>
+            <button type="button" class="preset-chip" onclick="document.getElementById('notes-input').value='Strategic Management: Porter 5 Forces & Platform Economics\nNetwork effects, multi-homing switching costs, asymmetric platform subsidies, and disruptive innovation.'; switchTab('paste');">
+              Strategic Management
+            </button>
+            <button type="button" class="preset-chip" onclick="document.getElementById('notes-input').value='Operations & Supply Chain Management\nLittle\'s Law, Bullwhip Effect, Economic Order Quantity (EOQ), Safety Stock calculation, and Toyota Production System.'; switchTab('paste');">
+              Operations & Supply Chain
+            </button>
+          </div>
+
+          <div class="mode-tabs">
+            <button type="button" class="mode-tab-btn active" id="tab-mode-upload" onclick="switchTab('upload')">Upload Course PDF</button>
+            <button type="button" class="mode-tab-btn" id="tab-mode-paste" onclick="switchTab('paste')">Paste Notes or Transcripts</button>
+          </div>
+
+          <!-- UPLOAD PANE -->
+          <div id="pane-upload">
+            <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()">
+              <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFileSelect(event)">
+              <div style="font-size:24px; margin-bottom:8px; color:var(--text-steel);">&uarr;</div>
+              <div style="font-weight:600; font-size:15px; margin-bottom:4px;">Drop lecture slide PDF or course packet here</div>
+              <div style="font-size:13px; color:var(--text-steel);">Extracted directly in browser memory (Client-side privacy). Up to 80 pages.</div>
+              <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
+            </div>
+          </div>
+
+          <!-- PASTE PANE -->
+          <div id="pane-paste" style="display:none;">
+            <textarea class="notes-textarea" id="notes-input" placeholder="Paste lecture slide transcripts, syllabus bullet points, case summaries, or textbook chapters here..."></textarea>
+          </div>
+
+          <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
+          <div style="margin-top:14px;">
+            <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
+              <span>+ Add Professor Emphasis &middot; Exam Weighting (Optional)</span>
+              <span id="annals-arrow">&darr;</span>
+            </button>
+            <div class="annals-content" id="annals-box">
+              <textarea class="notes-textarea" id="annals-input" style="min-height:90px;" placeholder="e.g. Professor repeatedly stressed that Miller-Modigliani Proposition II with corporate taxes ignores financial distress costs. Focus heavily on WACC calculations."></textarea>
+            </div>
+          </div>
+
+          <!-- CONTROLS ROW -->
+          <div class="console-controls-bar">
+            <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
+              <label for="model-select" style="font-size:13px; font-weight:500; color:var(--text-steel);">LLM Engine:</label>
+              <select class="model-select" id="model-select">
+                <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Recommended)</option>
+                <option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
+                <option value="gpt-4o">GPT-4o</option>
+                <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+              </select>
+            </div>
+
+            <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
+              Formulate Study Arena &rarr;
+            </button>
+          </div>
+
+          <!-- TELEMETRY STEPPER -->
+          <div class="stepper-card" id="stepper">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <div id="prog-msg" style="font-weight:600; font-size:14px;">Reading course notes...</div>
+              <div id="prog-elapsed" class="mono tnum" style="color:var(--text-steel);">00:00</div>
+            </div>
+            <div class="prog-track">
+              <div id="prog-fill" style="width:15%; height:100%; background:var(--accent-cta); transition:width 300ms var(--ease-out);"></div>
+            </div>
+            <div style="font-size:12px; color:var(--text-steel);">Synthesizing progressive mastery zones, scenario distractors, and revision debriefs.</div>
+          </div>
+
+          <!-- ERROR CARD -->
+          <div class="error-card" id="error-card">
+            <div id="error-summary-title" style="font-weight:600; margin-bottom:4px;">Generation Error</div>
+            <div id="error-summary-body" style="margin-bottom:8px;"></div>
+            <details style="font-family:var(--f-mono); font-size:11px; white-space:pre-wrap;" id="error-details"></details>
+          </div>
+
+          <!-- RESULT CARD -->
+          <div class="result-card" id="result-card">
+            <div class="mono" style="color:var(--correct-text); margin-bottom:6px; font-weight:600;">SIMULATION COMPILED</div>
+            <h3 class="serif-title" style="font-size:24px; margin-bottom:8px;">Your Study Arena is Battle Ready</h3>
+            <p style="font-size:14px; color:var(--text-graphite); max-width:540px; margin:0 auto 20px;">
+              All zones, questions, scenario traps, and revision debriefs have been synthesized and stored locally in this browser.
+            </p>
+            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="btn-play-main" style="padding:10px 24px;" onclick="playGeneratedArena()">
+                Play Arena Now &rarr;
+              </button>
+              <button type="button" class="btn-ghost" style="padding:10px 20px;" onclick="downloadGeneratedArena()">
+                Download Offline (.html)
+              </button>
+            </div>
+            <div class="result-stats-row" id="result-stats"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+
+    <!-- SCREEN 3: SAVED ARENAS VIEW -->
+    <div id="view-saved" style="display:none; padding: 48px 0 96px;">
+      <div class="container">
+        <div class="saved-header">
+          <div>
+            <h2>Saved Study Arenas</h2>
+            <p>All previously generated courses stored locally on this machine.</p>
+          </div>
+          <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
+            + Create New Arena
+          </button>
+        </div>
+
+        <div id="saved-arenas-container">
+          <!-- Rendered dynamically by renderSavedArenasList() -->
+        </div>
       </div>
     </div>
 
   </main>
 
-  <!-- COLOSSAL OUIDO-STYLE BOTTOM SIGNATURE -->
+
+  <!-- EDITORIAL FOOTER -->
   <footer class="editorial-footer">
     <div class="container">
       <div class="footer-huge-mark">STUDY ARENA</div>
       <div class="footer-cols">
         <div>
-          <b>Study Arena &middot; Ed. 2026</b><br>
-          Interactive practice exam compiler for business and economics students.
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Study Arena &middot; Ed. 2026</div>
+          <div>Academic Exam Simulation &amp; Distractor Diagnostics.</div>
         </div>
         <div>
-          Zero cloud data storage &middot; All slide text parsed in-browser &middot; BYOK Architecture
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Privacy First</div>
+          <div>Zero-knowledge architecture. All API requests run directly from browser to LLM provider.</div>
         </div>
         <div>
-          Designed for undergraduate, MBA, and master's exam revision.
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Navigation</div>
+          <div>
+            <a href="#" onclick="switchMainView('landing'); return false;" style="color:inherit; text-decoration:none;">Overview</a> &middot;
+            <a href="#" onclick="switchMainView('generator'); return false;" style="color:inherit; text-decoration:none;">Generator</a> &middot;
+            <a href="#" onclick="switchMainView('saved'); return false;" style="color:inherit; text-decoration:none;">Saved Arenas</a>
+          </div>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- BYOK KEY MODAL -->
+  <!-- API KEY MODAL -->
   <div class="modal-overlay" id="key-modal" onclick="if(event.target===this)closeKeyModal()">
     <div class="modal-box">
       <button type="button" class="modal-close" onclick="closeKeyModal()">&times;</button>
-      <h3 class="serif-title" style="font-size:22px; margin-bottom:8px;">AI Provider Settings</h3>
-      <p style="font-size:13px; color:var(--ink-2); margin-bottom:18px;">
-        Study Arena uses Bring-Your-Own-Key. Your API key is stored only in your browser localStorage and sent directly to Anthropic, OpenAI, or Google.
+      <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">BYOK ARCHITECTURE</div>
+      <h3 class="serif-title" style="font-size:22px; margin-bottom:12px;">Configure AI Provider Key</h3>
+      <p style="font-size:13px; color:var(--text-graphite); margin-bottom:18px; line-height:1.5;">
+        Your API key is saved exclusively in your local browser storage. It is transmitted directly to the model provider and never stored on any intermediate server.
       </p>
 
-      <div style="display:grid; gap:14px;">
-        <div>
-          <label style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Select Provider</label>
-          <select id="key-provider-select" class="model-select" style="width:100%;" onchange="switchKeyProvider(this.value)">
-            <option value="claude">Anthropic Claude (Recommended)</option>
-            <option value="openai">OpenAI ChatGPT</option>
-            <option value="gemini">Google Gemini</option>
-          </select>
-        </div>
+      <div style="margin-bottom:14px;">
+        <label for="key-provider-select" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-ink);">Active Model Provider:</label>
+        <select id="key-provider-select" class="model-select" style="width:100%;" onchange="switchKeyProvider(this.value)">
+          <option value="claude">Anthropic Claude</option>
+          <option value="openai">OpenAI (GPT-4o)</option>
+          <option value="gemini">Google Gemini</option>
+        </select>
+      </div>
 
-        <div>
-          <label id="key-input-label" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px;">Anthropic API Key</label>
-          <input type="password" id="api-key-field" style="width:100%; padding:10px 12px; border-radius:var(--r-sm); border:1px solid var(--line); font-family:var(--f-mono); font-size:13px; background:var(--surface-2); color:var(--ink);" placeholder="sk-ant-...">
-        </div>
+      <div style="margin-bottom:16px;">
+        <label id="key-input-label" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-ink);">Anthropic API Key (sk-ant-...):</label>
+        <input type="password" id="api-key-field" style="width:100%; padding:10px 14px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink); font-family:var(--f-mono); font-size:13px;" placeholder="sk-ant-api03-..." autocomplete="off">
+      </div>
 
-        <div id="ai-onboarding-help" style="font-size:12px; color:var(--ink-3); line-height:1.4;">
-          Get an API key from console.anthropic.com. A typical arena generation uses ~15k tokens and costs under $0.05.
-        </div>
+      <div id="ai-onboarding-help" style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:20px;"></div>
 
-        <div style="display:flex; justify-content:space-between; margin-top:10px;">
-          <button type="button" class="btn-ghost" onclick="clearApiKey()">Remove Key</button>
-          <button type="button" class="btn-primary" onclick="saveApiKey()">Save &amp; Connect</button>
-        </div>
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn-ghost" onclick="clearApiKey()">Clear Key</button>
+        <button type="button" class="btn-primary" onclick="saveApiKey()">Save &amp; Activate</button>
       </div>
     </div>
   </div>
 
-  <!-- FULLSCREEN EMBEDDED ARENA PLAYER MODAL -->
+  <!-- FULLSCREEN ARENA PLAYER MODAL -->
   <div class="modal-overlay" id="arena-player-modal" style="padding:16px;">
     <div class="player-modal-box">
       <div class="player-header">
-        <div style="display:flex; align-items:center; gap:12px;">
-          <span class="mono" id="player-title" style="font-weight:600;">Playing Study Arena</span>
-        </div>
-        <div style="display:flex; gap:10px;">
-          <a id="player-newtab-btn" href="#" target="_blank" class="btn-ghost" style="padding:6px 12px; font-size:12px; text-decoration:none;">Open in New Tab</a>
-          <button type="button" class="btn-ghost" style="padding:6px 12px; font-size:12px;" onclick="closeArenaPlayer()">Close Player</button>
+        <span class="mono" id="player-title" style="font-weight:600;">Playing Study Arena</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <a id="player-newtab-btn" href="#" target="_blank" class="btn-ghost" style="padding:4px 12px; font-size:12px;">Open Full Page &rarr;</a>
+          <button type="button" class="btn-ghost" style="padding:4px 12px; font-size:12px;" onclick="closeArenaPlayer()">Close &times;</button>
         </div>
       </div>
       <iframe id="arena-player-iframe" class="player-iframe" src="about:blank"></iframe>
     </div>
   </div>
 
-  <script src="generator/engine_bundle.js?v=2.11"></script>
-  <script src="generator/compiler.js?v=2.11"></script>
-  <script src="generator/api.js?v=2.11"></script>
 
-<script>
+  <script>
+
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
     var generatedHtmlBlob = null;
     var generatedHtmlString = '';
@@ -2038,9 +2274,11 @@
         switchMainView("landing");
       }
     })();
+  
   </script>
 
-<script>
+  <script>
+
 // Trap reveal helper for carousel
 function revealTrap(btn, isCorrect, debriefText) {
   var card = btn.closest('.exam-card');
@@ -2177,6 +2415,19 @@ function revealTrap(btn, isCorrect, debriefText) {
       initMotionDesign();
     }
 
-</script>
+
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  </script>
 </body>
 </html>
