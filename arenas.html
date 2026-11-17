@@ -1887,10 +1887,11 @@
       var html = "";
 
       if (list.length === 0) {
-        html += '<div class="empty-saved">' +
-          '<h3 style="margin:0; font-size:18px; font-weight:600;">No custom arenas saved in this browser yet</h3>' +
-          '<p style="margin:0; font-size:14px; color:var(--ink-2);">When you generate a Study Arena from your slides or notes, it is automatically saved here so you can replay or download it anytime.</p>' +
-          '<button type="button" class="btn-play" onclick="switchMainView(\'generator\')">Create your first arena</button>' +
+        html += '<div class="empty-saved" style="text-align:center; padding:48px 24px;">' +
+          '<div class="mono" style="color:var(--accent-cta); margin-bottom:8px; font-size:11px; font-weight:600; letter-spacing:0.05em;">LOCAL ACADEMIC REPOSITORY</div>' +
+          '<h3 style="margin:0 0 10px; font-size:22px; font-weight:500; font-family:var(--f-serif); color:var(--text-ink);">No Custom Study Arenas Compiled Yet</h3>' +
+          '<p style="margin:0 auto 24px; font-size:14px; color:var(--text-graphite); max-width:540px; line-height:1.6;">When you synthesize lecture slides, past exams, or course syllabi in the Arena Generator, your tailored simulations are securely stored here in your offline browser environment.</p>' +
+          '<button type="button" class="btn-primary" style="padding:10px 24px;" onclick="switchMainView(\'generator\')">+ Ingest Course Materials &rarr;</button>' +
         '</div>';
       }
 

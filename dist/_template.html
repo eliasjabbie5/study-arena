@@ -358,6 +358,37 @@ textarea:focus{border-color:var(--accent);outline:none}
   flex-wrap: wrap;
 }
 
+
+/* EXAM HALL MODE -- AUSTERE SENSORY FOCUS */
+body.exam-hall-active {
+  background: var(--bg-canvas);
+}
+body.exam-hall-active .top,
+body.exam-hall-active .nav,
+body.exam-hall-active .rankbar,
+body.exam-hall-active .foot {
+  display: none !important;
+}
+.exam-hall-badge {
+  font-family: var(--f-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  padding: 3px 8px;
+  border-radius: var(--radius-badge);
+  background: rgba(11, 122, 79, 0.12);
+  color: var(--accent);
+  border: 1px solid rgba(11, 122, 79, 0.25);
+  text-transform: uppercase;
+}
+.exam-hall-bar {
+  background: var(--surface) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: var(--shadow-float) !important;
+  border-radius: var(--radius-card) !important;
+  padding: 12px 18px !important;
+}
+
 </style>
 
 <div class="wrap" id="app"></div>
@@ -624,6 +655,7 @@ function header(active){
 function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){var g=b.dataset.go;stopClock();if(g==="home")home();else if(g==="progress")progress();else if(g==="learn")learn();else if(g==="exams")exams();else diagrams()}})}
 
 function home(){
+  document.body.classList.remove("exam-hall-active");
   G=null;view="home";
   var miss=missed().length;
   var decay=computeDecayQueue();
@@ -653,7 +685,7 @@ function home(){
    '<button class="mode" id="mock"><h3>Timed Diagnostic Mock</h3><p>14 multiple choice (3 of them scenario traps), 3 short answers and 1 essay drawn from across the syllabus.</p></button>'+
    '<button class="mode alt" id="essays"><h3>Written Case &amp; Essay Lab</h3><p>All 6 case essays, rigorously evaluated against academic grading criteria.</p></button>'+
    '<button class="mode alt" id="traps"><h3>Distractor Forensics</h3><p>'+Q.filter(function(q){return q.trick}).length+' scenario traps: deceptive distractors, edge cases, and combined assertions.</p></button>'+
-   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Review Incorrect Responses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'No incorrect responses to review yet.')+'</p></button></div>'+
+   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Review Incorrect Responses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'Zero Inoculation Deficits: All previously encountered trap questions and distractor variations have been successfully resolved. Your conceptual defense across the syllabus is intact.')+'</p></button></div>'+
    '<div class="foot"><span>Essays and short answers are evaluated against a rubric built from your notes. Progress is saved locally in your browser.</span></div>';
   app.innerHTML=h;wireNav();
   app.querySelectorAll(".zone").forEach(function(b){b.onclick=function(){startZone(b.dataset.z)}});
@@ -680,6 +712,7 @@ function radar(){
 }
 
 function progress(){
+  document.body.classList.remove("exam-hall-active");
   G=null;view="progress";
   var all=stats(Q),ts=topicList(),wk=weakOrder(ts);
   var h=header("progress");
@@ -692,8 +725,9 @@ function progress(){
     '<div style="display:grid;gap:8px">'+types.map(function(x){return '<div class="rankrow"><span>'+TYPE_LABEL[x.t]+'</span><span class="tnum mono">'+x.st.mas+'/'+x.st.n+' mastered</span></div><div class="tbar"><i class="g" style="width:'+x.st.mas/x.st.n*100+'%"></i><i class="b" style="width:'+(x.st.att-x.st.mas)/x.st.n*100+'%"></i></div>'}).join("")+'</div></div>'+
     '<div class="card"><div class="mono">Mastery by chapter</div>'+radar()+'</div></div>';
   var weak=wk.filter(function(t){return t.st.att&&t.st.ratio<0.8});
-  var focus=weak.length?'<div class="focus"><b>Focus next:</b> '+weak.slice(0,3).map(function(t){return esc(t.name)+' ('+pct(t.st.ratio)+' of tried questions mastered)'}).join(', ')+'.</div>':
-    (all.att?'<div class="focus"><b>Nice.</b> Nothing you have tried is below 80%. Cover the questions you have not seen yet.</div>':'');
+  var focus=weak.length?'<div class="focus"><b>Priority Curricular Focus:</b> '+weak.slice(0,3).map(function(t){return esc(t.name)+' ('+pct(t.st.ratio)+' concept retention)'}).join(', ')+'. Reinforce these areas before sitting full exam papers.</div>':
+    (all.att?'<div class="focus"><b>Syllabus Mastery Active:</b> Zero vulnerable distractor blindspots detected across attempted topics. All evaluated frameworks exceed 80% mastery. Advance to unseen scenarios or sit a Timed Diagnostic Mock to test cross-syllabus synthesis.</div>':
+    '<div class="focus"><b>Diagnostic Baseline:</b> Begin by exploring syllabus chapters to calibrate your baseline mastery radar and uncover curriculum traps.</div>');
   h+=focus+'<div class="btns"><button class="btn" id="pw">Strengthen Priority Topics</button><button class="btn ghost" id="pu"'+(all.n-all.att?'':' disabled')+'>Explore Unseen Questions</button><button class="btn ghost" id="pm"'+(missed().length?'':' disabled')+'>Review Incorrect Responses ('+missed().length+')</button></div>';
   h+='<div class="card"><div class="sec-h"><h2>Topics, weakest first</h2><span class="hint">Green is mastered, red needs work</span></div><div>';
   wk.forEach(function(t){var s=status(t.st);
@@ -702,7 +736,7 @@ function progress(){
       '<div style="display:flex;gap:8px;align-items:center;justify-content:flex-end"><span class="st '+s.k+'">'+s.t+'</span><button class="btn ghost small" data-topic="'+esc(t.name)+'">Practice</button></div></div>'});
   h+='</div></div>';
   var ex=(S.exams||[]).slice().reverse().slice(0,6);
-  h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
+  h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint" style="line-height:1.6; padding:8px 0;"><b>Independent Examination Record:</b> No written exam papers submitted yet. Complete a timed paper under &ldquo;Mock exams&rdquo; to calibrate rubric fidelity, argument structure, and time management against academic standards.</p>')+'</div>';
   h+='<div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
   app.innerHTML=h;wireNav();
   $("#pw").onclick=function(){
@@ -732,6 +766,7 @@ function startZone(zid){
   start(z.name,qs.slice().sort(function(a,b){return TORDER[a.t]-TORDER[b.t]}));
 }
 function startMock(){
+  document.body.classList.add("exam-hall-active");
   var by=function(t){return shuffle(Q.filter(function(q){return q.t===t}))};
   var tr=shuffle(Q.filter(function(q){return q.t==="mcq"&&q.trick})).slice(0,3),pl=shuffle(Q.filter(function(q){return q.t==="mcq"&&!q.trick})).slice(0,11);
   start("Mock exam",shuffle(tr.concat(pl)).concat(by("short").slice(0,3),by("essay").slice(0,1)),true);
@@ -760,8 +795,11 @@ function question(){
       pacePill='<span class="pace-pill '+paceCls+'">PACE: '+paceText+'</span>';
     }
   }
-  var top='<div class="bar-top"><button class="back" id="back">Leave</button><div class="prog"><span class="mono tnum">'+(G.i+1)+' / '+n+'</span><div class="bar"><i style="width:'+Math.round(G.i/n*100)+'%"></i></div></div>'+pacePill+'<span class="mono">'+esc(G.title)+'</span></div>';
-  var chips='<div class="chips"><span class="chip t-'+q.t+'">'+TYPE_LABEL[q.t]+'</span><span class="chip">'+esc(q.topic)+'</span><span class="chip">up to '+XPMAX[q.t]+' XP</span></div>';
+  var hallBadge = G.mock ? '<span class="exam-hall-badge">EXAM HALL ACTIVE</span>' : '';
+  var leaveText = G.mock ? 'Exit Exam Hall' : 'Leave';
+  var barClass = G.mock ? 'bar-top exam-hall-bar' : 'bar-top';
+  var top='<div class="'+barClass+'"><div style="display:flex;align-items:center;gap:10px;"><button class="back" id="back">'+leaveText+'</button>'+hallBadge+'</div><div class="prog"><span class="mono tnum">'+(G.i+1)+' / '+n+'</span><div class="bar"><i style="width:'+Math.round(G.i/n*100)+'%"></i></div></div>'+pacePill+'<span class="mono">'+esc(G.title)+'</span></div>';
+  var chips='<div class="chips"><span class="chip t-'+q.t+'">'+TYPE_LABEL[q.t]+'</span><span class="chip">'+esc(q.topic)+'</span><span class="chip">up to '+XPMAX[q.t]+' points</span></div>';
   var stim=q.fig&&q.figPos==="before"?figHTML(q,true):"";
   var body;
   if(q.t==="mcq"){
@@ -856,6 +894,7 @@ async function answerText(q,ans){
 }
 
 function summary(){
+  document.body.classList.remove("exam-hall-active");
   var n=G.res.length,sum=G.res.reduce(function(a,r){return a+r.s},0),pc=n?Math.round(sum/n*100):0;
   var byZ={};G.res.forEach(function(r){var q=qOf(r.id);(byZ[q.z]=byZ[q.z]||[]).push(r.s)});
   var verdict=pc>=85?"Exam ready":pc>=70?"Solid":pc>=50?"Getting there":"Needs another pass";
@@ -881,7 +920,7 @@ function loadDraft(id){try{return JSON.parse(localStorage.getItem(draftKey(id))|
 function saveDraft(id,d){try{localStorage.setItem(draftKey(id),JSON.stringify(d))}catch(e){}}
 function clearDraft(id){try{localStorage.removeItem(draftKey(id))}catch(e){}}
 function fmtClock(sec){var m=Math.floor(sec/60),s=sec%60;return (m<10?"0":"")+m+":"+(s<10?"0":"")+s}
-function stopClock(){if(clockT){clearInterval(clockT);clockT=null}}
+function stopClock(){document.body.classList.remove("exam-hall-active");if(clockT){clearInterval(clockT);clockT=null}}
 function lastExam(id){var a=(S.exams||[]).filter(function(x){return x.p===id});return a[a.length-1]}
 function bestExam(id){return (S.exams||[]).filter(function(x){return x.p===id}).reduce(function(m,x){return Math.max(m,x.s)},0)}
 
@@ -903,6 +942,7 @@ function exams(){
 }
 
 function startExam(id){
+  document.body.classList.add("exam-hall-active");
   stopClock();var e=exById(id),d=loadDraft(id);
   EX={e:e,a:d.a||{},m:d.m||{},sec:d.sec||0};G=null;view="exam";
   var h=header("exams")+'<div class="paper"><div class="paper-head"><div><div class="mono">Exam paper \u00b7 '+esc(e.title)+'</div><h2>'+esc(CONFIG.examName)+'</h2></div>'+
