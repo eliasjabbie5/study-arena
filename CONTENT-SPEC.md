@@ -14,7 +14,7 @@ The files are plain JavaScript pasted into the engine, in this order: `config.js
 var CONFIG={
   key:"micro-arena-v1",            // unique per course: browser save slot. Never reuse another course's key.
   title:"Micro Arena",             // header + browser tab
-  subtitle:"Microeconomics · IÉSEG Paris · exam prep",
+  subtitle:"Microeconomics  ISEG Paris  exam prep",
   course:"Microeconomics course at IESEG School of Management",  // sentence fragment used in the AI examiner prompt
   examName:"Microeconomics",       // heading on mock paper (unused if no exams)
   examFormat:"the 2025 annals",    // "written in the format of ..." (unused if no exams)
@@ -28,7 +28,7 @@ var CONFIG={
 
 ```js
 var ZONES=[
- {id:"mkt",name:"Markets & Elasticity",sess:"Sessions 1 · 2",blurb:"One or two sentences naming the key ideas and authors."}
+ {id:"mkt",name:"Markets & Elasticity",sess:"Sessions 1  2",blurb:"One or two sentences naming the key ideas and authors."}
 ];
 var TOPICS={};   // leave empty. Give every question its own topic instead (see 3).
 ```

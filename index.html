@@ -1223,44 +1223,62 @@
     }
     
 
-    /* AI Chatbot Thinking Indicator */
+    /* AI Thinking Indicator (No Box, Antigravity Font, 3 Moving Dots) */
     .thinking-cluster {
       display: inline-flex;
       align-items: center;
-      gap: 10px;
-      padding: 8px 16px;
-      background: var(--surface-2);
-      border: 0.5px solid var(--line);
-      border-radius: var(--radius-pill);
-      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      gap: 6px;
+      padding: 0;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
       user-select: none;
-      animation: fadeIn 200ms var(--ease-out);
-    }
-    .thinking-spinner {
-      width: 13px;
-      height: 13px;
-      border: 2px solid rgba(11, 122, 79, 0.2);
-      border-top-color: var(--accent-cta);
-      border-radius: 50%;
-      animation: spinSpinner 0.8s linear infinite;
-    }
-    @keyframes spinSpinner {
-      to { transform: rotate(360deg); }
+      vertical-align: middle;
+      animation: fadeIn 150ms var(--ease-out);
     }
     .thinking-text {
-      font-family: var(--f-mono);
-      font-size: 13px;
+      font-family: -apple-system, BlinkMacSystemFont, "Google Sans", "Segoe UI", Roboto, "Inter", -system-ui, sans-serif;
+      font-size: 13.5px;
       font-weight: 500;
       letter-spacing: -0.01em;
-      background: linear-gradient(90deg, var(--text-steel) 0%, var(--text-ink) 50%, var(--text-steel) 100%);
-      background-size: 200% auto;
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      animation: thinkingShimmer 2.2s linear infinite;
+      color: var(--text-steel);
+      line-height: 1;
+      display: inline-block;
     }
-    @keyframes thinkingShimmer {
-      0% { background-position: 200% 0; }
-      100% { background-position: -200% 0; }
+    .thinking-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      height: 12px;
+      padding-top: 1px;
+    }
+    .thinking-dots span {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--text-steel);
+      animation: antigravityDotWave 1.4s ease-in-out infinite both;
+    }
+    .thinking-dots span:nth-child(1) {
+      animation-delay: 0s;
+    }
+    .thinking-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .thinking-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes antigravityDotWave {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.3;
+      }
+      40% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
     }
 
 </style>
@@ -1554,8 +1572,12 @@
                 Generate Arena &rarr;
               </button>
               <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
-                <span class="thinking-spinner"></span>
-                <span class="thinking-text" id="thinking-status-text">Thinking...</span>
+                <span class="thinking-text" id="thinking-status-text">Thinking</span>
+                <span class="thinking-dots" id="thinking-dots" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
               </div>
             </div>
           </div>
@@ -2486,6 +2508,7 @@ if (modal) modal.classList.add("open");
       var genBtn = document.getElementById("gen-btn");
       var thinkingCluster = document.getElementById("gen-thinking-cluster");
       var thinkingText = document.getElementById("thinking-status-text");
+      var thinkingDots = document.getElementById("thinking-dots");
       var stepper = document.getElementById("stepper");
       var progMsg = document.getElementById("prog-msg");
       var progFill = document.getElementById("prog-fill");
@@ -2495,7 +2518,8 @@ if (modal) modal.classList.add("open");
       if (genBtn) genBtn.disabled = true;
       if (thinkingCluster) {
         thinkingCluster.style.display = "inline-flex";
-        if (thinkingText) thinkingText.textContent = "Thinking...";
+        if (thinkingDots) thinkingDots.style.display = "inline-flex";
+        if (thinkingText) thinkingText.textContent = "Thinking";
       }
       if (resCard) {
         resCard.classList.remove("active");
@@ -2512,7 +2536,10 @@ if (modal) modal.classList.add("open");
       try {
         var result = await window.StudyArenaAPI.generate(notes || "Sample notes", teacherAnnals, function (msg, pct) {
           if (progMsg) progMsg.textContent = msg;
-          if (thinkingText) thinkingText.textContent = msg;
+          if (thinkingText) {
+            var cleanMsg = msg ? msg.replace(/\.+$/, "") : "Thinking";
+            thinkingText.textContent = cleanMsg;
+          }
           var ratio = Math.max(0.08, Math.min(1, (pct || 15) / 100));
           if (progFill) progFill.style.transform = "scaleX(" + ratio + ")";
         });
@@ -2532,9 +2559,11 @@ if (modal) modal.classList.add("open");
         }
         if (thinkingCluster) {
           thinkingCluster.style.display = "inline-flex";
+          if (thinkingDots) thinkingDots.style.display = "none";
           if (thinkingText) thinkingText.textContent = "Arena Compiled";
           setTimeout(function() {
             if (thinkingCluster) thinkingCluster.style.display = "none";
+            if (thinkingDots) thinkingDots.style.display = "inline-flex";
           }, 3500);
         }
         if (genBtn) genBtn.disabled = false;
