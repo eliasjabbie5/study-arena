@@ -1020,47 +1020,127 @@
     }
     .arena-actions {
       display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-      align-items: center;
+      gap: 12px;
+      align-items: stretch;
     }
-    .btn-play {
+    .arena-actions .btn-play {
+      flex: 1;
       background: var(--accent-cta);
       color: var(--accent-cta-text);
       border: none;
-      padding: 8px 18px;
+      padding: 10px 22px;
       border-radius: var(--radius-pill);
       font-family: var(--f-sans);
       font-weight: 600;
-      font-size: 13px;
+      font-size: 13.5px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
+      justify-content: center;
       gap: 6px;
       text-decoration: none;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 3px 8px var(--accent-glow);
       transition: transform 120ms var(--ease-out), background-color 150ms ease, box-shadow 150ms ease;
     }
-    .btn-play:hover {
+    .arena-actions .btn-play:hover {
       background: var(--accent-cta-hover);
       transform: translateY(-1px);
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 5px 14px var(--accent-glow);
     }
-    .btn-download {
+    .arena-actions .btn-share {
       background: var(--surface-2);
       border: 1px solid var(--line);
       color: var(--text-ink);
-      padding: 8px 14px;
+      padding: 10px 18px;
       border-radius: var(--radius-pill);
       font-family: var(--f-sans);
       font-weight: 500;
-      font-size: 13px;
+      font-size: 13.5px;
       cursor: pointer;
-      transition: border-color 150ms ease, transform 120ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: border-color 150ms ease, transform 120ms ease, background-color 150ms ease;
     }
-    .btn-download:hover {
+    .arena-actions .btn-share:hover {
       border-color: var(--control-border);
+      background: var(--surface);
       transform: translateY(-1px);
+    }
+
+    /* Settings Cog & Dropdown */
+    .arena-settings-wrap {
+      position: relative;
+    }
+    .btn-settings-cog {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-steel);
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-badge);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+      padding: 0;
+    }
+    .btn-settings-cog:hover {
+      color: var(--text-ink);
+      border-color: var(--control-border);
+      background: var(--surface);
+    }
+    .arena-settings-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 100;
+      min-width: 175px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      box-shadow: var(--shadow-float);
+      padding: 6px;
+      animation: fadeIn 120ms var(--ease-out);
+    }
+    .arena-settings-dropdown.open {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .settings-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-ink);
+      font-family: var(--f-sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 120ms ease, color 120ms ease;
+    }
+    .settings-menu-item:hover {
+      background: var(--surface-2);
+    }
+    .settings-menu-item.danger {
+      color: var(--trap-danger-text);
+    }
+    .settings-menu-item.danger:hover {
+      background: var(--trap-danger-bg);
+    }
+    .settings-menu-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 6px;
     }
     .empty-saved {
       text-align: center;
@@ -1932,7 +2012,32 @@
           '<div>' +
             '<div class="arena-card-head">' +
               '<h3>' + escapeHtml(item.title) + '</h3>' +
-              '<span class="arena-date">' + escapeHtml(formatSavedDate(item.createdAt)) + '</span>' +
+              '<div style="display:flex; align-items:center; gap:8px;">' +
+                '<span class="arena-date">' + escapeHtml(formatSavedDate(item.createdAt)) + '</span>' +
+                '<div class="arena-settings-wrap">' +
+                  '<button type="button" class="btn-settings-cog" aria-label="Arena Settings" onclick="toggleArenaSettings(event, \'' + escapeHtml(item.id) + '\')">' +
+                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<circle cx="12" cy="12" r="3"></circle>' +
+                      '<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>' +
+                    '</svg>' +
+                  '</button>' +
+                  '<div class="arena-settings-dropdown" id="arena-settings-dropdown-' + escapeHtml(item.id) + '">' +
+                    '<button type="button" class="settings-menu-item" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
+                      '<span>Download (.html)</span>' +
+                    '</button>' +
+                    '<button type="button" class="settings-menu-item" onclick="exportArenaJson(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>' +
+                      '<span>Export JSON (.json)</span>' +
+                    '</button>' +
+                    '<div class="settings-menu-divider"></div>' +
+                    '<button type="button" class="settings-menu-item danger" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+                      '<span>Delete Arena</span>' +
+                    '</button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
             '</div>' +
             '<p class="arena-sub">' + escapeHtml(item.subtitle) + '</p>' +
           '</div>' +
@@ -1942,11 +2047,11 @@
             '<span>' + Number(item.chaptersCount || 0) + ' study chapters</span>' +
           '</div>' +
           '<div class="arena-actions">' +
-            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena</button>' +
-            '<button type="button" class="btn-download" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">Download (.html)</button>' +
-            '<button type="button" class="btn-ghost" onclick="shareArenaLink(\'' + escapeHtml(item.id) + '\')">Share Link</button>' +
-            '<button type="button" class="btn-ghost" onclick="exportArenaJson(\'' + escapeHtml(item.id) + '\')">Export (.json)</button>' +
-            '<button type="button" class="btn-ghost" style="color:var(--trap-danger-text);" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">Delete</button>' +
+            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena &rarr;</button>' +
+            '<button type="button" class="btn-share" onclick="shareArenaLink(\'' + escapeHtml(item.id) + '\')">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>' +
+              '<span>Share Link</span>' +
+            '</button>' +
           '</div>' +
         '</article>';
       }
@@ -1967,8 +2072,7 @@
           '<span>2 mock exams</span>' +
         '</div>' +
         '<div class="arena-actions">' +
-          '<button type="button" class="btn-play" onclick="playReferenceInModal()">Play Reference Arena</button>' +
-
+          '<button type="button" class="btn-play" style="width:100%;" onclick="playReferenceInModal()">Play Reference Arena &rarr;</button>' +
         '</div>' +
       '</article>';
 
@@ -2033,7 +2137,26 @@
       }
     }
 
+    function toggleArenaSettings(event, id) {
+      if (event) event.stopPropagation();
+      var all = document.querySelectorAll(".arena-settings-dropdown");
+      var target = document.getElementById("arena-settings-dropdown-" + id);
+      var wasOpen = target && target.classList.contains("open");
+      all.forEach(function(el) { el.classList.remove("open"); });
+      if (target && !wasOpen) {
+        target.classList.add("open");
+      }
+    }
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest(".arena-settings-wrap")) {
+        document.querySelectorAll(".arena-settings-dropdown").forEach(function(el) {
+          el.classList.remove("open");
+        });
+      }
+    });
+
     function deleteSavedArenaById(id) {
+      if (!confirm("Are you sure you want to delete this study arena from your local browser?")) return;
       var list = getSavedArenas().filter(function (x) { return x.id !== id; });
       try {
         localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
