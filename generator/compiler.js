@@ -110,7 +110,7 @@ window.StudyArenaCompiler = {
       learnJs,
       examsJs,
       b.main,
-      b.tail
+      b.tail || "\n})();\n</script>\n</body></html>"
     ].join("\n");
 
     return fullHtml;
