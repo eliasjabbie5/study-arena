@@ -1,0 +1,495 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Study Arena — Gamified Exam Prep for Business Students</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <style>
+    :root {
+      --bg: #EBEFF6;
+      --surface: #FFFFFF;
+      --surface2: #F3F6FB;
+      --ink: #101A33;
+      --muted: #556083;
+      --line: #D3DAE8;
+      --accent: #2B4EFF;
+      --accent-ink: #FFFFFF;
+      --accent-soft: #E3E9FF;
+      --good: #117A58;
+      --good-soft: #DDF3EA;
+      --warn: #9A6A12;
+      --warn-soft: #FBF0D6;
+      --f-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --f-body: "IBM Plex Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --f-mono: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme="light"]) {
+        --bg: #0D1326;
+        --surface: #151D37;
+        --surface2: #1B2544;
+        --ink: #E7ECF9;
+        --muted: #98A4C6;
+        --line: #2A3558;
+        --accent: #8199FF;
+        --accent-ink: #0D1326;
+        --accent-soft: #232F5C;
+        --good: #42D6A0;
+        --good-soft: #12382F;
+        --warn: #E9B64E;
+        --warn-soft: #3B2F14;
+        color-scheme: dark;
+      }
+    }
+
+    :root[data-theme="dark"] {
+      --bg: #0D1326;
+      --surface: #151D37;
+      --surface2: #1B2544;
+      --ink: #E7ECF9;
+      --muted: #98A4C6;
+      --line: #2A3558;
+      --accent: #8199FF;
+      --accent-ink: #0D1326;
+      --accent-soft: #232F5C;
+      --good: #42D6A0;
+      --good-soft: #12382F;
+      --warn: #E9B64E;
+      --warn-soft: #3B2F14;
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--f-body);
+      font-size: 15px;
+      line-height: 1.55;
+      padding: 32px 16px 64px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .wrap {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    /* Top Nav */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 8px;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-family: var(--f-display);
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+      text-decoration: none;
+    }
+    .logo-badge {
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-family: var(--f-mono);
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .btn-ghost {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      border-radius: 9px;
+      padding: 7px 13px;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.15s ease;
+      text-decoration: none;
+    }
+    .btn-ghost:hover {
+      border-color: var(--accent);
+      background: var(--surface2);
+    }
+
+    /* Hero Section */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 36px 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px -8px rgba(0,0,0,0.06);
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-soft);
+      color: var(--accent);
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 4px 12px;
+      border-radius: 99px;
+      width: fit-content;
+    }
+    .hero h1 {
+      font-family: var(--f-display);
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin: 0;
+      max-width: 720px;
+    }
+    .hero p {
+      margin: 0;
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 680px;
+      line-height: 1.6;
+    }
+    .hero-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+    .hero-stat {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .hero-stat b {
+      font-family: var(--f-display);
+      font-size: 24px;
+      font-weight: 800;
+    }
+    .hero-stat span {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Course Grid */
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 12px;
+    }
+    .section-title h2 {
+      font-family: var(--f-display);
+      font-size: 24px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: -0.02em;
+    }
+    .section-title span {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      gap: 18px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      position: relative;
+      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: var(--accent);
+      box-shadow: 0 10px 24px -10px rgba(0,0,0,0.1);
+    }
+    .card.disabled {
+      opacity: 0.72;
+      pointer-events: none;
+    }
+    .card-tag {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 3px 9px;
+      border-radius: 6px;
+      width: fit-content;
+      font-weight: 600;
+    }
+    .tag-active {
+      background: var(--good-soft);
+      color: var(--good);
+    }
+    .tag-wip {
+      background: var(--warn-soft);
+      color: var(--warn);
+    }
+    .tag-plan {
+      background: var(--surface2);
+      color: var(--muted);
+    }
+
+    .card h3 {
+      font-family: var(--f-display);
+      font-size: 22px;
+      font-weight: 700;
+      margin: 0;
+      line-height: 1.2;
+    }
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .card-meta {
+      margin-top: auto;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .card-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-family: var(--f-body);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 6px 12px;
+      border-radius: 8px;
+      transition: opacity 0.15s ease;
+    }
+    .card:hover .card-btn {
+      opacity: 0.95;
+    }
+
+    /* Features banner */
+    .feature-strip {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 20px 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+    }
+    .feature-item h4 {
+      margin: 0 0 4px;
+      font-family: var(--f-display);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .feature-item p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    /* Footer */
+    .foot {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      padding-top: 16px;
+      border-top: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--muted);
+      font-family: var(--f-mono);
+    }
+    .foot a {
+      color: var(--muted);
+      text-decoration: none;
+    }
+    .foot a:hover {
+      color: var(--accent);
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    
+    <!-- Top Nav -->
+    <header class="nav">
+      <a href="index.html" class="logo">
+        Study Arena
+        <span class="logo-badge">Beta</span>
+      </a>
+      <div class="nav-actions">
+        <button class="btn-ghost" id="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
+        <span class="btn-ghost" style="cursor: default;">⚡ Supabase Ready</span>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-badge">🎓 Business Exam Simulator</div>
+      <h1>Master your business exams through gameplay.</h1>
+      <p>
+        Built specifically for business students. Study the core frameworks, test yourself against trick exam questions, and sit timed mock exam papers with instant grading.
+      </p>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <b>100%</b>
+          <span>Client-Side & Offline</span>
+        </div>
+        <div class="hero-stat">
+          <b>109+</b>
+          <span>Curated Questions</span>
+        </div>
+        <div class="hero-stat">
+          <b>32</b>
+          <span>Guide Chapters</span>
+        </div>
+        <div class="hero-stat">
+          <b>XP & Ranks</b>
+          <span>Local Browser Save</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Arenas Grid -->
+    <div>
+      <div class="section-title">
+        <h2>Active Arenas</h2>
+        <span>Select a course to start</span>
+      </div>
+
+      <div class="grid">
+        <!-- Ethics Arena (Ready) -->
+        <a href="dist/ethics.html" class="card">
+          <div class="card-tag tag-active">● Active & Ready</div>
+          <h3>Business Ethics Arena</h3>
+          <p>
+            Philosophical foundations (Kant, Utilitarianism, Virtue Ethics), CSR, sustainability, whistleblowing, and leadership dilemmas.
+          </p>
+          <div class="card-meta">
+            <span>109 Qs · 2 Mock Exams</span>
+            <span class="card-btn">Enter Arena →</span>
+          </div>
+        </a>
+
+        <!-- Microeconomics (In Development) -->
+        <div class="card disabled">
+          <div class="card-tag tag-wip">🛠 In Development</div>
+          <h3>Microeconomics Arena</h3>
+          <p>
+            Elasticity, market equilibrium, price controls, perfect competition vs. monopolies, and game theory with interactive graphs.
+          </p>
+          <div class="card-meta">
+            <span>Coming next</span>
+            <span style="font-size: 11px; text-transform: uppercase;">Building</span>
+          </div>
+        </div>
+
+        <!-- Math for Business (Planned) -->
+        <div class="card disabled">
+          <div class="card-tag tag-plan">⏳ Planned</div>
+          <h3>Math for Business Arcade</h3>
+          <p>
+            Rapid-fire financial mathematics, compound interest, discounted cash flows, break-even matrices, and exam calculations.
+          </p>
+          <div class="card-meta">
+            <span>Course planned</span>
+            <span style="font-size: 11px; text-transform: uppercase;">Queued</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Features strip -->
+    <div class="feature-strip">
+      <div class="feature-item">
+        <h4>🎯 Exam-Grade Questions</h4>
+        <p>No generic trivia. Questions feature traps, subtle distinctions, and multi-factor rubrics modeled on real university annals.</p>
+      </div>
+      <div class="feature-item">
+        <h4>🧠 Deep Explanations</h4>
+        <p>Every incorrect choice explains exactly why it’s wrong and which concept was confused, turning mistakes into retention.</p>
+      </div>
+      <div class="feature-item">
+        <h4>📊 Zero Setup Needed</h4>
+        <p>All progress and XP persist in your browser’s localStorage. Open anywhere on your laptop or phone.</p>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="foot">
+      <span>Study Arena · Built for IÉSEG School of Management</span>
+      <span>v1.0 · Ready for Supabase Auth</span>
+    </footer>
+
+  </div>
+
+  <script>
+    function toggleTheme() {
+      const html = document.documentElement;
+      const current = html.getAttribute('data-theme');
+      const next = current === 'dark' ? 'light' : 'dark';
+      html.setAttribute('data-theme', next);
+      localStorage.setItem('study_arena_theme', next);
+    }
+    (function initTheme() {
+      const saved = localStorage.getItem('study_arena_theme');
+      if (saved) document.documentElement.setAttribute('data-theme', saved);
+    })();
+  </script>
+</body>
+</html>

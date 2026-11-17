@@ -1,0 +1,23 @@
+# Secrets & Local Environment
+.env
+.env*.local
+*.key
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+env/
+venv/
+
+# System & OS
+.DS_Store
+Thumbs.db
+
+# IDE & Agents
+.idea/
+.vscode/
+.gemini/
+.claude/
+scratch/

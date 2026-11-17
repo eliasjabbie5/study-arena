@@ -1,0 +1,1 @@
+/* No diagrams in the template. */
