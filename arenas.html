@@ -1229,8 +1229,8 @@
           </p>
 
           <div class="hero-action-cluster" style="margin-bottom: 20px;">
-            <button type="button" class="btn-primary" style="padding:12px 28px; font-size:14px;" onclick="switchMainView('generator')">
-              Try Now &rarr;
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
             </button>
             <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
               Play Live Sample &darr;
@@ -1364,8 +1364,8 @@
           <div class="cta-banner-card">
             <h2>Ready to simulate your course?</h2>
             <p>Generate a complete offline-ready study arena in under 60 seconds with your own API key.</p>
-            <button type="button" class="btn-primary" style="padding:12px 28px; font-size:14px;" onclick="switchMainView('generator')">
-              Try Now &rarr;
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
             </button>
           </div>
         </div>
@@ -1581,6 +1581,7 @@
 
 
   <script>
+
 
 
 
@@ -2269,9 +2270,11 @@
   
   
   
+  
   </script>
 
   <script>
+
 
 
 
@@ -2412,6 +2415,19 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
 
 
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
 
         (function() {
           var params = new URLSearchParams(window.location.search);
