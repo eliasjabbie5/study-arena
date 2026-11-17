@@ -709,13 +709,14 @@
   </div>
 
   <!-- Scripts with cache busting -->
-  <script src="generator/engine_bundle.js?v=2.1"></script>
-  <script src="generator/compiler.js?v=2.1"></script>
-  <script src="generator/api.js?v=2.1"></script>
+  <script src="generator/engine_bundle.js?v=2.2"></script>
+  <script src="generator/compiler.js?v=2.2"></script>
+  <script src="generator/api.js?v=2.2"></script>
 
   <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
     var generatedHtmlBlob = null;
+    var generatedHtmlString = '';
     var generatedCourseData = null;
 
     function updateKeyUI() {
@@ -892,6 +893,7 @@
         });
 
         generatedCourseData = result.courseData;
+        generatedHtmlString = result.compiledHtml;
         generatedHtmlBlob = new Blob([result.compiledHtml], { type: "text/html" });
 
         stepper.classList.remove("active");
@@ -923,9 +925,41 @@
     }
 
     function playGeneratedArena() {
-      if (!generatedHtmlBlob) return;
-      var url = URL.createObjectURL(generatedHtmlBlob);
-      window.open(url, "_blank");
+      if (!generatedHtmlString && !generatedHtmlBlob) return;
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      var title = document.getElementById("player-title");
+      var newTabBtn = document.getElementById("player-newtab-btn");
+
+      if (title && generatedCourseData && generatedCourseData.config) {
+        title.textContent = "🎮 Playing: " + (generatedCourseData.config.title || "Custom Arena");
+      }
+
+      var blobUrl = generatedHtmlBlob ? URL.createObjectURL(generatedHtmlBlob) : "";
+      if (newTabBtn && blobUrl) {
+        newTabBtn.href = blobUrl;
+      }
+
+      if (iframe) {
+        if (generatedHtmlString) {
+          iframe.srcdoc = generatedHtmlString;
+        } else if (blobUrl) {
+          iframe.src = blobUrl;
+        }
+      }
+
+      if (modal) {
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    function closeArenaPlayer() {
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      if (modal) modal.style.display = "none";
+      if (iframe) iframe.srcdoc = "about:blank";
+      document.body.style.overflow = "auto";
     }
 
     function downloadGeneratedArena() {
@@ -953,6 +987,25 @@
       updateKeyUI();
     })();
   </script>
+
+  <!-- In-Page Arena Player Modal -->
+  <div id="arena-player-modal" style="display: none; position: fixed; inset: 0; z-index: 10000; background: rgba(0,0,0,0.88); backdrop-filter: blur(10px); flex-direction: column;">
+    <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 24px; background: var(--surface); border-bottom: 1.5px solid var(--line);">
+      <div style="font-family: var(--f-display); font-size: 17px; font-weight: 700; color: var(--ink); display: flex; align-items: center; gap: 8px;">
+        <span id="player-title">🎮 Playing Study Arena</span>
+      </div>
+      <div style="display: flex; gap: 12px; align-items: center;">
+        <a id="player-newtab-btn" href="#" target="_blank" style="padding: 7px 14px; background: var(--surface-soft); border: 1px solid var(--line); border-radius: 8px; font-size: 13px; font-family: var(--f-mono); color: var(--ink); text-decoration: none; display: inline-flex; align-items: center; gap: 6px;">
+          <span>⛶ Open in New Tab</span>
+        </a>
+        <button onclick="closeArenaPlayer()" style="padding: 7px 16px; background: var(--bad); color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: opacity 0.2s;">
+          ✕ Close Game
+        </button>
+      </div>
+    </div>
+    <iframe id="arena-player-iframe" style="flex: 1; width: 100%; border: none; background: #fff;" sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"></iframe>
+  </div>
+
 </body>
 </html>
 
