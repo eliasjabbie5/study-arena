@@ -123,10 +123,11 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 ---
 
 ### QUANTITY TARGETS PER GENERATION
-- Minimum 3-4 Zones.
-- Minimum 2 Chapters per Zone (each chapter topic must link to at least 2-3 questions).
-- Minimum 10-14 MCQs total (including at least 3 labeled with 'trick': true).
-- Minimum 2-3 Short Answer questions with AACSB keyword rubrics.`,
+- 3 Zones.
+- 1-2 Chapters per Zone (concise 150-200 words per chapter).
+- 8-10 MCQs total (including at least 2 labeled with 'trick': true).
+- 2 Short Answer questions with AACSB keyword rubrics.
+Ensure valid, complete JSON output without truncating.`,
 
   cleanJsonResponse: function(raw) {
     var text = raw.trim();
@@ -138,7 +139,13 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     if (text.endsWith("```")) {
       text = text.substring(0, text.length - 3);
     }
-    return JSON.parse(text.trim());
+    text = text.trim();
+    var firstOpen = text.indexOf("{");
+    var lastClose = text.lastIndexOf("}");
+    if (firstOpen !== -1 && lastClose !== -1 && lastClose > firstOpen) {
+      text = text.substring(firstOpen, lastClose + 1);
+    }
+    return JSON.parse(text);
   },
 
   fetchClaudeModels: async function(apiKey) {
@@ -189,11 +196,13 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
       // The /v1/models endpoint may list internal research IDs like claude-haiku-5-5
       // that do NOT work via /v1/messages on the standard API tier.
       var SAFE_ALIASES = [
+        "claude-sonnet-4-6",
+        "claude-haiku-4-5-20251001",
+        "claude-haiku-5-5",
+        "claude-sonnet-5-5",
+        "claude-sonnet-5",
         "claude-3-5-haiku-latest",
-        "claude-3-haiku-20240307",
-        "claude-3-5-sonnet-latest",
-        "claude-3-5-sonnet-20241022",
-        "claude-3-sonnet-20240229"
+        "claude-3-5-sonnet-latest"
       ];
 
       var candidateModels = [];
@@ -233,7 +242,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
             },
             body: JSON.stringify({
               model: modelToTry,
-              max_tokens: 4096,
+              max_tokens: 8192,
               system: this.MASTER_PROMPT,
               messages: [{ role: "user", content: userContent }]
             })

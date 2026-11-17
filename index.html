@@ -703,9 +703,9 @@
   </div>
 
   <!-- Scripts with cache busting -->
-  <script src="generator/engine_bundle.js?v=1.8"></script>
-  <script src="generator/compiler.js?v=1.8"></script>
-  <script src="generator/api.js?v=1.8"></script>
+  <script src="generator/engine_bundle.js?v=2.0"></script>
+  <script src="generator/compiler.js?v=2.0"></script>
+  <script src="generator/api.js?v=2.0"></script>
 
   <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
@@ -876,6 +876,8 @@
       genBtn.disabled = true;
       resCard.classList.remove("active");
       stepper.classList.add("active");
+      var prevErr = document.getElementById("error-card");
+      if (prevErr) prevErr.style.display = "none";
 
       try {
         var result = await window.StudyArenaAPI.generate(notes, teacherAnnals, function(msg, pct) {
@@ -899,7 +901,15 @@
           "<span>Study Chapters: <b>" + cCount + "</b></span>";
 
       } catch (err) {
-        alert("Generation Error: " + err.message);
+        var errorCard = document.getElementById("error-card");
+        var errorDetails = document.getElementById("error-details");
+        if (errorCard && errorDetails) {
+          errorDetails.textContent = err.message;
+          errorCard.style.display = "flex";
+          errorCard.scrollIntoView({ behavior: "smooth", block: "center" });
+        } else {
+          alert("Generation Error: " + err.message);
+        }
         stepper.classList.remove("active");
       } finally {
         genBtn.disabled = false;
