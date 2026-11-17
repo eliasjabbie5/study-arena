@@ -156,7 +156,7 @@ L("Descriptive theories","indiv","Individual factors, locus of control and emoti
 
 L("Descriptive theories","bias","Bounded ethicality and cognitive biases (Banaji et al.)",{z:"beh",tp:"Banaji et al.",body:
 '<p>Banaji, Bazerman and Chugh argue that good people do unethical things <b>without realizing it</b>, because of unconscious biases. This is <b>bounded ethicality</b>; it differs from rationalization, which involves some awareness and protects self-image.</p>'+
-'<ul><li><b>Implicit prejudice</b>: unconscious attitudes toward other groups (see the Harvard Implicit Association Test).</li>'+
+'<ul><li><b>Implicit prejudice</b>: unconscious attitudes toward other groups (see the Implicit Association Test).</li>'+
 '<li><b>In-group favoritism</b>: we favour members of our own group.</li>'+
 '<li><b>Overclaiming credit</b>: we overestimate our own contribution.</li>'+
 '<li><b>Conflict of interest</b>: the illusion that we can be objective even when our interests are at stake.</li></ul>'+
