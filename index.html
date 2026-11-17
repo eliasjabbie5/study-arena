@@ -16,6 +16,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="generator/engine_bundle.js?v=3.5.0"></script>
+  <script src="generator/compiler.js?v=3.5.0"></script>
+  <script src="generator/api.js?v=3.5.0"></script>
 
   <style>
 
@@ -1585,6 +1588,7 @@
 
 
 
+
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
     var generatedHtmlBlob = null;
     var generatedHtmlString = '';
@@ -1812,7 +1816,8 @@
           '<span>2 mock exams</span>' +
         '</div>' +
         '<div class="arena-actions">' +
-          '<a href="dist/ethics.html" class="btn-play" style="text-decoration:none;">Play Reference Arena</a>' +
+          '<button type="button" class="btn-play" onclick="playReferenceInModal()">Play Reference Arena</button>' +
+          '<a href="dist/ethics.html?v=3.5.0" target="_blank" class="btn-download" style="text-decoration:none;">Open in New Tab &rarr;</a>' +
         '</div>' +
       '</article>';
 
@@ -1820,13 +1825,39 @@
       container.innerHTML = html;
     }
 
+    function playReferenceInModal() {
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      var newtabBtn = document.getElementById("player-newtab-btn");
+      var title = document.getElementById("player-title");
+      if (title) title.textContent = "Business Ethics Arena";
+      var url = "dist/ethics.html?v=" + Date.now();
+      if (iframe) iframe.src = url;
+      if (newtabBtn) newtabBtn.href = url;
+      if (modal) modal.classList.add("open");
+    }
+
     function playSavedArenaById(id) {
       var list = getSavedArenas();
       for (var i = 0; i < list.length; i++) {
         if (list[i].id === id) {
           generatedCourseData = list[i].courseData;
-          generatedHtmlString = list[i].compiledHtml || (window.StudyArenaCompiler && list[i].courseData ? window.StudyArenaCompiler.compile(list[i].courseData) : "");
-          generatedHtmlBlob = new Blob([generatedHtmlString], { type: "text/html" });
+          var compiled = "";
+          // ALWAYS recompile using the updated engine bundle so the latest luxury design applies!
+          if (window.StudyArenaCompiler && list[i].courseData) {
+            try {
+              compiled = window.StudyArenaCompiler.compile(list[i].courseData);
+            } catch (err) {
+              console.warn("Could not recompile courseData, falling back to compiledHtml", err);
+              compiled = list[i].compiledHtml || "";
+            }
+          } else {
+            compiled = list[i].compiledHtml || "";
+          }
+          generatedHtmlString = compiled;
+          generatedHtmlBlob = new Blob([compiled], { type: "text/html" });
+          var title = document.getElementById("player-title");
+          if (title) title.textContent = list[i].title || "Study Arena";
           playGeneratedArena();
           return;
         }
@@ -2271,9 +2302,11 @@
   
   
   
+  
   </script>
 
   <script>
+
 
 
 
@@ -2415,6 +2448,19 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
 
 
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
 
         (function() {
           var params = new URLSearchParams(window.location.search);
