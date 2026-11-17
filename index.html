@@ -639,6 +639,12 @@
         </div>
       </div>
 
+      <!-- Error Card -->
+      <div id="error-card" style="display: none; background: var(--bad-soft); border: 1.5px solid var(--bad); border-radius: 14px; padding: 20px; flex-direction: column; gap: 10px; margin-top: 10px;">
+        <h4 style="margin: 0; color: var(--bad); font-family: var(--f-display); font-size: 18px;">⚠️ Generation Error Details</h4>
+        <pre id="error-details" style="margin: 0; white-space: pre-wrap; font-family: var(--f-mono); font-size: 12px; color: var(--ink); max-height: 250px; overflow-y: auto; background: var(--surface); padding: 12px; border-radius: 8px; border: 1px solid var(--line);"></pre>
+      </div>
+
       <!-- Success Card -->
       <div class="result-card" id="result-card">
         <h3 class="result-title">🎉 Study Arena Generated Successfully!</h3>
@@ -703,9 +709,9 @@
   </div>
 
   <!-- Scripts with cache busting -->
-  <script src="generator/engine_bundle.js?v=2.0"></script>
-  <script src="generator/compiler.js?v=2.0"></script>
-  <script src="generator/api.js?v=2.0"></script>
+  <script src="generator/engine_bundle.js?v=2.1"></script>
+  <script src="generator/compiler.js?v=2.1"></script>
+  <script src="generator/api.js?v=2.1"></script>
 
   <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";

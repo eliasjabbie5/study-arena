@@ -123,11 +123,11 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 ---
 
 ### QUANTITY TARGETS PER GENERATION
-- 3 Zones.
-- 1-2 Chapters per Zone (concise 150-200 words per chapter).
-- 8-10 MCQs total (including at least 2 labeled with 'trick': true).
-- 2 Short Answer questions with AACSB keyword rubrics.
-Ensure valid, complete JSON output without truncating.`,
+- Exactly 2-3 Zones.
+- Exactly 1 Chapter per Zone (concise 100-150 words per chapter).
+- Exactly 6-8 MCQs total (including 2 labeled with 'trick': true).
+- Exactly 2 Short Answer questions with AACSB keyword rubrics.
+CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
 
   cleanJsonResponse: function(raw) {
     var text = raw.trim();
@@ -141,10 +141,67 @@ Ensure valid, complete JSON output without truncating.`,
     }
     text = text.trim();
     var firstOpen = text.indexOf("{");
-    var lastClose = text.lastIndexOf("}");
-    if (firstOpen !== -1 && lastClose !== -1 && lastClose > firstOpen) {
-      text = text.substring(firstOpen, lastClose + 1);
+    if (firstOpen !== -1) {
+      text = text.substring(firstOpen);
     }
+
+    // Try direct parse first
+    try {
+      return JSON.parse(text);
+    } catch (initialErr) {
+      console.warn("Direct JSON.parse failed, attempting auto-repair:", initialErr.message);
+    }
+
+    // Auto-repair for truncated JSON: walk backwards to find a valid cut point and close open braces
+    var maxLookback = Math.min(text.length, 4000);
+    for (var i = text.length; i >= text.length - maxLookback; i--) {
+      var candidate = text.substring(0, i).trimEnd();
+      if (candidate.endsWith(",") || candidate.endsWith(":")) {
+        candidate = candidate.slice(0, -1).trimEnd();
+      }
+
+      var openBraces = 0;
+      var openBrackets = 0;
+      var inString = false;
+      var escape = false;
+
+      for (var j = 0; j < candidate.length; j++) {
+        var ch = candidate[j];
+        if (escape) {
+          escape = false;
+          continue;
+        }
+        if (ch === "\\") {
+          escape = true;
+          continue;
+        }
+        if (ch === '"') {
+          inString = !inString;
+          continue;
+        }
+        if (!inString) {
+          if (ch === '{') openBraces++;
+          else if (ch === '}') openBraces--;
+          else if (ch === '[') openBrackets++;
+          else if (ch === ']') openBrackets--;
+        }
+      }
+
+      if (!inString && openBraces >= 0 && openBrackets >= 0) {
+        var repaired = candidate;
+        for (var b = 0; b < openBrackets; b++) repaired += "]";
+        for (var r = 0; r < openBraces; r++) repaired += "}";
+        try {
+          var parsed = JSON.parse(repaired);
+          console.log("JSON auto-repaired successfully! Rescued by trimming " + (text.length - i) + " chars.");
+          return parsed;
+        } catch (e) {
+          // continue searching backwards
+        }
+      }
+    }
+
+    // Fallback: throw original error
     return JSON.parse(text);
   },
 
