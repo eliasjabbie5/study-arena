@@ -2231,9 +2231,7 @@ if (title && generatedCourseData && generatedCourseData.config) {
         title.textContent = "Playing: " + (generatedCourseData.config.title || "Custom Arena");
       }
       var blobUrl = generatedHtmlBlob ? URL.createObjectURL(generatedHtmlBlob) : "";
-      if (newTabBtn && blobUrl) newTabBtn.href = blobUrl;
-
-      if (iframe) {
+if (iframe) {
         if (generatedHtmlString) iframe.srcdoc = generatedHtmlString;
         else if (blobUrl) iframe.src = blobUrl;
       }

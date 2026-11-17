@@ -39,6 +39,15 @@ window.StudyArenaCompiler = {
     }
 
     var config = data.config;
+    if (!config.ranks || !Array.isArray(config.ranks) || config.ranks.length === 0 || config.ranks[0][1] === "Intern" || config.ranks[0][1] === "Rookie" || config.ranks[0][1] === "Novice") {
+      config.ranks = [
+        [0, "Foundational Standing"],
+        [150, "Proficiency Standing"],
+        [350, "Advanced Practice"],
+        [650, "Executive Mastery"],
+        [1000, "Distinction Honors"]
+      ];
+    }
     var zones = data.zones;
     var chapters = data.chapters || [];
     var questions = data.questions || [];
