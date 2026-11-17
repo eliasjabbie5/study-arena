@@ -1587,7 +1587,7 @@ function home(){
    '<button class="mode" id="mock"><h3>Timed Diagnostic Mock</h3><p>14 multiple choice (3 of them scenario traps), 3 short answers and 1 essay drawn from across the syllabus.</p></button>'+
    '<button class="mode alt" id="essays"><h3>Written Case &amp; Essay Lab</h3><p>All 6 case essays, rigorously evaluated against academic grading criteria.</p></button>'+
    '<button class="mode alt" id="traps"><h3>Distractor Forensics</h3><p>'+Q.filter(function(q){return q.trick}).length+' scenario traps: deceptive distractors, edge cases, and combined assertions.</p></button>'+
-   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'No incorrect responses to review yet.')+'</p></button></div>'+
+   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Review Incorrect Responses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'No incorrect responses to review yet.')+'</p></button></div>'+
    '<div class="foot"><span>Essays and short answers are evaluated against a rubric built from your notes. Progress is saved locally in your browser.</span></div>';
   app.innerHTML=h;wireNav();
   app.querySelectorAll(".zone").forEach(function(b){b.onclick=function(){startZone(b.dataset.z)}});
@@ -1635,7 +1635,7 @@ function progress(){
   h+='</div></div>';
   var ex=(S.exams||[]).slice().reverse().slice(0,6);
   h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
-  h+='<div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
+  h+='  h+='<div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
   app.innerHTML=h;wireNav();
   $("#pw").onclick=function(){
     var pick=weak.length?weak:wk.filter(function(t){return !t.st.att});if(!pick.length)pick=wk;
