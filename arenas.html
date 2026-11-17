@@ -1242,9 +1242,17 @@
       font-size: 13.5px;
       font-weight: 500;
       letter-spacing: -0.01em;
-      color: var(--text-steel);
       line-height: 1;
       display: inline-block;
+      background: linear-gradient(90deg, var(--text-steel) 0%, var(--text-ink) 50%, var(--text-steel) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: thinkingShimmer 2.2s linear infinite;
+    }
+    @keyframes thinkingShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
     }
     .thinking-dots {
       display: inline-flex;
