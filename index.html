@@ -1979,11 +1979,14 @@
     function playReferenceInModal() {
       var modal = document.getElementById("arena-player-modal");
       var iframe = document.getElementById("arena-player-iframe");
-var title = document.getElementById("player-title");
+      var title = document.getElementById("player-title");
       if (title) title.textContent = "Business Ethics Arena";
       var url = "dist/ethics.html?v=" + Date.now();
-      if (iframe) iframe.src = url;
-if (modal) modal.classList.add("open");
+      if (iframe) {
+        iframe.removeAttribute("srcdoc");
+        iframe.src = url;
+      }
+      if (modal) modal.classList.add("open");
     }
 
     function playSavedArenaById(id) {
@@ -2621,13 +2624,17 @@ if (modal) modal.classList.add("open");
       var modal = document.getElementById("arena-player-modal");
       var iframe = document.getElementById("arena-player-iframe");
       var title = document.getElementById("player-title");
-if (title && generatedCourseData && generatedCourseData.config) {
+      if (title && generatedCourseData && generatedCourseData.config) {
         title.textContent = "Playing: " + (generatedCourseData.config.title || "Custom Arena");
       }
       var blobUrl = generatedHtmlBlob ? URL.createObjectURL(generatedHtmlBlob) : "";
-if (iframe) {
-        if (generatedHtmlString) iframe.srcdoc = generatedHtmlString;
-        else if (blobUrl) iframe.src = blobUrl;
+      if (iframe) {
+        if (generatedHtmlString) {
+          iframe.srcdoc = generatedHtmlString;
+        } else if (blobUrl) {
+          iframe.removeAttribute("srcdoc");
+          iframe.src = blobUrl;
+        }
       }
       if (modal) {
         modal.classList.add("open");
@@ -2639,7 +2646,10 @@ if (iframe) {
       var modal = document.getElementById("arena-player-modal");
       var iframe = document.getElementById("arena-player-iframe");
       if (modal) modal.classList.remove("open");
-      if (iframe) iframe.srcdoc = "about:blank";
+      if (iframe) {
+        iframe.removeAttribute("srcdoc");
+        iframe.src = "about:blank";
+      }
       document.body.style.overflow = "auto";
     }
 
