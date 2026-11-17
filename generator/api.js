@@ -404,11 +404,14 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       return { courseData: mockData, compiledHtml: mockHtml };
     }
 
-    var provider = localStorage.getItem("sa_ai_provider") || "claude";
-    var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
+    var provider = localStorage.getItem("sa_ai_provider") || "gemini";
+    var apiKey = localStorage.getItem("sa_api_key_" + provider) ||
+                 localStorage.getItem("sa_api_key_gemini") ||
+                 localStorage.getItem("sa_api_key_claude") ||
+                 localStorage.getItem("sa_api_key_openai") || "";
 
     if (!apiKey) {
-      throw new Error("Missing API Key for " + provider + ". Please click \'AI Settings (BYOK)\' to set your key.");
+      throw new Error("Missing API Key for " + provider.toUpperCase() + ". Click 'AI Settings' to connect your free Google Gemini key (1,500 free generations/day, zero credit card) or supply a Claude/OpenAI key.");
     }
 
     onProgress("Reading syllabus & lecture notes...", 15);
@@ -552,7 +555,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
 
     } else if (provider === "gemini") {
       onProgress("Creating tools & distractor traps...", 45);
-      var modelName = "gemini-1.5-flash";
+      var modelName = localStorage.getItem("sa_model_gemini") || "gemini-1.5-flash";
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
         signal: signal,

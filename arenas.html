@@ -1648,10 +1648,12 @@
             <div style="display:flex; align-items:center; gap:12px; flex-wrap:wrap;">
               <label for="model-select" style="font-size:13px; font-weight:500; color:var(--text-steel);">LLM Engine:</label>
               <select class="model-select" id="model-select">
-                <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (Recommended)</option>
-                <option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
-                <option value="gpt-4o">GPT-4o</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash (Free Tier &middot; Recommended)</option>
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash (Fast &amp; Free Tier)</option>
                 <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
+                <option value="claude-3-5-sonnet-latest">Claude 3.5 Sonnet (BYOK Key)</option>
+                <option value="claude-3-7-sonnet-latest">Claude 3.7 Sonnet</option>
+                <option value="gpt-4o">GPT-4o (BYOK Key)</option>
               </select>
             </div>
 
@@ -1777,9 +1779,9 @@
       <div style="margin-bottom:14px;">
         <label for="key-provider-select" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-ink);">Active Model Provider:</label>
         <select id="key-provider-select" class="model-select" style="width:100%;" onchange="switchKeyProvider(this.value)">
-          <option value="claude">Anthropic Claude</option>
-          <option value="openai">OpenAI (GPT-4o)</option>
-          <option value="gemini">Google Gemini</option>
+          <option value="gemini">Google Gemini (100% Free Tier Available)</option>
+          <option value="claude">Anthropic Claude (BYOK)</option>
+          <option value="openai">OpenAI (GPT-4o BYOK)</option>
         </select>
       </div>
 
@@ -1817,7 +1819,7 @@
 
 
 
-    var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
+    var currentProvider = localStorage.getItem("sa_ai_provider") || "gemini";
     var generatedHtmlBlob = null;
     var generatedHtmlString = '';
     var generatedCourseData = null;
@@ -2227,48 +2229,78 @@
     }
 
     var MODELS = {
+      gemini: [
+        { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (Free Tier \u00b7 Recommended)" },
+        { id: "gemini-2.0-flash", name: "Gemini 2.0 Flash (Fast & Free Tier)" },
+        { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" }
+      ],
       claude: [
-        { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6 (recommended)" },
-        { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5 (fast, lowest cost)" },
-        { id: "claude-3-5-haiku-latest", name: "Claude 3.5 Haiku" },
-        { id: "claude-3-5-sonnet-latest", name: "Claude 3.5 Sonnet" }
+        { id: "claude-3-5-sonnet-latest", name: "Claude 3.5 Sonnet (BYOK Key)" },
+        { id: "claude-3-7-sonnet-latest", name: "Claude 3.7 Sonnet" },
+        { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5" }
       ],
       openai: [
-        { id: "gpt-4o-mini", name: "GPT-4o Mini (fast, lowest cost)" },
-        { id: "gpt-4o", name: "GPT-4o (standard)" }
-      ],
-      gemini: [
-        { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (fast, free tier)" },
-        { id: "gemini-1.5-pro", name: "Gemini 1.5 Pro" }
+        { id: "gpt-4o", name: "GPT-4o (BYOK Key)" },
+        { id: "gpt-4o-mini", name: "GPT-4o Mini (fast)" }
       ]
     };
 
     function selectProvider(p) {
       currentProvider = p;
+      var provSelect = document.getElementById("key-provider-select");
+      if (provSelect) provSelect.value = p;
       ['claude', 'openai', 'gemini'].forEach(function (name) {
-        document.getElementById("tab-" + name).classList.toggle("active", name === p);
+        var tab = document.getElementById("tab-" + name);
+        if (tab) tab.classList.toggle("active", name === p);
       });
       var labels = {
-        claude: "Anthropic API key (sk-ant-...)",
-        openai: "OpenAI API key (sk-...)",
-        gemini: "Google Gemini API key (AIza...)"
+        claude: "Anthropic API key (sk-ant-...):",
+        openai: "OpenAI API key (sk-...):",
+        gemini: "Google Gemini API key (AIza...):"
       };
-      document.getElementById("key-input-label").textContent = labels[p];
+      var placeholders = {
+        claude: "sk-ant-api03-...",
+        openai: "sk-proj-...",
+        gemini: "AIzaSy..."
+      };
+      var lbl = document.getElementById("key-input-label");
+      if (lbl) lbl.textContent = labels[p] || "API Key:";
+      var fld = document.getElementById("api-key-field");
       var apiKey = localStorage.getItem("sa_api_key_" + p) || "";
-      document.getElementById("api-key-field").value = apiKey;
+      if (fld) {
+        fld.placeholder = placeholders[p] || "Paste API key...";
+        fld.value = apiKey;
+      }
+
+      var helpBox = document.getElementById("ai-onboarding-help");
+      if (helpBox) {
+        if (p === "gemini") {
+          helpBox.innerHTML = '<div style="background:var(--accent-pill-bg); border:1px solid var(--border-focus); border-radius:var(--radius-control); padding:12px 14px; margin-top:8px;">' +
+            '<div style="font-weight:600; color:var(--accent-cta); font-size:12.5px; margin-bottom:2px;">Google Gemini 100% Free Tier</div>' +
+            '<div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">1,500 free generations per day with zero credit card required. Grab your personal key in 5 seconds:</div>' +
+            '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:4px; color:var(--accent-cta); font-size:12px; font-weight:600; text-decoration:none; margin-top:6px;">Get Free Gemini API Key (Google AI Studio) &rarr;</a>' +
+            '</div>';
+        } else if (p === "claude") {
+          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your Anthropic key at <a href="https://console.anthropic.com/" target="_blank" rel="noopener" style="color:var(--accent-cta);">console.anthropic.com</a>. Billed directly by Anthropic.</div>';
+        } else if (p === "openai") {
+          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your OpenAI key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:var(--accent-cta);">platform.openai.com</a>. Billed directly by OpenAI.</div>';
+        }
+      }
 
       var sel = document.getElementById("model-select");
-      sel.innerHTML = "";
-      var savedModel = localStorage.getItem("sa_model_" + p);
-      (MODELS[p] || []).forEach(function (m) {
-        var opt = document.createElement("option");
-        opt.value = m.id;
-        opt.textContent = m.name;
-        if (savedModel === m.id) opt.selected = true;
-        sel.appendChild(opt);
-      });
+      if (sel) {
+        sel.innerHTML = "";
+        var savedModel = localStorage.getItem("sa_model_" + p);
+        (MODELS[p] || []).forEach(function (m) {
+          var opt = document.createElement("option");
+          opt.value = m.id;
+          opt.textContent = m.name;
+          if (savedModel === m.id) opt.selected = true;
+          sel.appendChild(opt);
+        });
+      }
 
-      if (p === 'claude' && apiKey && window.StudyArenaAPI) {
+      if (p === 'claude' && apiKey && window.StudyArenaAPI && sel) {
         window.StudyArenaAPI.fetchClaudeModels(apiKey).then(function (models) {
           if (models && models.length > 0) {
             var safeModels = models.filter(function (id) {
@@ -2280,8 +2312,8 @@
             listToUse.forEach(function (id) {
               var opt = document.createElement("option");
               opt.value = id;
-              opt.textContent = id + (id.indexOf("sonnet-4-6") > -1 ? " (recommended)" : id.indexOf("haiku") > -1 ? " (fast, low cost)" : "");
-              if (savedModel === id || (!savedModel && id.indexOf("sonnet-4-6") > -1)) opt.selected = true;
+              opt.textContent = id + (id.indexOf("sonnet") > -1 ? " (recommended)" : id.indexOf("haiku") > -1 ? " (fast, low cost)" : "");
+              if (savedModel === id || (!savedModel && id.indexOf("sonnet") > -1)) opt.selected = true;
               sel.appendChild(opt);
             });
           }
@@ -2883,6 +2915,7 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
 
     function clearKeySettings() {
+      localStorage.removeItem("sa_api_key_" + currentProvider);
       localStorage.removeItem("study_arena_key_" + currentProvider);
       updateKeyUI();
       closeKeyModal();
