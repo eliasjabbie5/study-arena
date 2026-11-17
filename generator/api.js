@@ -4,9 +4,9 @@
  */
 
 window.StudyArenaAPI = {
-  MASTER_PROMPT: `You are an elite Business School Professor and Exam Architect at an AACSB-accredited institution (e.g., I\u00c9SEG, HEC, Harvard Business School).
+  MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials for business and economics students.
 
-Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, gamified "Study Arena" course.
+Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, interactive study arena.
 
 ---
 
@@ -27,7 +27,7 @@ Your mission is to transform raw student course material (slides, readings, lect
 3. EXPLANATIONS FOR EVERY WRONG CHOICE:
    Every distractor must include a 1\u20132 sentence explanation explaining *why* it fails and *which conceptual error* led to that choice.
 
-4. AACSB RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
+4. EXAM RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
    Open-ended questions must be graded against specific rubric points evaluating:
    - Root-cause framing (identifying underlying structural issues, not surface symptoms).
    - Evidence & framework application (citing course models over casual opinion).
@@ -36,6 +36,11 @@ Your mission is to transform raw student course material (slides, readings, lect
 
 5. CONTENT INTEGRITY (ZERO HALLUCINATIONS):
    Every question and chapter must trace strictly to the provided student material. Mark references with slide/page citations.
+
+6. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
+   - Zero AI Cliché Vocabulary: Never use flowery, meta, or clichéd AI words such as "delve", "testament", "tapestry", "beacon", "multifaceted", "pivotal", "plethora", "crucial role", "in conclusion", "it is important to remember", "realm", "furthermore".
+   - Terse, Concrete Instructor Tone: Write like an exacting exam writer who values precision and respect for the student's revision time. Use real operational details, balance sheet constraints, customer dynamics, and regulatory limits.
+   - Genuine Plausibility: Every distractor option in multiple-choice questions must sound like a defensible real-world management option that an inexperienced manager or student might mistakenly choose.
 
 ---
 
@@ -132,7 +137,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 - Exactly 2-3 Zones.
 - Exactly 1 Chapter per Zone (concise 100-150 words per chapter).
 - Exactly 6-8 MCQs total (including 2 labeled with 'trick': true).
-- Exactly 2 Short Answer questions with AACSB keyword rubrics.
+- Exactly 2 Short Answer questions with keyword grading rubrics.
 CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
 
   sanitizeJsonControlChars: function(raw) {

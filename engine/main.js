@@ -93,14 +93,14 @@ async function grade(q,ans){
         return {src:"ai",hits:out.hits.map(Boolean),score:Math.round(sc*10)/10,feedback:String(out.feedback||""),
           improve:Array.isArray(out.improve)?out.improve.slice(0,3).map(String):[],deep:String(out.deep||"")};
       }
-      aiNote="Claude returned an unexpected format, so the keyword check was used."
+      aiNote="Evaluation returned an unexpected format, so the keyword check was used."
     }catch(e){
       var c=e&&e.code;
-      if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed"){aiOff=true;aiNote="Claude marking is not enabled for this view, so the keyword check was used."}
-      else if(c==="rate_limited")aiNote="Claude marking hit a usage limit, so the keyword check was used. Try again later for full marking.";
-      else aiNote="Claude marking failed this time, so the keyword check was used.";
+      if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed"){aiOff=true;aiNote="Automated marking is not enabled, so the keyword check was used."}
+      else if(c==="rate_limited")aiNote="Automated marking reached a temporary limit, so the keyword check was used. Try again later.";
+      else aiNote="Automated marking failed this time, so the keyword check was used.";
     }
-  }else if(!sm){aiNote="Claude marking is unavailable here, so the keyword check was used."}
+  }else if(!sm){aiNote="Automated marking is unavailable, so the keyword check was used."}
   return localGrade(q,ans);
 }
 
@@ -149,14 +149,14 @@ function home(){
     var all=zQs(z.id),m=mastered(z.id),c={mcq:0,short:0,essay:0};all.forEach(function(q){c[q.t]++});
     h+='<button class="zone" data-z="'+z.id+'"><span class="mono">'+z.sess+'</span><h3>'+z.name+'</h3><p>'+z.blurb+'</p>'+
       '<div class="bar"><i style="width:'+Math.round(m/all.length*100)+'%"></i></div>'+
-      '<div class="meta"><span>'+c.mcq+' MCQ · '+c.short+' short · '+c.essay+' essay</span><span class="tnum">'+m+'/'+all.length+'</span></div></button>';
+      '<div class="meta"><span>'+c.mcq+' MCQ \u00b7 '+c.short+' short \u00b7 '+c.essay+' essay</span><span class="tnum">'+m+'/'+all.length+'</span></div></button>';
   });
   h+='</div><div class="modes">'+
    '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every zone.</p></button>'+
    '<button class="mode alt" id="essays"><h3>Essay lab</h3><p>All 6 essays, graded one by one against a rubric.</p></button>'+
    '<button class="mode alt" id="traps"><h3>Trap round</h3><p>'+Q.filter(function(q){return q.trick}).length+' trick questions: negations, near-synonyms and combined statements.</p></button>'+
    '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'Nothing to retry yet.')+'</p></button></div>'+
-   '<div class="foot"><span>Essays and short answers are marked by Claude against a rubric built from your notes and readings. '+(cloud.mode==="cloud"?'Progress is saved to your account.':'Progress is saved on this device.')+'</span></div>';
+   '<div class="foot"><span>Essays and short answers are evaluated against a rubric built from your notes. Progress is saved locally in your browser.</span></div>';
   app.innerHTML=h;wireNav();
   app.querySelectorAll(".zone").forEach(function(b){b.onclick=function(){startZone(b.dataset.z)}});
   $("#mock").onclick=startMock;
@@ -185,7 +185,7 @@ function progress(){
   var h=header("progress");
   var types=["mcq","short","essay"].map(function(t){return {t:t,st:stats(Q.filter(function(q){return q.t===t}))}});
   h+='<div class="hero"><div class="card"><div class="mono">Exam readiness</div><div class="big tnum">'+pct(all.mas/all.n)+'</div>'+
-    '<p class="hint">'+all.mas+' of '+all.n+' questions mastered · '+all.att+' tried · '+(all.n-all.att)+' not seen yet</p>'+
+    '<p class="hint">'+all.mas+' of '+all.n+' questions mastered \u00b7 '+all.att+' tried \u00b7 '+(all.n-all.att)+' not seen yet</p>'+
     '<div class="tbar" aria-hidden="true"><i class="g" style="width:'+all.mas/all.n*100+'%"></i><i class="b" style="width:'+(all.att-all.mas)/all.n*100+'%"></i></div>'+
     '<div class="leg"><span class="g">Mastered</span><span class="b">Needs work</span><span>Not seen</span></div>'+
     (all.right+all.wrong?'<p>Overall you got <b>'+all.right+' right</b> and <b>'+all.wrong+' wrong</b> across all attempts ('+pct(all.right/(all.right+all.wrong))+' accuracy).</p>':'<p class="hint">Answer a few questions and your strengths and gaps show up here.</p>')+
@@ -197,18 +197,18 @@ function progress(){
   h+=focus+'<div class="btns"><button class="btn" id="pw">Practice my weakest topics</button><button class="btn ghost" id="pu"'+(all.n-all.att?'':' disabled')+'>Try unseen questions</button><button class="btn ghost" id="pm"'+(missed().length?'':' disabled')+'>Retry misses ('+missed().length+')</button></div>';
   h+='<div class="card"><div class="sec-h"><h2>Topics, weakest first</h2><span class="hint">Green is mastered, red needs work</span></div><div>';
   wk.forEach(function(t){var s=status(t.st);
-    h+='<div class="trow"><div><h4>'+esc(t.name)+'</h4><div class="sub">'+esc(ZSHORT[t.z])+' · '+t.st.att+' of '+t.st.n+' tried'+(t.st.right+t.st.wrong?' · '+t.st.right+' right, '+t.st.wrong+' wrong':'')+'</div></div>'+
+    h+='<div class="trow"><div><h4>'+esc(t.name)+'</h4><div class="sub">'+esc(ZSHORT[t.z])+' \u00b7 '+t.st.att+' of '+t.st.n+' tried'+(t.st.right+t.st.wrong?' \u00b7 '+t.st.right+' right, '+t.st.wrong+' wrong':'')+'</div></div>'+
       '<div class="tbar" aria-hidden="true"><i class="g" style="width:'+t.st.mas/t.st.n*100+'%"></i><i class="b" style="width:'+(t.st.att-t.st.mas)/t.st.n*100+'%"></i></div>'+
       '<div style="display:flex;gap:8px;align-items:center;justify-content:flex-end"><span class="st '+s.k+'">'+s.t+'</span><button class="btn ghost small" data-topic="'+esc(t.name)+'">Practice</button></div></div>'});
   h+='</div></div>';
   var ex=(S.exams||[]).slice().reverse().slice(0,6);
-  h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"✓":k==="n"?"✗":"~")+'</span><span class="q">'+esc(e?e.title+" · "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" · ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> · '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
+  h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
   var recent=S.log.slice(-10).reverse();
   h+='<div class="card"><div class="sec-h"><h2>Recent answers</h2><span class="hint">Your last '+recent.length+'</span></div>';
   if(!recent.length)h+='<p class="hint">No answers yet. Open a zone to start.</p>';
   else h+='<ul class="act">'+recent.map(function(l){var q=qOf(l.id);if(!q)return "";var k=l.s>=0.7?"y":l.s>=0.4?"p":"n";
-    return '<li><span class="m '+k+'">'+(k==="y"?"✓":k==="n"?"✗":"~")+'</span><span class="q">'+esc(q.q.length>110?q.q.slice(0,108)+"…":q.q)+'<div class="sub hint">'+esc(q.topic)+' · '+TYPE_LABEL[q.t]+(q.t!=="mcq"?' · '+Math.round(l.s*100)+'%':'')+'</div></span><span class="hint">'+ago(l.t)+'</span></li>'}).join("")+'</ul>';
-  h+='</div><div class="foot"><span>'+(cloud.mode==="cloud"?'Saved to your account, so it follows you across devices.':'Saved on this device only. Open the link while signed in to Claude to sync across devices.')+'</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
+    return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(q.q.length>110?q.q.slice(0,108)+"...":q.q)+'<div class="sub hint">'+esc(q.topic)+' \u00b7 '+TYPE_LABEL[q.t]+(q.t!=="mcq"?' \u00b7 '+Math.round(l.s*100)+'%':'')+'</div></span><span class="hint">'+ago(l.t)+'</span></li>'}).join("")+'</ul>';
+  h+='</div><div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
   app.innerHTML=h;wireNav();
   $("#pw").onclick=function(){
     var pick=weak.length?weak:wk.filter(function(t){return !t.st.att});if(!pick.length)pick=wk;
@@ -218,7 +218,7 @@ function progress(){
   var pm=$("#pm");if(!pm.disabled)pm.onclick=function(){start("Retry misses",shuffle(missed()))};
   app.querySelectorAll("[data-topic]").forEach(function(b){b.onclick=function(){var t=ts.filter(function(x){return x.name===b.dataset.topic})[0];start("Practice: "+t.name,practiceQs(t.qs,12))}});
   $("#reset").onclick=function(){
-    $("#resetwrap").innerHTML='<span>Erase all progress? </span><button class="link" id="yes">Yes, erase</button> · <button class="link" id="no">Cancel</button>';
+    $("#resetwrap").innerHTML='<span>Erase all progress? </span><button class="link" id="yes">Yes, erase</button> \u00b7 <button class="link" id="no">Cancel</button>';
     $("#yes").onclick=function(){S=normalize({u:Date.now()});save();progress()};
     $("#no").onclick=progress;
   };
@@ -260,7 +260,7 @@ function question(){
   }else{
     var long=q.t==="essay";
     body='<textarea id="ans" class="'+(long?"long":"")+'" placeholder="'+(long?"Write your essay: introduction, theory and case application, then a clear conclusion.":"Write your answer in a few sentences.")+'"></textarea>'+
-      '<div class="row"><span class="hint tnum" id="wc">0 words · '+(long?"aim for 250 to 400":"aim for 40 to 120")+'</span><button class="btn" id="submit" disabled>Mark my answer</button></div><div id="after"></div>';
+      '<div class="row"><span class="hint tnum" id="wc">0 words \u00b7 '+(long?"aim for 250 to 400":"aim for 40 to 120")+'</span><button class="btn" id="submit" disabled>Mark my answer</button></div><div id="after"></div>';
   }
   app.innerHTML=top+'<div class="qcard">'+chips+'<div class="qtext">'+esc(q.q)+'</div>'+stim+body+'</div>';
   $("#back").onclick=function(){if(G.res.length&&G.res.length<n)summary();else{G=null;home()}};
@@ -268,7 +268,7 @@ function question(){
     app.querySelectorAll(".opt").forEach(function(b){b.onclick=function(){answerMcq(q,+b.dataset.o)}});
   }else{
     var ta=$("#ans"),sb=$("#submit");
-    ta.oninput=function(){var w=(ta.value.trim().match(/\S+/g)||[]).length;$("#wc").textContent=w+" words · "+(q.t==="essay"?"aim for 250 to 400":"aim for 40 to 120");sb.disabled=w<3};
+    ta.oninput=function(){var w=(ta.value.trim().match(/\S+/g)||[]).length;$("#wc").textContent=w+" words \u00b7 "+(q.t==="essay"?"aim for 250 to 400":"aim for 40 to 120");sb.disabled=w<3};
     sb.onclick=function(){answerText(q,ta.value.trim())};
     ta.focus({preventScroll:true});
   }
@@ -286,7 +286,7 @@ function answerMcq(q,pick){
   var html;
   if(ok){
     var others=q.o.map(function(_,i){return i}).filter(function(i){return i!==q.a});
-    html='<div class="fb good"><strong>Correct'+(gain?' · +'+gain+' XP':'')+'</strong>'+trap+'<p>'+esc(q.w[q.a])+'</p><p><b>In depth.</b> '+esc(q.e)+'</p></div>'+
+    html='<div class="fb good"><strong>Correct'+(gain?' \u00b7 +'+gain+' XP':'')+'</strong>'+trap+'<p>'+esc(q.w[q.a])+'</p><p><b>In depth.</b> '+esc(q.e)+'</p></div>'+
       '<details class="model"><summary>Why the other options are wrong</summary><ul class="why">'+others.map(li).join("")+'</ul></details>';
   }else{
     var rest=q.o.map(function(_,i){return i}).filter(function(i){return i!==q.a&&i!==pick});
@@ -302,7 +302,7 @@ function answerMcq(q,pick){
 
 async function answerText(q,ans){
   var sb=$("#submit"),ta=$("#ans");sb.disabled=true;ta.readOnly=true;
-  $("#after").innerHTML='<div class="grade"><div class="hint pulse">Marking against the rubric. The first time, you may be asked to let Claude mark your answer.</div></div>';
+  $("#after").innerHTML='<div class="grade"><div class="hint pulse">Evaluating answer against the rubric...</div></div>';
   var g=await grade(q,ans);
   var s=Math.max(0,Math.min(1,g.score/10)),gain=record(q,s);G.res.push({id:q.id,s:s});G.sess+=gain;
   sb.hidden=true;
@@ -310,12 +310,12 @@ async function answerText(q,ans){
   var C=2*Math.PI*34,off=C*(1-s);
   var ring='<svg class="ring" viewBox="0 0 84 84" role="img" aria-label="Score '+g.score+' out of 10"><circle class="bgc" cx="42" cy="42" r="34" fill="none" stroke-width="8"/><circle cx="42" cy="42" r="34" fill="none" stroke-width="8" stroke-linecap="round" stroke="'+(s>=0.7?"var(--good)":s>=0.4?"var(--warn)":"var(--bad)")+'" stroke-dasharray="'+C.toFixed(1)+'" stroke-dashoffset="'+off.toFixed(1)+'" transform="rotate(-90 42 42)"/><text x="42" y="49" text-anchor="middle" font-size="22">'+g.score.toFixed(1)+'</text></svg>';
   var hit=g.hits.filter(Boolean).length;
-  var rub='<ul class="rub">'+q.rub.map(function(r,i){var y=g.hits[i];return '<li class="'+(y?"y":"n")+'"><span class="m">'+(y?"✓":"✗")+'</span><span>'+esc(r.p)+'</span></li>'}).join("")+'</ul>';
+  var rub='<ul class="rub">'+q.rub.map(function(r,i){var y=g.hits[i];return '<li class="'+(y?"y":"n")+'"><span class="m">'+(y?"\u2713":"\u2717")+'</span><span>'+esc(r.p)+'</span></li>'}).join("")+'</ul>';
   var missed_=q.rub.filter(function(r,i){return !g.hits[i]});
   var missHTML=missed_.length?'<div><div class="mono" style="margin-bottom:6px">What was missing</div><ul class="imp">'+missed_.map(function(r){return '<li>'+esc(r.p)+'</li>'}).join("")+'</ul></div>':"";
   var deepHTML=g.deep?'<div class="fb mid"><p><b>In depth.</b> '+esc(g.deep)+'</p></div>':"";
   var imp=g.improve&&g.improve.length?'<div><div class="mono" style="margin-bottom:6px">To improve</div><ul class="imp">'+g.improve.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':"";
-  $("#after").innerHTML='<div class="grade"><div class="gh">'+ring+'<div style="min-width:0;flex:1"><div class="src">'+(g.src==="ai"?"Marked by Claude":"Keyword check (offline)")+'</div><strong style="font-family:var(--f-display);font-size:20px">'+hit+' of '+q.rub.length+' rubric points'+(gain?' · +'+gain+' XP':'')+'</strong></div></div>'+
+  $("#after").innerHTML='<div class="grade"><div class="gh">'+ring+'<div style="min-width:0;flex:1"><div class="src">'+(g.src==="ai"?"Rubric evaluation":"Keyword check (offline)")+'</div><strong style="font-family:var(--f-display);font-size:20px">'+hit+' of '+q.rub.length+' rubric points'+(gain?' \u00b7 +'+gain+' XP':'')+'</strong></div></div>'+
    '<div class="fb '+cls+'"><p>'+esc(g.feedback)+'</p>'+(aiNote&&g.src!=="ai"?'<p class="hint">'+esc(aiNote)+'</p>':'')+'</div>'+rub+missHTML+deepHTML+imp+
    '<details class="model"'+(s<0.7?' open':'')+'><summary>'+(s<0.7?'Model answer':'Show model answer')+(q.fig?' and diagram':'')+'</summary><p>'+esc(q.model)+'</p>'+(q.fig?'<div style="margin-top:12px">'+figHTML(q,false)+'</div>':'')+'</details>'+
    '<div class="row"><button class="btn ghost" id="retry">Rewrite this answer</button><span></span></div>'+nextBtn()+'</div>';
@@ -329,12 +329,12 @@ function summary(){
   var byZ={};G.res.forEach(function(r){var q=qOf(r.id);(byZ[q.z]=byZ[q.z]||[]).push(r.s)});
   var verdict=pc>=85?"Exam ready":pc>=70?"Solid":pc>=50?"Getting there":"Needs another pass";
   var wrong=G.res.filter(function(r){return r.s<0.7}).map(function(r){return qOf(r.id)});
-  var h=header("")+'<div class="res"><div><div class="mono">'+esc(G.title)+' · '+n+' question'+(n>1?"s":"")+'</div><h2>'+verdict+' · '+pc+'%</h2><p class="hint" style="margin:6px 0 0">+'+G.sess+' XP this run</p></div>';
+  var h=header("")+'<div class="res"><div><div class="mono">'+esc(G.title)+' \u00b7 '+n+' question'+(n>1?"s":"")+'</div><h2>'+verdict+' \u00b7 '+pc+'%</h2><p class="hint" style="margin:6px 0 0">+'+G.sess+' XP this run</p></div>';
   h+='<div style="display:grid;gap:12px">';
   Object.keys(byZ).forEach(function(z){var a=byZ[z],p=Math.round(a.reduce(function(x,y){return x+y},0)/a.length*100);
     h+='<div class="zrow"><span>'+esc(zname(z))+'</span><span class="tnum mono">'+p+'%</span><div class="bar"><i style="width:'+p+'%"></i></div></div>'});
   h+='</div>';
-  if(wrong.length)h+='<div><div class="mono" style="margin-bottom:6px">To review ('+wrong.length+')</div><ul class="imp">'+wrong.map(function(q){return '<li>'+esc(q.topic)+': '+esc(q.q.length>100?q.q.slice(0,98)+"…":q.q)+'</li>'}).join("")+'</ul></div>';
+  if(wrong.length)h+='<div><div class="mono" style="margin-bottom:6px">To review ('+wrong.length+')</div><ul class="imp">'+wrong.map(function(q){return '<li>'+esc(q.topic)+': '+esc(q.q.length>100?q.q.slice(0,98)+"...":q.q)+'</li>'}).join("")+'</ul></div>';
   h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to zones</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
   app.innerHTML=h;wireNav();
   $("#prog").onclick=progress;$("#home").onclick=home;if(G.mock)$("#again").onclick=startMock;
@@ -357,11 +357,11 @@ function bestExam(id){return (S.exams||[]).filter(function(x){return x.p===id}).
 function exams(){
   stopClock();G=null;EX=null;view="exams";
   var h=header("exams")+'<div class="sec-h"><h2>Mock exams</h2><span class="hint">Paper-style, '+CONFIG.examTotal+' points, answers written in full</span></div>'+
-   '<div class="card"><p>These are written in the format of '+esc(CONFIG.examFormat)+': you write full answers, a stopwatch runs, and everything is marked at the end against a rubric (by Claude when available, otherwise by a keyword check). The multiple-choice game is great for facts; this is for practising how to <b>write</b> under exam conditions. Try it closed-book.</p></div><div class="papers">';
+   '<div class="card"><p>These are written in the format of '+esc(CONFIG.examFormat)+': you write full answers, a stopwatch runs, and everything is marked at the end against a rubric (by an automated rubric evaluator when available, otherwise by an offline keyword check). The multiple-choice game is great for facts; this is for practising how to <b>write</b> under exam conditions. Try it closed-book.</p></div><div class="papers">';
   EXAMS.forEach(function(e){
     var l=lastExam(e.id),n=(S.exams||[]).filter(function(x){return x.p===e.id}).length,d=loadDraft(e.id),hasD=Object.keys(d.a||{}).some(function(k){return d.a[k]});
     h+='<div class="card paper-card"><div class="mono">'+esc(e.sub)+'</div><h3>'+esc(e.title)+'</h3><p>'+esc(e.blurb)+'</p>'+
-     '<p class="hint">'+e.qs.length+' questions · '+CONFIG.examTotal+' points'+(l?' · last score <b>'+l.s+'/'+CONFIG.examTotal+'</b> (best '+bestExam(e.id)+') · '+n+' attempt'+(n>1?'s':''):' · not attempted yet')+'</p>'+
+     '<p class="hint">'+e.qs.length+' questions \u00b7 '+CONFIG.examTotal+' points'+(l?' \u00b7 last score <b>'+l.s+'/'+CONFIG.examTotal+'</b> (best '+bestExam(e.id)+') \u00b7 '+n+' attempt'+(n>1?'s':''):' \u00b7 not attempted yet')+'</p>'+
      '<div class="btns"><button class="btn" data-ex="'+e.id+'">'+(hasD?'Resume draft':'Start paper')+'</button>'+(hasD?'<button class="btn ghost" data-new="'+e.id+'">Start over</button>':'')+'</div></div>';
   });
   h+='</div>';
@@ -374,7 +374,7 @@ function exams(){
 function startExam(id){
   stopClock();var e=exById(id),d=loadDraft(id);
   EX={e:e,a:d.a||{},m:d.m||{},sec:d.sec||0};G=null;view="exam";
-  var h=header("exams")+'<div class="paper"><div class="paper-head"><div><div class="mono">Exam paper · '+esc(e.title)+'</div><h2>'+esc(CONFIG.examName)+'</h2></div>'+
+  var h=header("exams")+'<div class="paper"><div class="paper-head"><div><div class="mono">Exam paper \u00b7 '+esc(e.title)+'</div><h2>'+esc(CONFIG.examName)+'</h2></div>'+
    '<div class="clock" aria-live="off"><span class="mono">Time</span><b id="clock" class="tnum">'+fmtClock(EX.sec)+'</b></div></div>'+
    '<table class="cover">'+e.meta.map(function(m){return '<tr><th>'+esc(m[0])+'</th><td>'+esc(m[1])+'</td></tr>'}).join("")+'<tr><th>Total</th><td>'+CONFIG.examTotal+' points</td></tr></table>'+
    '<p class="hint">Write complete answers: name the author or theory, define it, give an example and apply it. Your draft is saved on this device as you type.</p>';
@@ -384,7 +384,7 @@ function startExam(id){
     if(q.kind==="match"){
       h+='<div class="match">'+q.items.map(function(it,i){
         var cur=EX.m[q.n+"."+i];
-        return '<div class="mrow"><p class="quote">'+(i+1)+'. '+esc(it.quote)+'</p><select data-m="'+q.n+'.'+i+'" aria-label="Strategy for quote '+(i+1)+'"><option value="">Choose a strategy…</option>'+STRATS.map(function(s,k){return '<option value="'+k+'"'+(String(cur)===String(k)?' selected':'')+'>'+esc(s)+'</option>'}).join("")+'</select></div>'}).join("")+'</div>';
+        return '<div class="mrow"><p class="quote">'+(i+1)+'. '+esc(it.quote)+'</p><select data-m="'+q.n+'.'+i+'" aria-label="Strategy for quote '+(i+1)+'"><option value="">Choose a strategy...</option>'+STRATS.map(function(s,k){return '<option value="'+k+'"'+(String(cur)===String(k)?' selected':'')+'>'+esc(s)+'</option>'}).join("")+'</select></div>'}).join("")+'</div>';
     }else{
       h+='<textarea data-a="'+q.n+'" rows="'+(q.pts>=6?14:q.pts>=3?9:6)+'" placeholder="Write your answer here" aria-label="Answer to question '+q.n+'">'+esc(EX.a[q.n]||"")+'</textarea>';
     }
@@ -429,14 +429,14 @@ async function gradeExam(e,answers){
           if(r&&Array.isArray(r.hits)&&r.hits.length===q.rub.length&&typeof r.score!=="undefined"){
             out[q.n]={hits:r.hits.map(Boolean),score:Math.max(0,Math.min(10,Number(r.score)||0)),feedback:String(r.feedback||""),deep:String(r.deep||""),src:"ai"}}});
         if(Object.keys(out).length)src="ai";
-      }else note="Claude returned an unexpected format, so the keyword check was used.";
+      }else note="Evaluation returned an unexpected format, so the keyword check was used.";
     }catch(err){
       var c=err&&err.code;
-      if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed"){aiOff=true;note="Claude marking is not enabled here, so the keyword check was used."}
-      else if(c==="rate_limited")note="Claude marking hit a usage limit, so the keyword check was used. Try again later.";
-      else note="Claude marking failed this time, so the keyword check was used.";
+      if(c==="not_granted"||c==="sampling_disabled"||c==="not_declared"||c==="capability_disabled"||c==="capability_removed"){aiOff=true;note="Automated marking is not enabled, so the keyword check was used."}
+      else if(c==="rate_limited")note="Automated marking reached a temporary limit, so the keyword check was used. Try again later.";
+      else note="Automated marking failed this time, so the keyword check was used.";
     }
-  }else if(!sm)note="Claude marking is unavailable here, so the keyword check was used.";
+  }else if(!sm)note="Automated marking is unavailable, so the keyword check was used.";
   items.forEach(function(q){if(!out[q.n]){var l=localExamGrade(q,answers[q.n]);l.src="local";out[q.n]=l}});
   return {res:out,src:src,note:note};
 }
@@ -444,7 +444,7 @@ async function gradeExam(e,answers){
 async function submitExam(){
   stopClock();var e=EX.e,sec=EX.sec;
   var btn=$("#submitEx");btn.disabled=true;$("#leaveEx").disabled=true;
-  $("#exmsg").innerHTML='<span class="pulse">Marking your paper. The first time, you may be asked to let Claude mark your answers.</span>';
+  $("#exmsg").innerHTML='<span class="pulse">Evaluating your answers against the exam rubric...</span>';
   app.querySelectorAll("textarea,select").forEach(function(x){x.disabled=true});
   var g=await gradeExam(e,EX.a),rows=[],total=0;
   e.qs.forEach(function(q){
@@ -467,19 +467,19 @@ async function submitExam(){
 function showExamResult(e,rows,total,sec,g){
   view="examres";
   var pc=total/CONFIG.examTotal,verdict=pc>=0.85?"Excellent":pc>=0.7?"Solid pass":pc>=0.5?"Pass, with gaps":"Not there yet";
-  var h=header("exams")+'<div class="res"><div><div class="mono">'+esc(e.title)+' · '+esc(e.sub)+' · time '+fmtClock(sec)+'</div><h2>'+total+' / '+CONFIG.examTotal+' · '+verdict+'</h2>'+
-   '<p class="hint" style="margin:6px 0 0">'+(g.src==="ai"?"Marked by Claude against a rubric. Marking is an estimate: your professor may weigh things differently.":"Keyword check (offline). Treat as a rough guide and compare each answer with the model answer.")+(g.note?' '+esc(g.note):'')+'</p></div>';
+  var h=header("exams")+'<div class="res"><div><div class="mono">'+esc(e.title)+' \u00b7 '+esc(e.sub)+' \u00b7 time '+fmtClock(sec)+'</div><h2>'+total+' / '+CONFIG.examTotal+' \u00b7 '+verdict+'</h2>'+
+   '<p class="hint" style="margin:6px 0 0">'+(g.src==="ai"?"Evaluated against exam rubric criteria. Marking is an estimate: professors may weigh nuances differently.":"Keyword check (offline). Treat as a rough guide and compare each answer with the model answer.")+(g.note?' '+esc(g.note):'')+'</p></div>';
   h+='<div class="tbar" aria-hidden="true"><i class="g" style="width:'+pc*100+'%"></i></div>';
   h+='<div class="scoretable"><div class="mono">Question</div><div class="mono">Score</div>'+rows.map(function(x){return '<div>'+x.q.n+'</div><div class="tnum">'+x.sc+' / '+x.q.pts+'</div>'}).join("")+'</div>';
   rows.forEach(function(x){
     var q=x.q,frac=q.pts?x.sc/q.pts:0,cls=frac>=0.7?"good":frac>=0.4?"mid":"bad";
     h+='<section class="eq res-q"><div class="eqh"><span class="qn">Question '+q.n+'</span><span class="pts '+cls+'">'+x.sc+' / '+q.pts+'</span></div><p class="eqt">'+q.q+'</p>';
     if(x.kind==="match"){
-      h+='<ul class="rub">'+x.det.map(function(d,i){return '<li class="'+(d.good?"y":"n")+'"><span class="m">'+(d.good?"✓":"✗")+'</span><span>'+esc(d.quote)+'<br><b>You: '+esc(d.pick)+'</b>'+(d.good?'':' · <b>Answer: '+esc(d.right)+'</b>')+'<br><span class="hint">'+esc(d.why)+'</span></span></li>'}).join("")+'</ul>';
+      h+='<ul class="rub">'+x.det.map(function(d,i){return '<li class="'+(d.good?"y":"n")+'"><span class="m">'+(d.good?"\u2713":"\u2717")+'</span><span>'+esc(d.quote)+'<br><b>You: '+esc(d.pick)+'</b>'+(d.good?'':' \u00b7 <b>Answer: '+esc(d.right)+'</b>')+'<br><span class="hint">'+esc(d.why)+'</span></span></li>'}).join("")+'</ul>';
     }else{
       var r=x.r,missed_=q.rub.filter(function(rr,i){return !r.hits[i]});
       h+='<div class="fb '+cls+'"><p>'+esc(r.feedback)+'</p></div>'+
-       '<ul class="rub">'+q.rub.map(function(rr,i){var y=r.hits[i];return '<li class="'+(y?"y":"n")+'"><span class="m">'+(y?"✓":"✗")+'</span><span>'+esc(rr.p)+'</span></li>'}).join("")+'</ul>'+
+       '<ul class="rub">'+q.rub.map(function(rr,i){var y=r.hits[i];return '<li class="'+(y?"y":"n")+'"><span class="m">'+(y?"\u2713":"\u2717")+'</span><span>'+esc(rr.p)+'</span></li>'}).join("")+'</ul>'+
        (r.deep?'<div class="fb mid"><p><b>In depth.</b> '+esc(r.deep)+'</p></div>':'')+
        '<details class="model"'+(missed_.length?' open':'')+'><summary>Model answer</summary><p>'+esc(q.model)+'</p></details>';
     }

@@ -1,27 +1,26 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
 <title>Study Arena</title>
-<meta name="claude:viewport-fit-sides" content="cover">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
 <style>
-/* Layout: one calm column. Home is a grid of six zone cards; play view is a single question card with feedback beneath. */
+/* Layout: one calm column. Home is a grid of zone cards; play view is a single question card with feedback beneath. */
 :root{
-  --bg:#EBEFF6; --surface:#FFFFFF; --surface2:#F3F6FB; --ink:#101A33; --muted:#556083; --line:#D3DAE8;
-  --accent:#2B4EFF; --accent-ink:#FFFFFF; --accent-soft:#E3E9FF;
-  --good:#117A58; --good-soft:#DDF3EA; --bad:#C23737; --bad-soft:#FBE4E4; --warn:#9A6A12; --warn-soft:#FBF0D6;
-  --f-display:"Bricolage Grotesque","Segoe UI",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
-  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+  --bg:#F7F8F7; --surface:#FFFFFF; --surface2:#EEF1EF; --ink:#0F1713; --muted:#55625C; --line:#D5DDD8;
+  --accent:#0B7A4F; --accent-ink:#FFFFFF; --accent-soft:#E4F3EA;
+  --good:#0B7A4F; --good-soft:#E4F3EA; --bad:#B42318; --bad-soft:#FDECEA; --warn:#B54708; --warn-soft:#FEF0C7;
+  --f-display:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --f-body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0D1326; --surface:#151D37; --surface2:#1B2544; --ink:#E7ECF9; --muted:#98A4C6; --line:#2A3558;
-  --accent:#8199FF; --accent-ink:#0D1326; --accent-soft:#232F5C;
-  --good:#42D6A0; --good-soft:#12382F; --bad:#FF8484; --bad-soft:#40202A; --warn:#E9B64E; --warn-soft:#3B2F14; color-scheme:dark}}
+  --bg:#0B0F0D; --surface:#121815; --surface2:#18201C; --ink:#EEF2EF; --muted:#8A9790; --line:#232D28;
+  --accent:#3DDC84; --accent-ink:#04130B; --accent-soft:#12261C;
+  --good:#3DDC84; --good-soft:#12261C; --bad:#F97066; --bad-soft:#2A1513; --warn:#FDB022; --warn-soft:#2E1F09; color-scheme:dark}}
 :root[data-theme="dark"]{
-  --bg:#0D1326; --surface:#151D37; --surface2:#1B2544; --ink:#E7ECF9; --muted:#98A4C6; --line:#2A3558;
-  --accent:#8199FF; --accent-ink:#0D1326; --accent-soft:#232F5C;
-  --good:#42D6A0; --good-soft:#12382F; --bad:#FF8484; --bad-soft:#40202A; --warn:#E9B64E; --warn-soft:#3B2F14; color-scheme:dark}
+  --bg:#0B0F0D; --surface:#121815; --surface2:#18201C; --ink:#EEF2EF; --muted:#8A9790; --line:#232D28;
+  --accent:#3DDC84; --accent-ink:#04130B; --accent-soft:#12261C;
+  --good:#3DDC84; --good-soft:#12261C; --bad:#F97066; --bad-soft:#2A1513; --warn:#FDB022; --warn-soft:#2E1F09; color-scheme:dark}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
   padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
