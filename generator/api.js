@@ -39,6 +39,12 @@ Your mission is to transform raw student course material (slides, readings, lect
 
 ---
 
+
+### CRITICAL SYNTAX RULES
+1. Output pure, standard JSON.
+2. Inside HTML strings, always use single quotes for attributes (e.g. <div class='exam'>), never unescaped double quotes.
+3. Escape all quotes inside text strings properly.
+
 ### OUTPUT SCHEMA REQUIREMENT
 
 You must output PURE, VALID JSON with no markdown wrapping and no code fences, matching this exact schema:
@@ -129,6 +135,39 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 - Exactly 2 Short Answer questions with AACSB keyword rubrics.
 CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
 
+  sanitizeJsonControlChars: function(raw) {
+    var out = [];
+    var inString = false;
+    var escape = false;
+    for (var j = 0; j < raw.length; j++) {
+      var ch = raw[j];
+      if (escape) {
+        out.push(ch);
+        escape = false;
+        continue;
+      }
+      if (ch === '\\') {
+        out.push(ch);
+        escape = true;
+        continue;
+      }
+      if (ch === '"') {
+        inString = !inString;
+        out.push(ch);
+        continue;
+      }
+      if (inString) {
+        if (ch === '\n') out.push('\\n');
+        else if (ch === '\r') out.push('\\r');
+        else if (ch === '\t') out.push('\\t');
+        else out.push(ch);
+      } else {
+        out.push(ch);
+      }
+    }
+    return out.join("");
+  },
+
   cleanJsonResponse: function(raw) {
     var text = raw.trim();
     if (text.startsWith("```json")) {
@@ -145,15 +184,18 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       text = text.substring(firstOpen);
     }
 
-    // Try direct parse first
+    // Step 1: Sanitize literal unescaped newlines/tabs inside string values
+    text = this.sanitizeJsonControlChars(text);
+
+    // Step 2: Try direct parse
     try {
       return JSON.parse(text);
     } catch (initialErr) {
       console.warn("Direct JSON.parse failed, attempting auto-repair:", initialErr.message);
     }
 
-    // Auto-repair for truncated JSON: walk backwards to find a valid cut point and close open braces
-    var maxLookback = Math.min(text.length, 4000);
+    // Step 3: Auto-repair for truncated JSON: walk backwards to find a valid cut point and close open braces
+    var maxLookback = Math.min(text.length, 6000);
     for (var i = text.length; i >= text.length - maxLookback; i--) {
       var candidate = text.substring(0, i).trimEnd();
       if (candidate.endsWith(",") || candidate.endsWith(":")) {
@@ -171,7 +213,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
           escape = false;
           continue;
         }
-        if (ch === "\\") {
+        if (ch === '\\') {
           escape = true;
           continue;
         }
