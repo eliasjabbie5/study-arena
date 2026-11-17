@@ -165,10 +165,10 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
 
     if (!apiKey) {
-      throw new Error("Missing API Key for " + provider + ". Please configure it in AI Settings.");
+      throw new Error("Missing API Key for " + provider + ". Please click 'AI Settings (BYOK)' to set your key.");
     }
 
-    onProgress("Deconstructing course concepts and extracting zones...", 20);
+    onProgress("Analyzing course lecture notes...", 15);
 
     var userContent = "COURSE LECTURE MATERIAL TO TRANSFORM:\n\n" + courseText;
     if (teacherNotes && teacherNotes.trim()) {
@@ -178,52 +178,41 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Checking budget-friendly Claude models...", 30);
+      onProgress("Checking models available to your API key...", 25);
       var allModels = await this.fetchClaudeModels(apiKey);
-      console.log("All account models:", allModels);
+      console.log("Anthropic /v1/models returned:", allModels);
 
-      // SAFETY FILTER: Never auto-fallback to expensive heavy models (Fable, Opus, Mythos)
-      var safeModels = allModels.filter(function(m) {
-        var lower = m.toLowerCase();
-        return !lower.includes("fable") && !lower.includes("opus") && !lower.includes("mythos");
-      });
-
-      var selectedModel = localStorage.getItem("sa_model_claude");
+      // Model priority order
+      var userChosen = localStorage.getItem("sa_model_claude");
       var candidateModels = [];
 
-      // If user explicitly picked a model, allow it
-      if (selectedModel && allModels.includes(selectedModel)) {
-        candidateModels.push(selectedModel);
+      if (userChosen) candidateModels.push(userChosen);
+
+      if (allModels.length > 0) {
+        // Safe budget-friendly models available on the account
+        var safe = allModels.filter(function(m) {
+          var l = m.toLowerCase();
+          return !l.includes("fable") && !l.includes("opus") && !l.includes("mythos");
+        });
+        safe.forEach(function(m) {
+          if (!candidateModels.includes(m)) candidateModels.push(m);
+        });
+        // If only heavy models exist, add them as last resort
+        allModels.forEach(function(m) {
+          if (!candidateModels.includes(m)) candidateModels.push(m);
+        });
+      } else {
+        // Standard defaults
+        ["claude-3-5-haiku-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-latest", "claude-3-5-sonnet-20241022"].forEach(function(m) {
+          if (!candidateModels.includes(m)) candidateModels.push(m);
+        });
       }
 
-      // Prioritize cheap, high-speed models (Haiku first to protect budget!)
-      var budgetPriority = [
-        "claude-3-5-haiku-latest",
-        "claude-3-5-haiku-20241022",
-        "claude-3-haiku-20240307",
-        "claude-3-5-sonnet-latest",
-        "claude-3-5-sonnet-20241022",
-        "claude-3-5-sonnet-20240620"
-      ];
+      console.log("Candidate models to try:", candidateModels);
+      var attemptErrors = [];
 
-      budgetPriority.forEach(function(p) {
-        if (safeModels.includes(p) && !candidateModels.includes(p)) {
-          candidateModels.push(p);
-        }
-      });
-
-      // Only add other safe models
-      safeModels.forEach(function(m) {
-        if (!candidateModels.includes(m)) candidateModels.push(m);
-      });
-
-      if (candidateModels.length === 0) {
-        candidateModels = ["claude-3-5-haiku-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-latest"];
-      }
-
-      var lastError = null;
-      for (var mIdx = 0; mIdx < candidateModels.length; mIdx++) {
-        var modelToTry = candidateModels[mIdx];
+      for (var i = 0; i < candidateModels.length; i++) {
+        var modelToTry = candidateModels[i];
         onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 45);
 
         try {
@@ -246,30 +235,34 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
           });
 
           if (!res.ok) {
-            var errBody = await res.text();
-            lastError = "HTTP " + res.status + " on " + modelToTry + ": " + errBody;
-            console.error(lastError);
+            var errText = await res.text();
+            var errMsg = "Model [" + modelToTry + "] HTTP " + res.status + ": " + errText;
+            console.warn(errMsg);
+            attemptErrors.push(errMsg);
+
+            // If 404 (model not found), try next model
             if (res.status === 404) {
               continue;
             }
-            throw new Error(lastError);
+            // For other errors (like 400 Bad Request, 401 Invalid Key, 429 Rate Limit), stop and show error
+            throw new Error(errMsg);
           }
 
           var jsonRes = await res.json();
           rawResponse = jsonRes.content[0].text;
           localStorage.setItem("sa_model_claude", modelToTry);
+          console.log("Successful generation with model:", modelToTry);
           break;
-        } catch (callErr) {
-          var msg = callErr.message || String(callErr);
-          lastError = msg;
-          if (!msg.includes("404") || mIdx === candidateModels.length - 1) {
-            throw new Error(msg);
+        } catch (fetchErr) {
+          var fMsg = fetchErr.message || String(fetchErr);
+          if (!fMsg.includes("404") || i === candidateModels.length - 1) {
+            throw new Error(fMsg + (attemptErrors.length ? "\n\nAttempts:\n" + attemptErrors.join("\n") : ""));
           }
         }
       }
 
       if (!rawResponse) {
-        throw new Error(lastError ? ("Claude error: " + lastError) : "Failed to generate with Claude.");
+        throw new Error("All Claude models failed.\n\nAccount Models: " + JSON.stringify(allModels) + "\n\nErrors:\n" + attemptErrors.join("\n"));
       }
 
     } else if (provider === "openai") {
