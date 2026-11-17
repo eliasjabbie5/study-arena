@@ -2448,50 +2448,72 @@ if (modal) modal.classList.add("open");
 
     async function startGeneration() {
       var combinedSyllabus = "";
-      if (uploadedFiles && uploadedFiles.length > 0) {
+      if (typeof uploadedFiles !== "undefined" && uploadedFiles && uploadedFiles.length > 0) {
         for (var f = 0; f < uploadedFiles.length; f++) {
           combinedSyllabus += "\n\n=== SOURCE DOCUMENT " + (f + 1) + ": " + uploadedFiles[f].name + " ===\n" + uploadedFiles[f].text;
         }
       }
-      var extraNotes = document.getElementById("notes-input").value.trim();
+      var notesEl = document.getElementById("notes-input");
+      var extraNotes = notesEl ? notesEl.value.trim() : "";
       if (extraNotes) {
         combinedSyllabus += "\n\n=== SUPPLEMENTARY LECTURE NOTES & EXAM RUBRICS ===\n" + extraNotes;
       }
       var notes = combinedSyllabus.trim();
       var teacherAnnals = document.getElementById("annals-input").value.trim();
-      var isMock = new URLSearchParams(window.location.search).get("mock");
+      var isMock = inMemoryMock || (new URLSearchParams(window.location.search).get("mock") === "ok");
 
       if (!notes && !isMock) {
-        setInputMode("paste");
-        document.getElementById("notes-input").focus();
+        showToast("Please attach a course PDF or paste notes first.");
+        if (notesEl) notesEl.focus();
         return;
       }
 
-      var key = localStorage.getItem("sa_api_key_" + currentProvider);
+      var key = localStorage.getItem("sa_api_key_" + currentProvider) ||
+                localStorage.getItem("sa_api_key_claude") ||
+                localStorage.getItem("sa_api_key_openai") ||
+                localStorage.getItem("sa_api_key_gemini") ||
+                localStorage.getItem("study_arena_key_claude") ||
+                localStorage.getItem("study_arena_key_openai") ||
+                localStorage.getItem("study_arena_key_gemini") || "";
+
       if (!key && !isMock) {
+        showToast("Please enter your AI provider API key, or click 'Load Sample Notes' to test immediately.");
         openKeyModal();
         return;
       }
 
       var genBtn = document.getElementById("gen-btn");
+      var thinkingCluster = document.getElementById("gen-thinking-cluster");
+      var thinkingText = document.getElementById("thinking-status-text");
       var stepper = document.getElementById("stepper");
       var progMsg = document.getElementById("prog-msg");
       var progFill = document.getElementById("prog-fill");
       var resCard = document.getElementById("result-card");
       var prevErr = document.getElementById("error-card");
 
-      genBtn.disabled = true;
-      resCard.classList.remove("active");
+      if (genBtn) genBtn.disabled = true;
+      if (thinkingCluster) {
+        thinkingCluster.style.display = "inline-flex";
+        if (thinkingText) thinkingText.textContent = "Thinking...";
+      }
+      if (resCard) {
+        resCard.classList.remove("active");
+        resCard.style.display = "none";
+      }
       if (prevErr) prevErr.style.display = "none";
-      stepper.classList.add("active");
-      progFill.style.transform = "scaleX(0.1)";
+      if (stepper) {
+        stepper.classList.add("active");
+        stepper.style.display = "block";
+      }
+      if (progFill) progFill.style.transform = "scaleX(0.1)";
       startElapsedTimer();
 
       try {
         var result = await window.StudyArenaAPI.generate(notes || "Sample notes", teacherAnnals, function (msg, pct) {
-          progMsg.textContent = msg;
+          if (progMsg) progMsg.textContent = msg;
+          if (thinkingText) thinkingText.textContent = msg;
           var ratio = Math.max(0.08, Math.min(1, (pct || 15) / 100));
-          progFill.style.transform = "scaleX(" + ratio + ")";
+          if (progFill) progFill.style.transform = "scaleX(" + ratio + ")";
         });
 
         stopElapsedTimer();
@@ -2500,24 +2522,48 @@ if (modal) modal.classList.add("open");
         generatedHtmlBlob = new Blob([result.compiledHtml], { type: "text/html" });
 
         saveArenaToHistory(result.courseData, result.compiledHtml);
+        renderSavedArenasList();
+        updateSavedBadge();
 
-        stepper.classList.remove("active");
-        resCard.classList.add("active");
+        if (stepper) {
+          stepper.classList.remove("active");
+          stepper.style.display = "none";
+        }
+        if (thinkingCluster) {
+          thinkingCluster.style.display = "inline-flex";
+          if (thinkingText) thinkingText.textContent = "Arena Compiled";
+          setTimeout(function() {
+            if (thinkingCluster) thinkingCluster.style.display = "none";
+          }, 3500);
+        }
+        if (genBtn) genBtn.disabled = false;
+        if (resCard) {
+          resCard.classList.add("active");
+          resCard.style.display = "block";
+        }
 
         var qCount = (result.courseData.questions || []).length;
         var zCount = (result.courseData.zones || []).length;
         var cCount = (result.courseData.chapters || []).length;
-        document.getElementById("result-stats").innerHTML =
-          "<span>Course: <b>" + escapeHtml(result.courseData.config.title || "Custom Arena") + "</b></span>" +
-          "<span>Zones: <b>" + zCount + "</b></span>" +
-          "<span>Questions: <b>" + qCount + "</b></span>" +
-          "<span>Chapters: <b>" + cCount + "</b></span>";
+        var statsEl = document.getElementById("result-stats");
+        if (statsEl) {
+          statsEl.innerHTML =
+            "<span>Course: <b>" + escapeHtml(result.courseData.config.title || "Custom Arena") + "</b></span>" +
+            "<span>Zones: <b>" + zCount + "</b></span>" +
+            "<span>Questions: <b>" + qCount + "</b></span>" +
+            "<span>Chapters: <b>" + cCount + "</b></span>";
+        }
 
         var playBtn = document.getElementById("btn-play-main");
         if (playBtn) playBtn.focus();
       } catch (err) {
         stopElapsedTimer();
-        stepper.classList.remove("active");
+        if (stepper) {
+          stepper.classList.remove("active");
+          stepper.style.display = "none";
+        }
+        if (thinkingCluster) thinkingCluster.style.display = "none";
+        if (genBtn) genBtn.disabled = false;
         var errorCard = document.getElementById("error-card");
         var errorDetails = document.getElementById("error-details");
         var friendly = formatFriendlyError(err && err.message);
@@ -2529,8 +2575,6 @@ if (modal) modal.classList.add("open");
           errorDetails.textContent = (err && err.message) || String(err);
           errorCard.style.display = "flex";
         }
-      } finally {
-        genBtn.disabled = false;
       }
     }
 
