@@ -642,7 +642,7 @@ function home(){
       '</button>' +
     '</div>';
   }
-  var h=header("home")+decayCard+'<div class="sec-h"><h2>Study Chapters</h2>'<span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
+  var h=header("home")+decayCard+'<div class="sec-h"><h2>Study Chapters</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
   ZONES.forEach(function(z){
     var all=zQs(z.id),m=mastered(z.id),c={mcq:0,short:0,essay:0};all.forEach(function(q){c[q.t]++});
     h+='<button class="zone" data-z="'+z.id+'"><span class="mono">'+z.sess+'</span><h3>'+z.name+'</h3><p>'+z.blurb+'</p>'+

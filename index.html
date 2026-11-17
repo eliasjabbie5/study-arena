@@ -1858,7 +1858,9 @@
           '<div class="arena-actions">' +
             '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena</button>' +
             '<button type="button" class="btn-download" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">Download (.html)</button>' +
-            '<button type="button" class="btn-ghost" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">Delete</button>' +
+            '<button type="button" class="btn-ghost" onclick="shareArenaLink(\'' + escapeHtml(item.id) + '\')">Share Link</button>' +
+            '<button type="button" class="btn-ghost" onclick="exportArenaJson(\'' + escapeHtml(item.id) + '\')">Export (.json)</button>' +
+            '<button type="button" class="btn-ghost" style="color:var(--trap-danger-text);" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">Delete</button>' +
           '</div>' +
         '</article>';
       }
@@ -2640,6 +2642,11 @@ function revealTrap(btn, isCorrect, debriefText) {
       var notes = document.getElementById("notes-input");
       if (notes) {
         notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
+        var wordCountEl = document.getElementById("notes-word-count");
+        if (wordCountEl) {
+          var wc = (notes.value.trim().match(/\S+/g) || []).length;
+          wordCountEl.textContent = wc.toLocaleString() + " words";
+        }
       }
       var url = new URL(window.location.href);
       url.searchParams.set("mock", "ok");
