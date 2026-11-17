@@ -3,10 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Study Arena — Gamified Exam Prep for Business Students</title>
+  <title>Study Arena — AI Course-to-Game Generator for Business Students</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+  <!-- PDF.js for client-side slide extraction -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+
   <style>
     :root {
       --bg: #EBEFF6;
@@ -20,6 +24,8 @@
       --accent-soft: #E3E9FF;
       --good: #117A58;
       --good-soft: #DDF3EA;
+      --bad: #C23737;
+      --bad-soft: #FBE4E4;
       --warn: #9A6A12;
       --warn-soft: #FBF0D6;
       --f-display: "Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
@@ -40,6 +46,8 @@
         --accent-soft: #232F5C;
         --good: #42D6A0;
         --good-soft: #12382F;
+        --bad: #FF8484;
+        --bad-soft: #40202A;
         --warn: #E9B64E;
         --warn-soft: #3B2F14;
         color-scheme: dark;
@@ -58,6 +66,8 @@
       --accent-soft: #232F5C;
       --good: #42D6A0;
       --good-soft: #12382F;
+      --bad: #FF8484;
+      --bad-soft: #40202A;
       --warn: #E9B64E;
       --warn-soft: #3B2F14;
       color-scheme: dark;
@@ -76,14 +86,14 @@
     }
 
     .wrap {
-      max-width: 960px;
+      max-width: 980px;
       margin: 0 auto;
       display: flex;
       flex-direction: column;
       gap: 32px;
     }
 
-    /* Top Nav */
+    /* Header Nav */
     .nav {
       display: flex;
       justify-content: space-between;
@@ -117,40 +127,48 @@
       gap: 10px;
       align-items: center;
     }
-    .btn-ghost {
+    .btn-nav {
       background: var(--surface);
       border: 1px solid var(--line);
       color: var(--ink);
-      border-radius: 9px;
-      padding: 7px 13px;
+      border-radius: 10px;
+      padding: 8px 14px;
       font-family: var(--f-mono);
       font-size: 12px;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       transition: all 0.15s ease;
       text-decoration: none;
     }
-    .btn-ghost:hover {
+    .btn-nav:hover {
       border-color: var(--accent);
       background: var(--surface2);
     }
+    .key-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 99px;
+      background: var(--bad);
+    }
+    .key-indicator.configured {
+      background: var(--good);
+    }
 
-    /* Hero Section */
-    .hero {
+    /* Generator Box */
+    .generator-card {
       background: var(--surface);
-      border: 1px solid var(--line);
-      border-radius: 18px;
+      border: 1.5px solid var(--line);
+      border-radius: 20px;
       padding: 36px 32px;
       display: flex;
       flex-direction: column;
-      gap: 18px;
+      gap: 24px;
+      box-shadow: 0 8px 30px -10px rgba(0,0,0,0.06);
       position: relative;
-      overflow: hidden;
-      box-shadow: 0 4px 20px -8px rgba(0,0,0,0.06);
     }
-    .hero-badge {
+    .gen-badge {
       display: inline-flex;
       align-items: center;
       gap: 8px;
@@ -165,49 +183,323 @@
       border-radius: 99px;
       width: fit-content;
     }
-    .hero h1 {
+    .gen-title h1 {
       font-family: var(--f-display);
-      font-size: 38px;
+      font-size: 34px;
       font-weight: 800;
       line-height: 1.15;
       letter-spacing: -0.03em;
+      margin: 6px 0 10px;
+    }
+    .gen-title p {
       margin: 0;
+      font-size: 16px;
+      color: var(--muted);
       max-width: 720px;
     }
-    .hero p {
-      margin: 0;
-      font-size: 17px;
-      color: var(--muted);
-      max-width: 680px;
-      line-height: 1.6;
+
+    /* Upload Zones */
+    .dropzone {
+      border: 2px dashed var(--line);
+      border-radius: 14px;
+      padding: 32px 20px;
+      text-align: center;
+      background: var(--surface2);
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      position: relative;
     }
-    .hero-stats {
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-      padding-top: 20px;
-      border-top: 1px solid var(--line);
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--accent);
+      background: var(--accent-soft);
     }
-    .hero-stat {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
+    .dropzone input[type="file"] {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      cursor: pointer;
     }
-    .hero-stat b {
-      font-family: var(--f-display);
-      font-size: 24px;
-      font-weight: 800;
+    .dz-icon {
+      font-size: 32px;
+      margin-bottom: 8px;
     }
-    .hero-stat span {
+    .dz-text b {
+      display: block;
+      font-size: 16px;
+      margin-bottom: 4px;
+    }
+    .dz-text span {
       font-family: var(--f-mono);
-      font-size: 11px;
-      letter-spacing: 0.05em;
-      text-transform: uppercase;
+      font-size: 12px;
       color: var(--muted);
     }
 
-    /* Course Grid */
+    .or-divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      color: var(--muted);
+      font-family: var(--f-mono);
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    .or-divider::before, .or-divider::after {
+      content: "";
+      flex: 1;
+      height: 1px;
+      background: var(--line);
+    }
+
+    textarea {
+      width: 100%;
+      min-height: 140px;
+      resize: vertical;
+      font-family: var(--f-body);
+      font-size: 14px;
+      line-height: 1.5;
+      background: var(--surface2);
+      color: var(--ink);
+      border: 1.5px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      transition: border-color 0.2s;
+    }
+    textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .optional-box {
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .optional-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      cursor: pointer;
+      user-select: none;
+    }
+    .optional-toggle strong {
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Action Bar */
+    .action-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 14px;
+      padding-top: 10px;
+    }
+    .btn-generate {
+      background: var(--accent);
+      color: var(--accent-ink);
+      font-family: var(--f-display);
+      font-size: 17px;
+      font-weight: 700;
+      border: 0;
+      border-radius: 12px;
+      padding: 14px 28px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.15s, opacity 0.15s;
+    }
+    .btn-generate:hover:not(:disabled) {
+      transform: translateY(-2px);
+    }
+    .btn-generate:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* Progress Stepper */
+    .stepper {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--surface2);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 24px;
+      margin-top: 10px;
+    }
+    .stepper.active {
+      display: flex;
+    }
+    .prog-bar {
+      height: 8px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .prog-fill {
+      height: 100%;
+      background: var(--accent);
+      border-radius: 99px;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+    .prog-msg {
+      font-family: var(--f-mono);
+      font-size: 13px;
+      color: var(--ink);
+    }
+
+    /* Success Card */
+    .result-card {
+      display: none;
+      background: var(--good-soft);
+      border: 1.5px solid var(--good);
+      border-radius: 16px;
+      padding: 28px;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .result-card.active {
+      display: flex;
+    }
+    .result-title {
+      font-family: var(--f-display);
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--good);
+      margin: 0;
+    }
+    .result-stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      font-family: var(--f-mono);
+      font-size: 13px;
+    }
+    .result-btns {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .btn-play {
+      background: var(--good);
+      color: #fff;
+      font-family: var(--f-display);
+      font-size: 16px;
+      font-weight: 700;
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 22px;
+      cursor: pointer;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .btn-download {
+      background: var(--surface);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      font-family: var(--f-mono);
+      font-size: 13px;
+      border-radius: 10px;
+      padding: 12px 20px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      place-items: center;
+      padding: 16px;
+    }
+    .modal-backdrop.open {
+      display: grid;
+    }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      width: 100%;
+      max-width: 520px;
+      padding: 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+    }
+    .modal h2 {
+      font-family: var(--f-display);
+      font-size: 22px;
+      margin: 0;
+    }
+    .provider-tabs {
+      display: flex;
+      gap: 8px;
+      background: var(--surface2);
+      padding: 4px;
+      border-radius: 10px;
+      border: 1px solid var(--line);
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 8px;
+      border: 0;
+      background: none;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      color: var(--muted);
+      font-weight: 600;
+    }
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    .input-grp {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+    .input-grp label {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .input-grp input {
+      padding: 12px 14px;
+      border: 1.5px solid var(--line);
+      border-radius: 10px;
+      background: var(--surface2);
+      color: var(--ink);
+      font-family: var(--f-mono);
+      font-size: 13px;
+    }
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+    }
+
+    /* Course Cards */
     .section-title {
       display: flex;
       justify-content: space-between;
@@ -216,17 +508,10 @@
     }
     .section-title h2 {
       font-family: var(--f-display);
-      font-size: 24px;
+      font-size: 22px;
       font-weight: 700;
       margin: 0;
-      letter-spacing: -0.02em;
     }
-    .section-title span {
-      font-family: var(--f-mono);
-      font-size: 12px;
-      color: var(--muted);
-    }
-
     .grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
@@ -239,20 +524,14 @@
       padding: 24px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
       text-decoration: none;
       color: inherit;
-      position: relative;
-      transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.2s ease, box-shadow 0.2s ease;
+      transition: transform 0.2s, border-color 0.2s;
     }
     .card:hover {
-      transform: translateY(-4px);
+      transform: translateY(-3px);
       border-color: var(--accent);
-      box-shadow: 0 10px 24px -10px rgba(0,0,0,0.1);
-    }
-    .card.disabled {
-      opacity: 0.72;
-      pointer-events: none;
     }
     .card-tag {
       font-family: var(--f-mono);
@@ -263,36 +542,22 @@
       border-radius: 6px;
       width: fit-content;
       font-weight: 600;
-    }
-    .tag-active {
       background: var(--good-soft);
       color: var(--good);
     }
-    .tag-wip {
-      background: var(--warn-soft);
-      color: var(--warn);
-    }
-    .tag-plan {
-      background: var(--surface2);
-      color: var(--muted);
-    }
-
     .card h3 {
       font-family: var(--f-display);
-      font-size: 22px;
-      font-weight: 700;
+      font-size: 20px;
       margin: 0;
-      line-height: 1.2;
     }
     .card p {
       margin: 0;
       color: var(--muted);
-      font-size: 14px;
-      line-height: 1.5;
+      font-size: 13.5px;
     }
     .card-meta {
       margin-top: auto;
-      padding-top: 14px;
+      padding-top: 12px;
       border-top: 1px solid var(--line);
       display: flex;
       justify-content: space-between;
@@ -300,66 +565,6 @@
       font-family: var(--f-mono);
       font-size: 12px;
       color: var(--muted);
-    }
-    .card-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: var(--accent);
-      color: var(--accent-ink);
-      font-family: var(--f-body);
-      font-size: 13px;
-      font-weight: 600;
-      padding: 6px 12px;
-      border-radius: 8px;
-      transition: opacity 0.15s ease;
-    }
-    .card:hover .card-btn {
-      opacity: 0.95;
-    }
-
-    /* Features banner */
-    .feature-strip {
-      background: var(--surface2);
-      border: 1px solid var(--line);
-      border-radius: 14px;
-      padding: 20px 24px;
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px;
-    }
-    .feature-item h4 {
-      margin: 0 0 4px;
-      font-family: var(--f-display);
-      font-size: 16px;
-      font-weight: 700;
-    }
-    .feature-item p {
-      margin: 0;
-      font-size: 13px;
-      color: var(--muted);
-      line-height: 1.45;
-    }
-
-    /* Footer */
-    .foot {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-      padding-top: 16px;
-      border-top: 1px solid var(--line);
-      font-size: 13px;
-      color: var(--muted);
-      font-family: var(--f-mono);
-    }
-    .foot a {
-      color: var(--muted);
-      text-decoration: none;
-    }
-    .foot a:hover {
-      color: var(--accent);
     }
   </style>
 </head>
@@ -370,125 +575,313 @@
     <header class="nav">
       <a href="index.html" class="logo">
         Study Arena
-        <span class="logo-badge">Beta</span>
+        <span class="logo-badge">Generator</span>
       </a>
       <div class="nav-actions">
-        <button class="btn-ghost" id="theme-btn" onclick="toggleTheme()">🌓 Theme</button>
-        <span class="btn-ghost" style="cursor: default;">⚡ Supabase Ready</span>
+        <button class="btn-nav" onclick="openKeyModal()">
+          <span class="key-indicator" id="key-ind"></span>
+          <span id="key-label">AI Settings (BYOK)</span>
+        </button>
+        <button class="btn-nav" onclick="toggleTheme()">🌓 Theme</button>
       </div>
     </header>
 
-    <!-- Hero -->
-    <section class="hero">
-      <div class="hero-badge">🎓 Business Exam Simulator</div>
-      <h1>Master your business exams through gameplay.</h1>
-      <p>
-        Built specifically for business students. Study the core frameworks, test yourself against trick exam questions, and sit timed mock exam papers with instant grading.
-      </p>
-      <div class="hero-stats">
-        <div class="hero-stat">
-          <b>100%</b>
-          <span>Client-Side & Offline</span>
+    <!-- Main Generator UI -->
+    <section class="generator-card">
+      <div class="gen-badge">⚡ AACSB Professor Engine</div>
+      <div class="gen-title">
+        <h1>Transform course material into an interactive study game.</h1>
+        <p>
+          Drop in your lecture slides, notes, or syllabus. The AI will extract core frameworks, build tricky micro-case exam questions, construct chapter guides, and compile a playable Study Arena.
+        </p>
+      </div>
+
+      <!-- File Dropzone -->
+      <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+        <input type="file" id="file-input" accept=".pdf,.txt,.md,.json" onchange="handleFileSelect(event)">
+        <div class="dz-icon">📂</div>
+        <div class="dz-text">
+          <b id="dz-filename">Click or Drag & Drop Course Slides (PDF, TXT, MD)</b>
+          <span>Text is parsed 100% inside your browser. No files uploaded to our server.</span>
         </div>
-        <div class="hero-stat">
-          <b>109+</b>
-          <span>Curated Questions</span>
+      </div>
+
+      <div class="or-divider">Or paste lecture notes directly</div>
+
+      <textarea id="notes-input" placeholder="Paste syllabus, lecture transcript, slide bullet points, or chapter summaries here..."></textarea>
+
+      <!-- Optional Professor Annals Section -->
+      <div class="optional-box">
+        <div class="optional-toggle" onclick="toggleAnnals()">
+          <strong>🎯 Professor Annals & Exam Rubrics (Optional)</strong>
+          <span id="annals-arrow" style="font-family: var(--f-mono);">▼ Show</span>
         </div>
-        <div class="hero-stat">
-          <b>32</b>
-          <span>Guide Chapters</span>
+        <div id="annals-body" style="display: none; padding-top: 8px;">
+          <textarea id="annals-input" style="min-height: 90px;" placeholder="Optional: Paste your teacher's past exam questions, grading rubrics, or specific exam tips to match their exact grading style..."></textarea>
         </div>
-        <div class="hero-stat">
-          <b>XP & Ranks</b>
-          <span>Local Browser Save</span>
+      </div>
+
+      <!-- Action Bar -->
+      <div class="action-bar">
+        <div style="font-family: var(--f-mono); font-size: 12px; color: var(--muted);" id="provider-hint">
+          Active Provider: <b id="active-prov-name">Claude</b>
+        </div>
+        <button class="btn-generate" id="gen-btn" onclick="startGeneration()">
+          <span>Generate Study Arena ✨</span>
+        </button>
+      </div>
+
+      <!-- Stepper / Loading Progress -->
+      <div class="stepper" id="stepper">
+        <div class="prog-msg" id="prog-msg">Initializing generation...</div>
+        <div class="prog-bar">
+          <div class="prog-fill" id="prog-fill"></div>
+        </div>
+      </div>
+
+      <!-- Success Card -->
+      <div class="result-card" id="result-card">
+        <h3 class="result-title">🎉 Study Arena Generated Successfully!</h3>
+        <div class="result-stats" id="result-stats"></div>
+        <div class="result-btns">
+          <button class="btn-play" onclick="playGeneratedArena()">🎮 Play Arena Now</button>
+          <button class="btn-download" onclick="downloadGeneratedArena()">💾 Download Game (.html)</button>
         </div>
       </div>
     </section>
 
-    <!-- Arenas Grid -->
+    <!-- Demo Courses Section -->
     <div>
       <div class="section-title">
-        <h2>Active Arenas</h2>
-        <span>Select a course to start</span>
+        <h2>Reference & Demo Arenas</h2>
+        <span style="font-family: var(--f-mono); font-size: 12px; color: var(--muted);">Pre-compiled test games</span>
       </div>
-
       <div class="grid">
-        <!-- Ethics Arena (Ready) -->
         <a href="dist/ethics.html" class="card">
-          <div class="card-tag tag-active">● Active & Ready</div>
+          <div class="card-tag">● Gold Standard Blueprint</div>
           <h3>Business Ethics Arena</h3>
-          <p>
-            Philosophical foundations (Kant, Utilitarianism, Virtue Ethics), CSR, sustainability, whistleblowing, and leadership dilemmas.
-          </p>
+          <p>The original reference game: 109 questions, 6 zones, 32 study chapters, and 2 full mock papers.</p>
           <div class="card-meta">
             <span>109 Qs · 2 Mock Exams</span>
-            <span class="card-btn">Enter Arena →</span>
+            <span style="color: var(--accent); font-weight: 600;">Play Demo →</span>
           </div>
         </a>
-
-        <!-- Microeconomics (In Development) -->
-        <div class="card disabled">
-          <div class="card-tag tag-wip">🛠 In Development</div>
-          <h3>Microeconomics Arena</h3>
-          <p>
-            Elasticity, market equilibrium, price controls, perfect competition vs. monopolies, and game theory with interactive graphs.
-          </p>
-          <div class="card-meta">
-            <span>Coming next</span>
-            <span style="font-size: 11px; text-transform: uppercase;">Building</span>
-          </div>
-        </div>
-
-        <!-- Math for Business (Planned) -->
-        <div class="card disabled">
-          <div class="card-tag tag-plan">⏳ Planned</div>
-          <h3>Math for Business Arcade</h3>
-          <p>
-            Rapid-fire financial mathematics, compound interest, discounted cash flows, break-even matrices, and exam calculations.
-          </p>
-          <div class="card-meta">
-            <span>Course planned</span>
-            <span style="font-size: 11px; text-transform: uppercase;">Queued</span>
-          </div>
-        </div>
       </div>
     </div>
-
-    <!-- Features strip -->
-    <div class="feature-strip">
-      <div class="feature-item">
-        <h4>🎯 Exam-Grade Questions</h4>
-        <p>No generic trivia. Questions feature traps, subtle distinctions, and multi-factor rubrics modeled on real university annals.</p>
-      </div>
-      <div class="feature-item">
-        <h4>🧠 Deep Explanations</h4>
-        <p>Every incorrect choice explains exactly why it’s wrong and which concept was confused, turning mistakes into retention.</p>
-      </div>
-      <div class="feature-item">
-        <h4>📊 Zero Setup Needed</h4>
-        <p>All progress and XP persist in your browser’s localStorage. Open anywhere on your laptop or phone.</p>
-      </div>
-    </div>
-
-    <!-- Footer -->
-    <footer class="foot">
-      <span>Study Arena · Built for IÉSEG School of Management</span>
-      <span>v1.0 · Ready for Supabase Auth</span>
-    </footer>
 
   </div>
 
+  <!-- BYOK Settings Modal -->
+  <div class="modal-backdrop" id="key-modal" onclick="if(event.target===this) closeKeyModal()">
+    <div class="modal">
+      <h2>AI Settings (BYOK)</h2>
+      <p style="margin: 0; font-size: 14px; color: var(--muted);">
+        Bring Your Own Key: Tokens are charged directly to your own AI account. Your key is stored solely in your browser's local storage and is never sent to our servers.
+      </p>
+
+      <div class="provider-tabs">
+        <button class="tab-btn active" id="tab-claude" onclick="selectProvider('claude')">Claude (Anthropic)</button>
+        <button class="tab-btn" id="tab-openai" onclick="selectProvider('openai')">ChatGPT (OpenAI)</button>
+        <button class="tab-btn" id="tab-gemini" onclick="selectProvider('gemini')">Google Gemini</button>
+      </div>
+
+      <div class="input-grp">
+        <label id="key-input-label">Anthropic API Key (sk-ant-...)</label>
+        <input type="password" id="api-key-field" placeholder="Paste your API key here...">
+      </div>
+
+      <div class="modal-foot">
+        <button class="btn-nav" onclick="closeKeyModal()">Cancel</button>
+        <button class="btn-generate" style="font-size: 14px; padding: 10px 18px;" onclick="saveKeySettings()">Save Key</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="generator/engine_bundle.js"></script>
+  <script src="generator/compiler.js"></script>
+  <script src="generator/api.js"></script>
+
   <script>
+    var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
+    var generatedHtmlBlob = null;
+    var generatedCourseData = null;
+
+    function updateKeyUI() {
+      var key = localStorage.getItem("sa_api_key_" + currentProvider);
+      var ind = document.getElementById("key-ind");
+      var label = document.getElementById("key-label");
+      var provHint = document.getElementById("active-prov-name");
+
+      provHint.textContent = currentProvider.toUpperCase();
+
+      if (key && key.trim().length > 5) {
+        ind.classList.add("configured");
+        label.textContent = currentProvider.toUpperCase() + " (Key Set)";
+      } else {
+        ind.classList.remove("configured");
+        label.textContent = "Configure AI Key";
+      }
+    }
+
+    function openKeyModal() {
+      selectProvider(currentProvider);
+      document.getElementById("key-modal").classList.add("open");
+    }
+
+    function closeKeyModal() {
+      document.getElementById("key-modal").classList.remove("open");
+    }
+
+    function selectProvider(p) {
+      currentProvider = p;
+      ['claude', 'openai', 'gemini'].forEach(function(name) {
+        document.getElementById("tab-" + name).classList.toggle("active", name === p);
+      });
+
+      var labels = {
+        claude: "Anthropic API Key (sk-ant-...)",
+        openai: "OpenAI API Key (sk-...)",
+        gemini: "Google Gemini API Key (AIza...)"
+      };
+      document.getElementById("key-input-label").textContent = labels[p];
+      document.getElementById("api-key-field").value = localStorage.getItem("sa_api_key_" + p) || "";
+    }
+
+    function saveKeySettings() {
+      var val = document.getElementById("api-key-field").value.trim();
+      localStorage.setItem("sa_ai_provider", currentProvider);
+      if (val) {
+        localStorage.setItem("sa_api_key_" + currentProvider, val);
+      }
+      closeKeyModal();
+      updateKeyUI();
+    }
+
+    function toggleAnnals() {
+      var b = document.getElementById("annals-body");
+      var arr = document.getElementById("annals-arrow");
+      if (b.style.display === "none") {
+        b.style.display = "block";
+        arr.textContent = "▲ Hide";
+      } else {
+        b.style.display = "none";
+        arr.textContent = "▼ Show";
+      }
+    }
+
+    async function handleFileSelect(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      document.getElementById("dz-filename").textContent = "Selected: " + file.name;
+
+      if (file.name.endsWith(".pdf")) {
+        document.getElementById("dz-filename").textContent = "Extracting text from PDF...";
+        try {
+          var arrayBuffer = await file.arrayBuffer();
+          var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          var fullText = "";
+          for (var i = 1; i <= pdf.numPages; i++) {
+            var page = await pdf.getPage(i);
+            var content = await page.getTextContent();
+            var strings = content.items.map(function(item) { return item.str; });
+            fullText += "\\n--- Slide / Page " + i + " ---\\n" + strings.join(" ");
+          }
+          document.getElementById("notes-input").value = fullText;
+          document.getElementById("dz-filename").textContent = "Extracted " + pdf.numPages + " slides from " + file.name;
+        } catch(err) {
+          alert("Error reading PDF: " + err.message);
+          document.getElementById("dz-filename").textContent = "Click or Drag & Drop Course Slides";
+        }
+      } else {
+        var text = await file.text();
+        document.getElementById("notes-input").value = text;
+      }
+    }
+
+    async function startGeneration() {
+      var notes = document.getElementById("notes-input").value.trim();
+      var teacherAnnals = document.getElementById("annals-input").value.trim();
+
+      if (!notes) {
+        alert("Please paste course notes or upload slides first.");
+        return;
+      }
+
+      var key = localStorage.getItem("sa_api_key_" + currentProvider);
+      if (!key) {
+        openKeyModal();
+        return;
+      }
+
+      var genBtn = document.getElementById("gen-btn");
+      var stepper = document.getElementById("stepper");
+      var progMsg = document.getElementById("prog-msg");
+      var progFill = document.getElementById("prog-fill");
+      var resCard = document.getElementById("result-card");
+
+      genBtn.disabled = true;
+      resCard.classList.remove("active");
+      stepper.classList.add("active");
+
+      try {
+        var result = await window.StudyArenaAPI.generate(notes, teacherAnnals, function(msg, pct) {
+          progMsg.textContent = msg;
+          progFill.style.width = pct + "%";
+        });
+
+        generatedCourseData = result.courseData;
+        generatedHtmlBlob = new Blob([result.compiledHtml], { type: "text/html" });
+
+        stepper.classList.remove("active");
+        resCard.classList.add("active");
+
+        var qCount = (result.courseData.questions || []).length;
+        var zCount = (result.courseData.zones || []).length;
+        var cCount = (result.courseData.chapters || []).length;
+        document.getElementById("result-stats").innerHTML =
+          "<span>Course: <b>" + (result.courseData.config.title || "Custom Arena") + "</b></span>" +
+          "<span>Zones: <b>" + zCount + "</b></span>" +
+          "<span>Questions: <b>" + qCount + "</b></span>" +
+          "<span>Study Chapters: <b>" + cCount + "</b></span>";
+
+      } catch (err) {
+        alert("Generation Error: " + err.message);
+        stepper.classList.remove("active");
+      } finally {
+        genBtn.disabled = false;
+      }
+    }
+
+    function playGeneratedArena() {
+      if (!generatedHtmlBlob) return;
+      var url = URL.createObjectURL(generatedHtmlBlob);
+      window.open(url, "_blank");
+    }
+
+    function downloadGeneratedArena() {
+      if (!generatedHtmlBlob) return;
+      var title = (generatedCourseData && generatedCourseData.config.key) || "study-arena";
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(generatedHtmlBlob);
+      a.download = title + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
     function toggleTheme() {
-      const html = document.documentElement;
-      const current = html.getAttribute('data-theme');
-      const next = current === 'dark' ? 'light' : 'dark';
+      var html = document.documentElement;
+      var current = html.getAttribute('data-theme');
+      var next = current === 'dark' ? 'light' : 'dark';
       html.setAttribute('data-theme', next);
       localStorage.setItem('study_arena_theme', next);
     }
-    (function initTheme() {
-      const saved = localStorage.getItem('study_arena_theme');
+
+    (function init() {
+      var saved = localStorage.getItem('study_arena_theme');
       if (saved) document.documentElement.setAttribute('data-theme', saved);
+      updateKeyUI();
     })();
   </script>
 </body>
