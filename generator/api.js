@@ -289,16 +289,16 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
     var params = new URLSearchParams(window.location.search);
     var mockMode = params.get("mock");
     if (mockMode === "error") {
-      onProgress("Reading course notes...", 15);
+      onProgress("Reading syllabus & lecture notes...", 15);
       await new Promise(function(r) { setTimeout(r, 300); });
       throw new Error("HTTP 401 on [claude-sonnet-4-6]: {\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"invalid x-api-key\"}}");
     }
     if (mockMode === "ok") {
-      onProgress("Reading course notes...", 15);
+      onProgress("Reading syllabus & lecture notes...", 15);
       await new Promise(function(r) { setTimeout(r, 250); });
-      onProgress("Creating study guide and practice questions...", 45);
+      onProgress("Creating tools & distractor traps...", 45);
       await new Promise(function(r) { setTimeout(r, 350); });
-      onProgress("Packaging playable arena...", 92);
+      onProgress("Compiling offline Study Arena...", 92);
       var mockData = {
         config: {
           key: "corporate-finance-wacc",
@@ -408,7 +408,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       throw new Error("Missing API Key for " + provider + ". Please click \'AI Settings (BYOK)\' to set your key.");
     }
 
-    onProgress("Reading course notes...", 15);
+    onProgress("Reading syllabus & lecture notes...", 15);
 
     var userContent = "COURSE LECTURE MATERIAL TO TRANSFORM:\n\n" + courseText;
     if (teacherNotes && teacherNotes.trim()) {
@@ -460,7 +460,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
 
       for (var i = 0; i < candidateModels.length; i++) {
         var modelToTry = candidateModels[i];
-        onProgress("Creating study guide and practice questions...", 45);
+        onProgress("Creating tools & distractor traps...", 45);
 
         var skipThisModel = false;
 
@@ -522,7 +522,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       }
 
         } else if (provider === "openai") {
-      onProgress("Creating study guide and practice questions...", 45);
+      onProgress("Creating tools & distractor traps...", 45);
       var res = await fetch("https://api.openai.com/v1/chat/completions", {
         signal: signal,
         method: "POST",
@@ -548,7 +548,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       rawResponse = jsonRes.choices[0].message.content;
 
     } else if (provider === "gemini") {
-      onProgress("Creating study guide and practice questions...", 45);
+      onProgress("Creating tools & distractor traps...", 45);
       var modelName = "gemini-1.5-flash";
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
@@ -573,7 +573,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
     onProgress("Checking questions and explanations...", 78);
     var courseData = this.cleanJsonResponse(rawResponse);
 
-    onProgress("Packaging playable arena...", 92);
+    onProgress("Compiling offline Study Arena...", 92);
     var compiledHtml = window.StudyArenaCompiler.compile(courseData);
 
     onProgress("Ready to play.", 100);

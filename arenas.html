@@ -1214,6 +1214,47 @@
       opacity: 1;
     }
     
+
+    /* AI Chatbot Thinking Indicator */
+    .thinking-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 16px;
+      background: var(--surface-2);
+      border: 0.5px solid var(--line);
+      border-radius: var(--radius-pill);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+      user-select: none;
+      animation: fadeIn 200ms var(--ease-out);
+    }
+    .thinking-spinner {
+      width: 13px;
+      height: 13px;
+      border: 2px solid rgba(11, 122, 79, 0.2);
+      border-top-color: var(--accent-cta);
+      border-radius: 50%;
+      animation: spinSpinner 0.8s linear infinite;
+    }
+    @keyframes spinSpinner {
+      to { transform: rotate(360deg); }
+    }
+    .thinking-text {
+      font-family: var(--f-mono);
+      font-size: 13px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      background: linear-gradient(90deg, var(--text-steel) 0%, var(--text-ink) 50%, var(--text-steel) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: thinkingShimmer 2.2s linear infinite;
+    }
+    @keyframes thinkingShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
 </style>
 </head>
 <body>
@@ -1500,9 +1541,15 @@
               </select>
             </div>
 
-            <button type="button" class="btn-primary" id="gen-btn" style="padding:11px 24px; font-size:13px;" onclick="generateArena()">
-              Generate Arena &rarr;
-            </button>
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="gen-btn" style="padding:11px 24px; font-size:13px;" onclick="generateArena()">
+                Generate Arena &rarr;
+              </button>
+              <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
+                <span class="thinking-spinner"></span>
+                <span class="thinking-text" id="thinking-status-text">Thinking...</span>
+              </div>
+            </div>
           </div>
 
           <!-- TELEMETRY STEPPER -->
@@ -1976,28 +2023,9 @@ if (modal) modal.classList.add("open");
     }
 
     /* ---------- INPUT MODE TABS (UPLOAD vs PASTE) ---------- */
-    function setInputMode(mode) {
-      var upPane = document.getElementById("pane-upload");
-      var paPane = document.getElementById("pane-paste");
-      var upTab = document.getElementById("tab-mode-upload");
-      var paTab = document.getElementById("tab-mode-paste");
-
-      if (mode === "paste") {
-        upPane.style.display = "none";
-        paPane.style.display = "block";
-        upTab.classList.remove("active");
-        upTab.setAttribute("aria-selected", "false");
-        paTab.classList.add("active");
-        paTab.setAttribute("aria-selected", "true");
-        document.getElementById("notes-input").focus();
-      } else {
-        paPane.style.display = "none";
-        upPane.style.display = "block";
-        paTab.classList.remove("active");
-        paTab.setAttribute("aria-selected", "false");
-        upTab.classList.add("active");
-        upTab.setAttribute("aria-selected", "true");
-      }
+        function setInputMode(mode) {
+      var notes = document.getElementById("notes-input");
+      if (notes) notes.focus();
     }
 
     /* ---------- AI KEY SETTINGS ---------- */
@@ -2637,8 +2665,11 @@ function revealTrap(btn, isCorrect, debriefText) {
       closeKeyModal();
     }
 
+    var inMemoryMock = false;
+
     function loadPreloadedMock() {
       switchMainView("generator");
+      inMemoryMock = true;
       var notes = document.getElementById("notes-input");
       if (notes) {
         notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
