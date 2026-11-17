@@ -141,6 +141,25 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     return JSON.parse(text.trim());
   },
 
+  fetchClaudeModels: async function(apiKey) {
+    try {
+      var res = await fetch("https://api.anthropic.com/v1/models", {
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "anthropic-dangerous-direct-browser-access": "true"
+        }
+      });
+      if (res.ok) {
+        var data = await res.json();
+        return (data.data || []).map(function(m) { return m.id; });
+      }
+    } catch (e) {
+      console.warn("Could not list Claude models:", e);
+    }
+    return [];
+  },
+
   generate: async function(courseText, teacherNotes, onProgress) {
     var provider = localStorage.getItem("sa_ai_provider") || "claude";
     var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
@@ -159,15 +178,52 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var rawResponse = "";
 
     if (provider === "claude") {
-      var selectedModel = localStorage.getItem("sa_model_claude") || "claude-3-5-haiku-latest";
-      var candidateModels = [selectedModel, "claude-3-5-haiku-latest", "claude-3-5-sonnet-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"];
-      // Deduplicate
-      candidateModels = Array.from(new Set(candidateModels));
+      onProgress("Checking available Claude models for your API key...", 30);
+      var authorizedModels = await this.fetchClaudeModels(apiKey);
+      console.log("Authorized Claude models for key:", authorizedModels);
+
+      var selectedModel = localStorage.getItem("sa_model_claude");
+      var candidateModels = [];
+
+      if (authorizedModels.length > 0) {
+        if (selectedModel && authorizedModels.includes(selectedModel)) {
+          candidateModels.push(selectedModel);
+        }
+        // Prioritize Sonnet 3.5, then Haiku 3.5, then Haiku 3
+        var preferredOrder = [
+          "claude-3-5-sonnet-latest",
+          "claude-3-5-sonnet-20241022",
+          "claude-3-5-sonnet-20240620",
+          "claude-3-5-haiku-latest",
+          "claude-3-5-haiku-20241022",
+          "claude-3-haiku-20240307",
+          "claude-3-opus-20240229"
+        ];
+        preferredOrder.forEach(function(p) {
+          if (authorizedModels.includes(p) && !candidateModels.includes(p)) {
+            candidateModels.push(p);
+          }
+        });
+        // Add any remaining authorized models
+        authorizedModels.forEach(function(m) {
+          if (!candidateModels.includes(m)) candidateModels.push(m);
+        });
+      } else {
+        // Fallback candidates if list models endpoint isn't supported
+        candidateModels = [
+          selectedModel,
+          "claude-3-5-sonnet-latest",
+          "claude-3-5-haiku-latest",
+          "claude-3-haiku-20240307",
+          "claude-3-5-sonnet-20241022",
+          "claude-3-5-sonnet-20240620"
+        ].filter(Boolean);
+      }
 
       var lastError = null;
       for (var mIdx = 0; mIdx < candidateModels.length; mIdx++) {
         var modelToTry = candidateModels[mIdx];
-        onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 40);
+        onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 45);
 
         try {
           var res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -191,8 +247,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
           if (!res.ok) {
             var errBody = await res.text();
             lastError = "Claude API (" + modelToTry + " - HTTP " + res.status + "): " + errBody;
-            console.warn("Model " + modelToTry + " failed, attempting fallback...", errBody);
-            // If it's a 404 model not found, try the next model candidate
+            console.warn("Model " + modelToTry + " failed (" + res.status + "), trying next available model...", errBody);
             if (res.status === 404) continue;
             throw new Error(lastError);
           }

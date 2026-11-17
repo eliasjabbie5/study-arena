@@ -767,7 +767,8 @@
         gemini: "Google Gemini API Key (AIza...)"
       };
       document.getElementById("key-input-label").textContent = labels[p];
-      document.getElementById("api-key-field").value = localStorage.getItem("sa_api_key_" + p) || "";
+      var apiKey = localStorage.getItem("sa_api_key_" + p) || "";
+      document.getElementById("api-key-field").value = apiKey;
 
       var sel = document.getElementById("model-select");
       sel.innerHTML = "";
@@ -779,6 +780,21 @@
         if (savedModel === m.id) opt.selected = true;
         sel.appendChild(opt);
       });
+
+      if (p === 'claude' && apiKey && window.StudyArenaAPI) {
+        window.StudyArenaAPI.fetchClaudeModels(apiKey).then(function(models) {
+          if (models && models.length > 0) {
+            sel.innerHTML = "";
+            models.forEach(function(id) {
+              var opt = document.createElement("option");
+              opt.value = id;
+              opt.textContent = id + (id.includes("3-5-sonnet") ? " (Recommended)" : id.includes("3-5-haiku") ? " (Fast/Cheap)" : "");
+              if (savedModel === id || (!savedModel && id.includes("3-5-sonnet"))) opt.selected = true;
+              sel.appendChild(opt);
+            });
+          }
+        });
+      }
     }
 
     function saveKeySettings() {
