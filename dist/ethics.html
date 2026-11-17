@@ -2,29 +2,91 @@
 <title>Study Arena</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
 <style>
-/* Layout: one calm column. Home is a grid of zone cards; play view is a single question card with feedback beneath. */
-:root{
-  --bg:#F7F8F7; --surface:#FFFFFF; --surface2:#EEF1EF; --ink:#0F1713; --muted:#55625C; --line:#D5DDD8;
-  --accent:#0B7A4F; --accent-ink:#FFFFFF; --accent-soft:#E4F3EA;
-  --good:#0B7A4F; --good-soft:#E4F3EA; --bad:#B42318; --bad-soft:#FDECEA; --warn:#B54708; --warn-soft:#FEF0C7;
-  --f-display:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --f-body:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+/* Study Arena Luxury Academic Engine -- Apple Gallery + Craft Serif + Linear Precision */
+:root {
+  --f-serif: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --f-display: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --f-body: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --radius-card: 24px;
+  --radius-pill: 9999px;
+  --radius-control: 12px;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
-  --bg:#0B0F0D; --surface:#121815; --surface2:#18201C; --ink:#EEF2EF; --muted:#8A9790; --line:#232D28;
-  --accent:#3DDC84; --accent-ink:#04130B; --accent-soft:#12261C;
-  --good:#3DDC84; --good-soft:#12261C; --bad:#F97066; --bad-soft:#2A1513; --warn:#FDB022; --warn-soft:#2E1F09; color-scheme:dark}}
-:root[data-theme="dark"]{
-  --bg:#0B0F0D; --surface:#121815; --surface2:#18201C; --ink:#EEF2EF; --muted:#8A9790; --line:#232D28;
-  --accent:#3DDC84; --accent-ink:#04130B; --accent-soft:#12261C;
-  --good:#3DDC84; --good-soft:#12261C; --bad:#F97066; --bad-soft:#2A1513; --warn:#FDB022; --warn-soft:#2E1F09; color-scheme:dark}
+
+:root, :root[data-theme="light"] {
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --surface2: #F6F8F6;
+  --ink: #111815;
+  --muted: #718077;
+  --line: rgba(0, 0, 0, 0.08);
+  --line-strong: rgba(0, 0, 0, 0.14);
+  --accent: #0B7A4F;
+  --accent-ink: #FFFFFF;
+  --accent-soft: #E7F5EE;
+  --good: #0B7A4F;
+  --good-soft: #E7F5EE;
+  --bad: #CF1322;
+  --bad-soft: #FFF1F0;
+  --warn: #B54708;
+  --warn-soft: #FEF0C7;
+  --card-shadow: rgba(0, 0, 0, 0.02) 0px 40px 30px, rgba(0, 0, 0, 0.04) 0px 20px 20px, rgba(0, 0, 0, 0.06) 0px 4px 10px;
+  --accent-glow: rgba(11, 122, 79, 0.3);
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #090C0B;
+    --surface: #151C18;
+    --surface2: #101513;
+    --ink: #EEF4F0;
+    --muted: #75867C;
+    --line: #1E2822;
+    --line-strong: #2A3830;
+    --accent: #3DDC84;
+    --accent-ink: #04140B;
+    --accent-soft: rgba(61, 220, 132, 0.12);
+    --good: #3DDC84;
+    --good-soft: rgba(61, 220, 132, 0.12);
+    --bad: #FF7875;
+    --bad-soft: rgba(235, 87, 87, 0.12);
+    --warn: #FDB022;
+    --warn-soft: #2E1F09;
+    --card-shadow: rgba(0, 0, 0, 0.6) 0px 20px 40px -10px, 0 0 0 1px #1E2822;
+    --accent-glow: rgba(61, 220, 132, 0.35);
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg: #090C0B;
+  --surface: #151C18;
+  --surface2: #101513;
+  --ink: #EEF4F0;
+  --muted: #75867C;
+  --line: #1E2822;
+  --line-strong: #2A3830;
+  --accent: #3DDC84;
+  --accent-ink: #04140B;
+  --accent-soft: rgba(61, 220, 132, 0.12);
+  --good: #3DDC84;
+  --good-soft: rgba(61, 220, 132, 0.12);
+  --bad: #FF7875;
+  --bad-soft: rgba(235, 87, 87, 0.12);
+  --warn: #FDB022;
+  --warn-soft: #2E1F09;
+  --card-shadow: rgba(0, 0, 0, 0.6) 0px 20px 40px -10px, 0 0 0 1px #1E2822;
+  --accent-glow: rgba(61, 220, 132, 0.35);
+  color-scheme: dark;
+}
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--ink);font-family:var(--f-body);font-size:15px;line-height:1.55;
   padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-.wrap{max-width:900px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+.wrap{max-width:960px;margin:0 auto;display:flex;flex-direction:column;gap:24px}
 h1,h2,h3{font-family:var(--f-display);margin:0;text-wrap:balance;line-height:1.15}
 button{font:inherit;color:inherit;cursor:pointer}
 :focus-visible{outline:3px solid var(--accent);outline-offset:2px;border-radius:6px}
@@ -33,29 +95,29 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* header */
 .top{display:flex;flex-wrap:wrap;gap:14px 24px;align-items:flex-end;justify-content:space-between}
-.brand h1{font-size:34px;font-weight:800;letter-spacing:-.02em}
+.brand h1{font-family:var(--f-serif);font-size:32px;font-weight:500;letter-spacing:-.025em;line-height:1.15;color:var(--ink)}
 .brand .mono{margin-top:4px}
 .stats{display:flex;gap:10px;flex-wrap:wrap}
-.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:92px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:12px 18px;min-width:96px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
 .stat b{display:block;font-family:var(--f-display);font-size:22px;font-weight:800;line-height:1.1}
 .stat span{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
-.rankbar{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;gap:8px}
+.rankbar{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:16px 20px;display:grid;gap:10px;box-shadow:0 1px 3px rgba(0,0,0,0.03)}
 .rankrow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:baseline}
-.rankrow strong{font-family:var(--f-display);font-size:18px}
+.rankrow strong{font-family:var(--f-serif);font-size:19px;font-weight:500;letter-spacing:-.015em;color:var(--ink)}
 .bar{height:8px;background:var(--surface2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
 .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width .4s}
 
 /* home */
-.zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
-.zone{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px;display:flex;flex-direction:column;gap:10px;min-width:0;transition:transform .15s,border-color .15s}
+.zones{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:18px}
+.zone{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px;min-width:0;box-shadow:var(--card-shadow);transition:transform .18s var(--ease-out),border-color .18s ease;cursor:pointer}
 .zone:hover{border-color:var(--accent);transform:translateY(-2px)}
-.zone h3{font-size:20px;font-weight:700}
+.zone h3{font-family:var(--f-serif);font-size:21px;font-weight:500;letter-spacing:-.02em;line-height:1.25;color:var(--ink)}
 .zone p{margin:0;color:var(--muted);font-size:14px}
 .zone .meta{display:flex;justify-content:space-between;gap:8px;margin-top:auto;font-family:var(--f-mono);font-size:12px;color:var(--muted)}
-.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-.mode{background:var(--accent);color:var(--accent-ink);border:0;border-radius:12px;padding:16px;text-align:left;display:grid;gap:4px}
-.mode.alt{background:var(--surface);color:var(--ink);border:1px solid var(--line)}
-.mode h3{font-size:19px}
+.modes{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:18px}
+.mode{background:var(--accent);color:var(--accent-ink);border:0;border-radius:22px;padding:22px;text-align:left;display:grid;gap:6px;box-shadow:0 1px 3px rgba(0,0,0,0.08),0 3px 10px var(--accent-glow);transition:transform .16s ease}
+.mode.alt{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--card-shadow)}
+.mode h3{font-family:var(--f-serif);font-size:20px;font-weight:500;letter-spacing:-.015em;margin:0}
 .mode p{margin:0;font-size:14px;opacity:.85}
 .mode:disabled{opacity:.5;cursor:not-allowed}
 .sec-h{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
@@ -65,34 +127,34 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* play */
 .bar-top{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
-.back{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:6px 12px}
+.back{background:var(--surface2);border:1px solid var(--line);border-radius:9999px;padding:6px 14px;font-size:12px;font-weight:500;color:var(--ink);cursor:pointer;transition:all 120ms ease}
 .prog{display:flex;align-items:center;gap:10px;flex:1;min-width:140px}
 .prog .bar{flex:1}
-.qcard{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:16px;min-width:0}
+.qcard{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:32px;display:grid;gap:20px;min-width:0;box-shadow:var(--card-shadow)}
 .chips{display:flex;gap:8px;flex-wrap:wrap}
 .chip{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--surface2);color:var(--muted);border-radius:99px;padding:3px 10px}
 .chip.t-mcq{background:var(--accent-soft);color:var(--accent);border-color:transparent}
 .chip.t-short{background:var(--warn-soft);color:var(--warn);border-color:transparent}
 .chip.t-essay{background:var(--good-soft);color:var(--good);border-color:transparent}
-.qtext{font-family:var(--f-display);font-size:22px;font-weight:600;line-height:1.3;text-wrap:balance}
+.qtext{font-family:var(--f-serif);font-size:23px;font-weight:500;line-height:1.35;letter-spacing:-.02em;text-wrap:balance;color:var(--ink)}
 .opts{display:grid;gap:10px}
-.opt{display:flex;gap:12px;align-items:flex-start;text-align:left;background:var(--surface2);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px;min-width:0}
+.opt{display:flex;gap:14px;align-items:flex-start;text-align:left;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:14px 16px;min-width:0;transition:all 120ms ease;cursor:pointer}
 .opt:hover:not(:disabled){border-color:var(--accent)}
-.opt .k{font-family:var(--f-mono);font-size:12px;font-weight:500;min-width:24px;height:24px;border-radius:6px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);flex:none}
+.opt .k{font-family:var(--f-mono);font-size:11px;font-weight:600;min-width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--surface);border:1px solid var(--line);flex:none;color:var(--ink)}
 .opt span.tx{min-width:0;overflow-wrap:anywhere}
 .opt.ok{border-color:var(--good);background:var(--good-soft)}
 .opt.no{border-color:var(--bad);background:var(--bad-soft)}
 .opt:disabled{cursor:default}
-.fb{border-radius:10px;padding:14px 16px;display:grid;gap:6px}
+.fb{border-radius:16px;padding:18px 20px;display:grid;gap:8px;border:1px solid var(--line)}
 .fb.good{background:var(--good-soft)} .fb.bad{background:var(--bad-soft)} .fb.mid{background:var(--warn-soft)}
-.fb strong{font-family:var(--f-display);font-size:17px}
+.fb strong{font-family:var(--f-serif);font-size:18px;font-weight:500;letter-spacing:-.015em}
 .fb p{margin:0}
 textarea{width:100%;min-height:150px;resize:vertical;font:inherit;line-height:1.5;background:var(--surface2);color:var(--ink);border:1.5px solid var(--line);border-radius:10px;padding:12px 14px}
 textarea.long{min-height:300px}
 textarea:focus{border-color:var(--accent);outline:none}
 .row{display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap}
-.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:10px;padding:10px 18px;font-weight:600}
-.btn.ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--line)}
+.btn{background:var(--accent);color:var(--accent-ink);border:0;border-radius:9999px;padding:9px 20px;font-weight:600;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,0.08),0 3px 8px var(--accent-glow);transition:transform 120ms ease;cursor:pointer}
+.btn.ghost{background:var(--surface2);color:var(--ink);border:1px solid var(--line);border-radius:9999px;padding:8px 18px;font-weight:500;font-size:13px;box-shadow:none}
 .btn:disabled{opacity:.5;cursor:not-allowed}
 .hint{color:var(--muted);font-size:13px}
 
@@ -123,9 +185,9 @@ textarea:focus{border-color:var(--accent);outline:none}
 .zrow .bar{grid-column:1 / -1}
 
 /* nav */
-.nav{display:flex;gap:6px;flex-wrap:wrap;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:4px;width:fit-content;max-width:100%}
-.nav button{background:none;border:0;border-radius:7px;padding:7px 14px;font-weight:500;color:var(--muted)}
-.nav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink)}
+.nav{display:inline-flex;gap:4px;align-items:center;background:var(--surface2);border:1px solid var(--line);border-radius:9999px;padding:4px;width:fit-content;max-width:100%;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.nav button{background:none;border:0;border-radius:9999px;padding:6px 16px;font-weight:500;font-size:13px;color:var(--muted);transition:all 140ms ease}
+.nav button[aria-current="page"]{background:var(--accent);color:var(--accent-ink);font-weight:600;box-shadow:0 1px 3px rgba(0,0,0,0.1)}
 /* figures */
 .fig{margin:0;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:12px;display:grid;gap:8px;min-width:0}
 .fig svg{width:100%;height:auto;max-width:520px;display:block;margin:0 auto}
@@ -136,7 +198,7 @@ textarea:focus{border-color:var(--accent);outline:none}
 /* progress */
 .hero{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:14px}
 @media (max-width:640px){.hero{grid-template-columns:1fr}}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px;display:grid;gap:12px;align-content:start;min-width:0}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:24px;padding:24px;display:grid;gap:14px;align-content:start;min-width:0;box-shadow:var(--card-shadow)}
 .big{font-family:var(--f-display);font-size:64px;font-weight:800;line-height:1;letter-spacing:-.03em}
 .card p{margin:0}
 .tbar{display:flex;height:10px;border-radius:99px;overflow:hidden;background:var(--surface2);border:1px solid var(--line)}
@@ -176,7 +238,7 @@ textarea:focus{border-color:var(--accent);outline:none}
 .chipbtn{font-family:var(--f-mono);font-size:11px;letter-spacing:.06em;text-transform:uppercase;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:99px;padding:5px 12px}
 .chipbtn.on{background:var(--accent);color:var(--accent-ink);border-color:transparent}
 .lsec{font-size:18px;margin:18px 0 8px}
-.litem{background:var(--surface);border:1px solid var(--line);border-radius:12px;margin:0 0 8px}
+.litem{background:var(--surface);border:1px solid var(--line);border-radius:20px;margin:0 0 12px;box-shadow:var(--card-shadow)}
 .litem summary{cursor:pointer;padding:13px 16px;font-weight:600;display:flex;gap:10px;align-items:center;justify-content:space-between;list-style-position:inside}
 .litem[open] summary{border-bottom:1px solid var(--line)}
 .rd{font-family:var(--f-mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;background:var(--good-soft);color:var(--good);border-radius:99px;padding:2px 9px;flex:none}
@@ -187,7 +249,7 @@ textarea:focus{border-color:var(--accent);outline:none}
 .chk{display:flex;gap:8px;align-items:center;font-size:14px}
 .btn.small{padding:6px 12px;font-size:13px}
 .papers{display:grid;gap:14px}
-.paper{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:22px;display:grid;gap:16px}
+.paper{background:var(--surface);border:1px solid var(--line);border-radius:28px;padding:32px;display:grid;gap:20px;box-shadow:var(--card-shadow)}
 .paper-head{display:flex;justify-content:space-between;gap:14px;align-items:flex-start;flex-wrap:wrap}
 .paper-head h2{font-size:28px}
 .clock{background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:8px 14px;display:grid;gap:2px;text-align:right}
@@ -222,7 +284,7 @@ textarea:focus{border-color:var(--accent);outline:none}
 var CONFIG={
   key:"ethics-arena-v1",                       // localStorage key (kept identical so existing progress still loads)
   title:"Ethics Arena",
-  subtitle:"Ethics & CSR · IÉSEG Paris · exam prep",
+  subtitle:"Business Ethics & Governance - Academic Exam Prep",
   course:"Business Ethics & CSR Course",   // used in the AI examiner prompt
   examName:"Ethics & CSR",                     // heading on the mock exam paper
   examFormat:"the 2025 annals",                // "written in the format of ..."
@@ -256,10 +318,10 @@ function L(sec,id,title,o){LEARN.push(Object.assign({sec:sec,id:id,t:title},o))}
 
 /* ---------- content ---------- */
 var ZONES=[
- {id:"csr",name:"Purpose, CSR & Stakeholders",sess:"Sessions 1 · 3",blurb:"Friedman, Carroll's pyramid, stakeholder theory, Wicks et al. and Kidder's right-vs-right dilemmas."},
- {id:"theo",name:"Normative Theories",sess:"Sessions 2 · 3",blurb:"Utilitarianism, deontology and virtue ethics, the three ethical tests and their limits."},
- {id:"beh",name:"Why Good People Do Bad Things",sess:"Sessions 4 · 5",blurb:"Rest's four stages, moral intensity, rationalization, situational and individual factors, Banaji et al."},
- {id:"mgmt",name:"Managing Ethics",sess:"Sessions 6 · 7",blurb:"Globalization, four orientations, codes of ethics, ethics committees and reporting lines."},
+ {id:"csr",name:"Purpose, CSR & Stakeholders",sess:"Sessions 1 - 3",blurb:"Friedman, Carroll's pyramid, stakeholder theory, Wicks et al. and Kidder's right-vs-right dilemmas."},
+ {id:"theo",name:"Normative Theories",sess:"Sessions 2 - 3",blurb:"Utilitarianism, deontology and virtue ethics, the three ethical tests and their limits."},
+ {id:"beh",name:"Why Good People Do Bad Things",sess:"Sessions 4 - 5",blurb:"Rest's four stages, moral intensity, rationalization, situational and individual factors, Banaji et al."},
+ {id:"mgmt",name:"Managing Ethics",sess:"Sessions 6 - 7",blurb:"Globalization, four orientations, codes of ethics, ethics committees and reporting lines."},
  {id:"ai",name:"AI & Business Ethics",sess:"Session 8",blurb:"Floridi's agency without intelligence, EU Trustworthy AI principles and the Tesla Autopilot case."},
  {id:"cases",name:"Case Files",sess:"All sessions",blurb:"Apple vs FBI, Volkswagen and cross-case theory application."}
 ];
@@ -937,7 +999,7 @@ FIGS.tree={title:"How the three normative theories fit together",cap:"Utilitaria
   out+=box(10,70,190,48)+tx(105,91,"Consequentialist",{size:13,w:700})+tx(105,108,"judges the outcome",{size:11,fill:"var(--muted)"});
   out+=box(220,70,190,48)+tx(315,91,"Non-consequentialist",{size:13,w:700})+tx(315,108,"judges motives and principles",{size:11,fill:"var(--muted)"});
   out+=ln(105,118,105,148)+ln(315,118,262,148)+ln(315,118,368,148);
-  out+=box(10,148,190,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(105,172,["Utilitarianism","Bentham (act) · Mill (rule)","greatest good, greatest number","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:14,w:700,fill:"var(--ink)"}},17);
+  out+=box(10,148,190,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(105,172,["Utilitarianism","Bentham (act) - Mill (rule)","greatest good, greatest number","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:14,w:700,fill:"var(--ink)"}},17);
   out+=box(212,148,100,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(262,172,["Deontology","Kant","duty, universal law","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:13,w:700,fill:"var(--ink)"}},17);
   out+=box(318,148,96,92,{fill:"var(--warn-soft)",stroke:"var(--warn)"})+lines(366,172,["Virtue ethics","Aristotle","character, habit","tends to relativism"],{size:11,fill:"var(--muted)",first:{size:13,w:700,fill:"var(--ink)"}},17);
   return svgW(420,250,"Tree of normative ethical theories",out)}};
@@ -951,8 +1013,8 @@ FIGS.tests={title:"The three ethical tests",cap:"Each test echoes one normative 
   return svgW(420,224,"Three ethical tests mapped to theories",out)}};
 
 FIGS.wicks={title:"Wicks et al.: three levels of ethics and strategy",cap:"Ethics is not a separate add-on. Firms must manage all three levels (eBay and Cranium are the chapter's examples).",svg:function(){
-  var out=box(5,5,410,250,{fill:"var(--surface)",stroke:"var(--accent)",r:16})+tx(18,26,"Level 3 · Respect for societal standards of conduct",{a:"start",size:12,w:700});
-  out+=box(28,40,364,205,{fill:"var(--accent-soft)",stroke:"var(--accent)",r:14})+tx(42,61,"Level 2 · Principles for stakeholder cooperation",{a:"start",size:12,w:700});
+  var out=box(5,5,410,250,{fill:"var(--surface)",stroke:"var(--accent)",r:16})+tx(18,26,"Level 3 - Respect for societal standards of conduct",{a:"start",size:12,w:700});
+  out+=box(28,40,364,205,{fill:"var(--accent-soft)",stroke:"var(--accent)",r:14})+tx(42,61,"Level 2 - Principles for stakeholder cooperation",{a:"start",size:12,w:700});
   out+=box(52,76,316,158,{fill:"var(--accent)",stroke:"var(--accent)",r:12})+tx(210,130,"Level 1",{size:12,fill:"var(--accent-ink)"})+tx(210,152,"Value proposition",{size:18,w:800,fill:"var(--accent-ink)"})+tx(210,178,"what the firm offers, and to whom",{size:11,fill:"var(--accent-ink)"});
   return svgW(420,260,"Nested circles of three levels",out)}};
 
@@ -1506,7 +1568,7 @@ function header(active){
   var r=rankInfo(),m=Q.filter(isMas).length;
   return '<header class="top"><div class="brand"><h1>'+esc(CONFIG.title)+'</h1><div class="mono">'+esc(CONFIG.subtitle)+'</div></div>'+
    '<div class="stats"><div class="stat"><b class="tnum">'+S.xp+'</b><span>XP</span></div><div class="stat"><b class="tnum">'+S.streak+'</b><span>Streak</span></div><div class="stat"><b class="tnum">'+m+'/'+Q.length+'</b><span>Mastered</span></div></div></header>'+
-   '<nav class="nav" aria-label="Sections"><button data-go="home"'+(active==="home"?' aria-current="page"':'')+'>Zones</button><button data-go="progress"'+(active==="progress"?' aria-current="page"':'')+'>My progress</button><button data-go="learn"'+(active==="learn"?' aria-current="page"':'')+'>Learn</button><button data-go="exams"'+(active==="exams"?' aria-current="page"':'')+'>Mock exams</button><button data-go="diagrams"'+(active==="diagrams"?' aria-current="page"':'')+'>Diagrams</button></nav>'+
+   '<nav class="nav" aria-label="Sections"><button data-go="home"'+(active==="home"?' aria-current="page"':'')+'>Chapters</button><button data-go="learn"'+(active==="learn"?' aria-current="page"':'')+'>Learn</button><button data-go="exams"'+(active==="exams"?' aria-current="page"':'')+'>Mock exams</button><button data-go="progress"'+(active==="progress"?' aria-current="page"':'')+'>My progress</button></nav>'+
    '<div class="rankbar"><div class="rankrow"><strong>'+r.name+'</strong><span class="hint">'+(r.next?r.toGo+' XP to '+r.next:'Top rank reached')+'</span></div><div class="bar"><i style="width:'+r.pct+'%"></i></div></div>';
 }
 function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){var g=b.dataset.go;stopClock();if(g==="home")home();else if(g==="progress")progress();else if(g==="learn")learn();else if(g==="exams")exams();else diagrams()}})}
@@ -1514,7 +1576,7 @@ function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onc
 function home(){
   G=null;view="home";
   var miss=missed().length;
-  var h=header("home")+'<div class="sec-h"><h2>Zones</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
+  var h=header("home")+'<div class="sec-h"><h2>Study Chapters</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
   ZONES.forEach(function(z){
     var all=zQs(z.id),m=mastered(z.id),c={mcq:0,short:0,essay:0};all.forEach(function(q){c[q.t]++});
     h+='<button class="zone" data-z="'+z.id+'"><span class="mono">'+z.sess+'</span><h3>'+z.name+'</h3><p>'+z.blurb+'</p>'+
@@ -1522,7 +1584,7 @@ function home(){
       '<div class="meta"><span>'+c.mcq+' MCQ \u00b7 '+c.short+' short \u00b7 '+c.essay+' essay</span><span class="tnum">'+m+'/'+all.length+'</span></div></button>';
   });
   h+='</div><div class="modes">'+
-   '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every zone.</p></button>'+
+   '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every chapter.</p></button>'+
    '<button class="mode alt" id="essays"><h3>Essay lab</h3><p>All 6 essays, graded one by one against a rubric.</p></button>'+
    '<button class="mode alt" id="traps"><h3>Trap round</h3><p>'+Q.filter(function(q){return q.trick}).length+' trick questions: negations, near-synonyms and combined statements.</p></button>'+
    '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'Nothing to retry yet.')+'</p></button></div>'+
@@ -1546,7 +1608,7 @@ function radar(){
   vals.forEach(function(v,i){var p=pt(i,Math.max(v,0.02));out+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"/>'});
   ZONES.forEach(function(z,i){var a=pt(i,1.28),anc=Math.abs(a[0]-cx)<8?"middle":a[0]>cx?"start":"end";
     out+=tx(a[0],a[1]-2,ZSHORT[z.id],{size:12,w:700,a:anc})+tx(a[0],a[1]+13,pct(vals[i]),{size:11,a:anc,fill:"var(--muted)"})});
-  return svgW(420,300,"Radar chart of mastery in each zone",out);
+  return svgW(420,300,"Radar chart of mastery in each chapter",out);
 }
 
 function progress(){
@@ -1560,7 +1622,7 @@ function progress(){
     '<div class="leg"><span class="g">Mastered</span><span class="b">Needs work</span><span>Not seen</span></div>'+
     (all.right+all.wrong?'<p>Overall you got <b>'+all.right+' right</b> and <b>'+all.wrong+' wrong</b> across all attempts ('+pct(all.right/(all.right+all.wrong))+' accuracy).</p>':'<p class="hint">Answer a few questions and your strengths and gaps show up here.</p>')+
     '<div style="display:grid;gap:8px">'+types.map(function(x){return '<div class="rankrow"><span>'+TYPE_LABEL[x.t]+'</span><span class="tnum mono">'+x.st.mas+'/'+x.st.n+' mastered</span></div><div class="tbar"><i class="g" style="width:'+x.st.mas/x.st.n*100+'%"></i><i class="b" style="width:'+(x.st.att-x.st.mas)/x.st.n*100+'%"></i></div>'}).join("")+'</div></div>'+
-    '<div class="card"><div class="mono">Mastery by zone</div>'+radar()+'</div></div>';
+    '<div class="card"><div class="mono">Mastery by chapter</div>'+radar()+'</div></div>';
   var weak=wk.filter(function(t){return t.st.att&&t.st.ratio<0.8});
   var focus=weak.length?'<div class="focus"><b>Focus next:</b> '+weak.slice(0,3).map(function(t){return esc(t.name)+' ('+pct(t.st.ratio)+' of tried questions mastered)'}).join(', ')+'.</div>':
     (all.att?'<div class="focus"><b>Nice.</b> Nothing you have tried is below 80%. Cover the questions you have not seen yet.</div>':'');
@@ -1575,7 +1637,7 @@ function progress(){
   h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
   var recent=S.log.slice(-10).reverse();
   h+='<div class="card"><div class="sec-h"><h2>Recent answers</h2><span class="hint">Your last '+recent.length+'</span></div>';
-  if(!recent.length)h+='<p class="hint">No answers yet. Open a zone to start.</p>';
+  if(!recent.length)h+='<p class="hint">No answers yet. Open a chapter to start.</p>';
   else h+='<ul class="act">'+recent.map(function(l){var q=qOf(l.id);if(!q)return "";var k=l.s>=0.7?"y":l.s>=0.4?"p":"n";
     return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(q.q.length>110?q.q.slice(0,108)+"...":q.q)+'<div class="sub hint">'+esc(q.topic)+' \u00b7 '+TYPE_LABEL[q.t]+(q.t!=="mcq"?' \u00b7 '+Math.round(l.s*100)+'%':'')+'</div></span><span class="hint">'+ago(l.t)+'</span></li>'}).join("")+'</ul>';
   h+='</div><div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
@@ -1705,7 +1767,7 @@ function summary(){
     h+='<div class="zrow"><span>'+esc(zname(z))+'</span><span class="tnum mono">'+p+'%</span><div class="bar"><i style="width:'+p+'%"></i></div></div>'});
   h+='</div>';
   if(wrong.length)h+='<div><div class="mono" style="margin-bottom:6px">To review ('+wrong.length+')</div><ul class="imp">'+wrong.map(function(q){return '<li>'+esc(q.topic)+': '+esc(q.q.length>100?q.q.slice(0,98)+"...":q.q)+'</li>'}).join("")+'</ul></div>';
-  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to zones</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
+  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to chapters</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
   app.innerHTML=h;wireNav();
   $("#prog").onclick=progress;$("#home").onclick=home;if(G.mock)$("#again").onclick=startMock;
   var rd=$("#redo");if(rd)rd.onclick=function(){start("Retry misses",wrong)};

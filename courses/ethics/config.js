@@ -2,7 +2,7 @@
 var CONFIG={
   key:"ethics-arena-v1",                       // localStorage key (kept identical so existing progress still loads)
   title:"Ethics Arena",
-  subtitle:"Ethics & CSR · IÉSEG Paris · exam prep",
+  subtitle:"Business Ethics & Governance - Academic Exam Prep",
   course:"Business Ethics & CSR Course",   // used in the AI examiner prompt
   examName:"Ethics & CSR",                     // heading on the mock exam paper
   examFormat:"the 2025 annals",                // "written in the format of ..."

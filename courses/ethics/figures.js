@@ -36,7 +36,7 @@ FIGS.tree={title:"How the three normative theories fit together",cap:"Utilitaria
   out+=box(10,70,190,48)+tx(105,91,"Consequentialist",{size:13,w:700})+tx(105,108,"judges the outcome",{size:11,fill:"var(--muted)"});
   out+=box(220,70,190,48)+tx(315,91,"Non-consequentialist",{size:13,w:700})+tx(315,108,"judges motives and principles",{size:11,fill:"var(--muted)"});
   out+=ln(105,118,105,148)+ln(315,118,262,148)+ln(315,118,368,148);
-  out+=box(10,148,190,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(105,172,["Utilitarianism","Bentham (act) · Mill (rule)","greatest good, greatest number","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:14,w:700,fill:"var(--ink)"}},17);
+  out+=box(10,148,190,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(105,172,["Utilitarianism","Bentham (act) - Mill (rule)","greatest good, greatest number","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:14,w:700,fill:"var(--ink)"}},17);
   out+=box(212,148,100,92,{fill:"var(--accent-soft)",stroke:"var(--accent)"})+lines(262,172,["Deontology","Kant","duty, universal law","tends to absolutism"],{size:11,fill:"var(--muted)",first:{size:13,w:700,fill:"var(--ink)"}},17);
   out+=box(318,148,96,92,{fill:"var(--warn-soft)",stroke:"var(--warn)"})+lines(366,172,["Virtue ethics","Aristotle","character, habit","tends to relativism"],{size:11,fill:"var(--muted)",first:{size:13,w:700,fill:"var(--ink)"}},17);
   return svgW(420,250,"Tree of normative ethical theories",out)}};
@@ -50,8 +50,8 @@ FIGS.tests={title:"The three ethical tests",cap:"Each test echoes one normative 
   return svgW(420,224,"Three ethical tests mapped to theories",out)}};
 
 FIGS.wicks={title:"Wicks et al.: three levels of ethics and strategy",cap:"Ethics is not a separate add-on. Firms must manage all three levels (eBay and Cranium are the chapter's examples).",svg:function(){
-  var out=box(5,5,410,250,{fill:"var(--surface)",stroke:"var(--accent)",r:16})+tx(18,26,"Level 3 · Respect for societal standards of conduct",{a:"start",size:12,w:700});
-  out+=box(28,40,364,205,{fill:"var(--accent-soft)",stroke:"var(--accent)",r:14})+tx(42,61,"Level 2 · Principles for stakeholder cooperation",{a:"start",size:12,w:700});
+  var out=box(5,5,410,250,{fill:"var(--surface)",stroke:"var(--accent)",r:16})+tx(18,26,"Level 3 - Respect for societal standards of conduct",{a:"start",size:12,w:700});
+  out+=box(28,40,364,205,{fill:"var(--accent-soft)",stroke:"var(--accent)",r:14})+tx(42,61,"Level 2 - Principles for stakeholder cooperation",{a:"start",size:12,w:700});
   out+=box(52,76,316,158,{fill:"var(--accent)",stroke:"var(--accent)",r:12})+tx(210,130,"Level 1",{size:12,fill:"var(--accent-ink)"})+tx(210,152,"Value proposition",{size:18,w:800,fill:"var(--accent-ink)"})+tx(210,178,"what the firm offers, and to whom",{size:11,fill:"var(--accent-ink)"});
   return svgW(420,260,"Nested circles of three levels",out)}};
 

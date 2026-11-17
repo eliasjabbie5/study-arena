@@ -1,7 +1,7 @@
 var CONFIG={
   key:"template-arena-v1",
   title:"Template Arena",
-  subtitle:"Sample course · template",
+  subtitle:"Sample course - template",
   course:"Sample course",
   examName:"Sample course",
   examFormat:"a sample paper",

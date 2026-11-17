@@ -136,7 +136,7 @@ function header(active){
   var r=rankInfo(),m=Q.filter(isMas).length;
   return '<header class="top"><div class="brand"><h1>'+esc(CONFIG.title)+'</h1><div class="mono">'+esc(CONFIG.subtitle)+'</div></div>'+
    '<div class="stats"><div class="stat"><b class="tnum">'+S.xp+'</b><span>XP</span></div><div class="stat"><b class="tnum">'+S.streak+'</b><span>Streak</span></div><div class="stat"><b class="tnum">'+m+'/'+Q.length+'</b><span>Mastered</span></div></div></header>'+
-   '<nav class="nav" aria-label="Sections"><button data-go="home"'+(active==="home"?' aria-current="page"':'')+'>Zones</button><button data-go="progress"'+(active==="progress"?' aria-current="page"':'')+'>My progress</button><button data-go="learn"'+(active==="learn"?' aria-current="page"':'')+'>Learn</button><button data-go="exams"'+(active==="exams"?' aria-current="page"':'')+'>Mock exams</button><button data-go="diagrams"'+(active==="diagrams"?' aria-current="page"':'')+'>Diagrams</button></nav>'+
+   '<nav class="nav" aria-label="Sections"><button data-go="home"'+(active==="home"?' aria-current="page"':'')+'>Chapters</button><button data-go="learn"'+(active==="learn"?' aria-current="page"':'')+'>Learn</button><button data-go="exams"'+(active==="exams"?' aria-current="page"':'')+'>Mock exams</button><button data-go="progress"'+(active==="progress"?' aria-current="page"':'')+'>My progress</button></nav>'+
    '<div class="rankbar"><div class="rankrow"><strong>'+r.name+'</strong><span class="hint">'+(r.next?r.toGo+' XP to '+r.next:'Top rank reached')+'</span></div><div class="bar"><i style="width:'+r.pct+'%"></i></div></div>';
 }
 function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){var g=b.dataset.go;stopClock();if(g==="home")home();else if(g==="progress")progress();else if(g==="learn")learn();else if(g==="exams")exams();else diagrams()}})}
@@ -144,7 +144,7 @@ function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onc
 function home(){
   G=null;view="home";
   var miss=missed().length;
-  var h=header("home")+'<div class="sec-h"><h2>Zones</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
+  var h=header("home")+'<div class="sec-h"><h2>Study Chapters</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
   ZONES.forEach(function(z){
     var all=zQs(z.id),m=mastered(z.id),c={mcq:0,short:0,essay:0};all.forEach(function(q){c[q.t]++});
     h+='<button class="zone" data-z="'+z.id+'"><span class="mono">'+z.sess+'</span><h3>'+z.name+'</h3><p>'+z.blurb+'</p>'+
@@ -152,7 +152,7 @@ function home(){
       '<div class="meta"><span>'+c.mcq+' MCQ \u00b7 '+c.short+' short \u00b7 '+c.essay+' essay</span><span class="tnum">'+m+'/'+all.length+'</span></div></button>';
   });
   h+='</div><div class="modes">'+
-   '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every zone.</p></button>'+
+   '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every chapter.</p></button>'+
    '<button class="mode alt" id="essays"><h3>Essay lab</h3><p>All 6 essays, graded one by one against a rubric.</p></button>'+
    '<button class="mode alt" id="traps"><h3>Trap round</h3><p>'+Q.filter(function(q){return q.trick}).length+' trick questions: negations, near-synonyms and combined statements.</p></button>'+
    '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'Nothing to retry yet.')+'</p></button></div>'+
@@ -176,7 +176,7 @@ function radar(){
   vals.forEach(function(v,i){var p=pt(i,Math.max(v,0.02));out+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4" fill="var(--accent)"/>'});
   ZONES.forEach(function(z,i){var a=pt(i,1.28),anc=Math.abs(a[0]-cx)<8?"middle":a[0]>cx?"start":"end";
     out+=tx(a[0],a[1]-2,ZSHORT[z.id],{size:12,w:700,a:anc})+tx(a[0],a[1]+13,pct(vals[i]),{size:11,a:anc,fill:"var(--muted)"})});
-  return svgW(420,300,"Radar chart of mastery in each zone",out);
+  return svgW(420,300,"Radar chart of mastery in each chapter",out);
 }
 
 function progress(){
@@ -190,7 +190,7 @@ function progress(){
     '<div class="leg"><span class="g">Mastered</span><span class="b">Needs work</span><span>Not seen</span></div>'+
     (all.right+all.wrong?'<p>Overall you got <b>'+all.right+' right</b> and <b>'+all.wrong+' wrong</b> across all attempts ('+pct(all.right/(all.right+all.wrong))+' accuracy).</p>':'<p class="hint">Answer a few questions and your strengths and gaps show up here.</p>')+
     '<div style="display:grid;gap:8px">'+types.map(function(x){return '<div class="rankrow"><span>'+TYPE_LABEL[x.t]+'</span><span class="tnum mono">'+x.st.mas+'/'+x.st.n+' mastered</span></div><div class="tbar"><i class="g" style="width:'+x.st.mas/x.st.n*100+'%"></i><i class="b" style="width:'+(x.st.att-x.st.mas)/x.st.n*100+'%"></i></div>'}).join("")+'</div></div>'+
-    '<div class="card"><div class="mono">Mastery by zone</div>'+radar()+'</div></div>';
+    '<div class="card"><div class="mono">Mastery by chapter</div>'+radar()+'</div></div>';
   var weak=wk.filter(function(t){return t.st.att&&t.st.ratio<0.8});
   var focus=weak.length?'<div class="focus"><b>Focus next:</b> '+weak.slice(0,3).map(function(t){return esc(t.name)+' ('+pct(t.st.ratio)+' of tried questions mastered)'}).join(', ')+'.</div>':
     (all.att?'<div class="focus"><b>Nice.</b> Nothing you have tried is below 80%. Cover the questions you have not seen yet.</div>':'');
@@ -205,7 +205,7 @@ function progress(){
   h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
   var recent=S.log.slice(-10).reverse();
   h+='<div class="card"><div class="sec-h"><h2>Recent answers</h2><span class="hint">Your last '+recent.length+'</span></div>';
-  if(!recent.length)h+='<p class="hint">No answers yet. Open a zone to start.</p>';
+  if(!recent.length)h+='<p class="hint">No answers yet. Open a chapter to start.</p>';
   else h+='<ul class="act">'+recent.map(function(l){var q=qOf(l.id);if(!q)return "";var k=l.s>=0.7?"y":l.s>=0.4?"p":"n";
     return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(q.q.length>110?q.q.slice(0,108)+"...":q.q)+'<div class="sub hint">'+esc(q.topic)+' \u00b7 '+TYPE_LABEL[q.t]+(q.t!=="mcq"?' \u00b7 '+Math.round(l.s*100)+'%':'')+'</div></span><span class="hint">'+ago(l.t)+'</span></li>'}).join("")+'</ul>';
   h+='</div><div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
@@ -335,7 +335,7 @@ function summary(){
     h+='<div class="zrow"><span>'+esc(zname(z))+'</span><span class="tnum mono">'+p+'%</span><div class="bar"><i style="width:'+p+'%"></i></div></div>'});
   h+='</div>';
   if(wrong.length)h+='<div><div class="mono" style="margin-bottom:6px">To review ('+wrong.length+')</div><ul class="imp">'+wrong.map(function(q){return '<li>'+esc(q.topic)+': '+esc(q.q.length>100?q.q.slice(0,98)+"...":q.q)+'</li>'}).join("")+'</ul></div>';
-  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to zones</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
+  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to chapters</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
   app.innerHTML=h;wireNav();
   $("#prog").onclick=progress;$("#home").onclick=home;if(G.mock)$("#again").onclick=startMock;
   var rd=$("#redo");if(rd)rd.onclick=function(){start("Retry misses",wrong)};
