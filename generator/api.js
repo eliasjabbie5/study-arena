@@ -159,31 +159,56 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Calling Claude (Sonnet 3.5) with AACSB Professor Blueprint...", 40);
-      var res = await fetch("https://api.anthropic.com/v1/messages", {
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-          "anthropic-dangerous-direct-browser-access": "true"
-        },
-        body: JSON.stringify({
-          model: "claude-3-5-sonnet-20241022",
-          max_tokens: 8192,
-          system: this.MASTER_PROMPT,
-          messages: [
-            { role: "user", content: userContent }
-          ]
-        })
-      });
+      var selectedModel = localStorage.getItem("sa_model_claude") || "claude-3-5-haiku-latest";
+      var candidateModels = [selectedModel, "claude-3-5-haiku-latest", "claude-3-5-sonnet-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-20240620"];
+      // Deduplicate
+      candidateModels = Array.from(new Set(candidateModels));
 
-      if (!res.ok) {
-        var errBody = await res.text();
-        throw new Error("Claude API error (" + res.status + "): " + errBody);
+      var lastError = null;
+      for (var mIdx = 0; mIdx < candidateModels.length; mIdx++) {
+        var modelToTry = candidateModels[mIdx];
+        onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 40);
+
+        try {
+          var res = await fetch("https://api.anthropic.com/v1/messages", {
+            method: "POST",
+            headers: {
+              "x-api-key": apiKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json",
+              "anthropic-dangerous-direct-browser-access": "true"
+            },
+            body: JSON.stringify({
+              model: modelToTry,
+              max_tokens: 8192,
+              system: this.MASTER_PROMPT,
+              messages: [
+                { role: "user", content: userContent }
+              ]
+            })
+          });
+
+          if (!res.ok) {
+            var errBody = await res.text();
+            lastError = "Claude API (" + modelToTry + " - HTTP " + res.status + "): " + errBody;
+            console.warn("Model " + modelToTry + " failed, attempting fallback...", errBody);
+            // If it's a 404 model not found, try the next model candidate
+            if (res.status === 404) continue;
+            throw new Error(lastError);
+          }
+
+          var jsonRes = await res.json();
+          rawResponse = jsonRes.content[0].text;
+          localStorage.setItem("sa_model_claude", modelToTry);
+          break;
+        } catch (callErr) {
+          if (mIdx === candidateModels.length - 1) throw callErr;
+        }
       }
-      var jsonRes = await res.json();
-      rawResponse = jsonRes.content[0].text;
+
+      if (!rawResponse) {
+        throw new Error(lastError || "Failed to generate with Claude.");
+      }
 
     } else if (provider === "openai") {
       onProgress("Calling OpenAI (GPT-4o) with AACSB Professor Blueprint...", 40);
