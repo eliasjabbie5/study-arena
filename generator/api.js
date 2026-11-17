@@ -294,11 +294,14 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       throw new Error("HTTP 401 on [claude-sonnet-4-6]: {\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"invalid x-api-key\"}}");
     }
     if (mockMode === "ok") {
-      onProgress("Reading syllabus & lecture notes...", 15);
-      await new Promise(function(r) { setTimeout(r, 250); });
-      onProgress("Creating tools & distractor traps...", 45);
-      await new Promise(function(r) { setTimeout(r, 350); });
-      onProgress("Compiling offline Study Arena...", 92);
+      onProgress("Reading syllabus & lecture notes...", 18);
+      await new Promise(function(r) { setTimeout(r, 700); });
+      onProgress("Creating tools & distractor traps...", 48);
+      await new Promise(function(r) { setTimeout(r, 900); });
+      onProgress("Synthesizing scenario-based arenas...", 76);
+      await new Promise(function(r) { setTimeout(r, 800); });
+      onProgress("Compiling offline Study Arena...", 95);
+      await new Promise(function(r) { setTimeout(r, 600); });
       var mockData = {
         config: {
           key: "corporate-finance-wacc",
