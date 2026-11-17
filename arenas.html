@@ -1162,9 +1162,9 @@
     </div>
   </div>
 
-  <script src="generator/engine_bundle.js?v=2.10"></script>
-  <script src="generator/compiler.js?v=2.10"></script>
-  <script src="generator/api.js?v=2.10"></script>
+  <script src="generator/engine_bundle.js?v=2.11"></script>
+  <script src="generator/compiler.js?v=2.11"></script>
+  <script src="generator/api.js?v=2.11"></script>
 
 <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
@@ -1839,6 +1839,63 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
   }
 }
+
+    // Aliases and bridge handlers for editorial UI
+    function generateArena() {
+      startGeneration();
+    }
+
+    function switchTab(mode) {
+      setInputMode(mode);
+    }
+
+    function switchKeyProvider(prov) {
+      selectProvider(prov);
+    }
+
+    function saveApiKey() {
+      saveKeySettings();
+    }
+
+    function clearApiKey() {
+      clearKeySettings();
+    }
+
+    function clearKeySettings() {
+      localStorage.removeItem("study_arena_key_" + currentProvider);
+      updateKeyUI();
+      closeKeyModal();
+    }
+
+    function loadPreloadedMock() {
+      var notes = document.getElementById("notes-input");
+      if (notes) {
+        notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
+      }
+      var url = new URL(window.location.href);
+      url.searchParams.set("mock", "ok");
+      window.history.replaceState({}, "", url.toString());
+      startGeneration();
+    }
+
+    // Carousel button listeners
+    var curCardIdx = 0;
+    var track = document.getElementById("exam-carousel-track");
+    var cPrev = document.getElementById("carousel-prev");
+    var cNext = document.getElementById("carousel-next");
+    if (cPrev && cNext && track) {
+      cPrev.onclick = function() {
+        curCardIdx = Math.max(0, curCardIdx - 1);
+        var card = track.children[curCardIdx];
+        if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      };
+      cNext.onclick = function() {
+        curCardIdx = Math.min(track.children.length - 1, curCardIdx + 1);
+        var card = track.children[curCardIdx];
+        if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      };
+    }
+
 </script>
 </body>
 </html>
