@@ -237,7 +237,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
             },
             body: JSON.stringify({
               model: modelToTry,
-              max_tokens: 8192,
+              max_tokens: 4096,
               system: this.MASTER_PROMPT,
               messages: [
                 { role: "user", content: userContent }
@@ -248,8 +248,11 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
           if (!res.ok) {
             var errBody = await res.text();
             lastError = "Claude API (" + modelToTry + " - HTTP " + res.status + "): " + errBody;
-            console.warn("Model " + modelToTry + " failed (" + res.status + "), trying next available model...", errBody);
-            if (res.status === 404) continue;
+            console.error(lastError);
+            // Only retry on 404 model not found; if it's 400, 401, 429, etc., fail fast with clear message
+            if (res.status === 404) {
+              continue;
+            }
             throw new Error(lastError);
           }
 
@@ -258,7 +261,10 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
           localStorage.setItem("sa_model_claude", modelToTry);
           break;
         } catch (callErr) {
-          if (mIdx === candidateModels.length - 1) throw callErr;
+          // If not a 404 retry, throw immediately
+          if (!callErr.message.includes("404") || mIdx === candidateModels.length - 1) {
+            throw callErr;
+          }
         }
       }
 
