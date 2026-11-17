@@ -1,3 +1,25 @@
+
+function computeDecayQueue(){
+  var now=Date.now(),queue=[];
+  Q.forEach(function(q){
+    var d=S.done[q.id];
+    if(d){
+      var days=Math.max(0,(now-(d.t||now))/(1000*60*60*24));
+      var stability=Math.max(1,(d.r||1)*2+(d.l>=0.7?3:1));
+      var retention=Math.exp(-days/stability);
+      if(retention<0.75||d.l<0.7){
+        queue.push({
+          q:q,
+          retention:Math.round(retention*100),
+          reason:d.l<0.7?"Needs reinforcement":"Decayed to "+Math.round(retention*100)+"% retention"
+        });
+      }
+    }
+  });
+  queue.sort(function(a,b){return a.retention-b.retention});
+  return queue;
+}
+
 function figHTML(q,stimulus){
   var f=FIGS[q.fig];if(!f)return "";var o=stimulus?(q.figOpt||{}):{hl:(q.figOpt&&q.figOpt.hl)};
   return '<figure class="fig">'+f.svg(o)+'<figcaption><b>'+esc(f.title)+'</b>. '+esc(f.cap)+'</figcaption></figure>';
@@ -144,7 +166,23 @@ function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onc
 function home(){
   G=null;view="home";
   var miss=missed().length;
-  var h=header("home")+'<div class="sec-h"><h2>Study Chapters</h2><span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
+  var decay=computeDecayQueue();
+  var decayCard="";
+  if(decay.length>0){
+    decayCard='<div class="retention-card">' +
+      '<div style="flex:1; min-width:260px;">' +
+        '<div class="mono" style="color:var(--accent); margin-bottom:4px; font-weight:600; font-size:11px;">EBBINGHAUS SPACED RETENTION SCHEDULER</div>' +
+        '<h3 style="font-family:var(--f-serif); font-size:20px; margin:0 0 6px; font-weight:500; color:var(--text-ink);">Daily Spaced Retention Dose</h3>' +
+        '<p style="margin:0; font-size:13px; color:var(--text-steel); line-height:1.5;">' +
+          decay.length + ' syllabus concepts have dropped below 75% retention since your last practice session. Clear these to maintain peak exam readiness.' +
+        '</p>' +
+      '</div>' +
+      '<button type="button" class="btn" id="start-decay-dose" style="white-space:nowrap; padding:10px 20px;">' +
+        'Start Daily Dose (' + Math.min(10, decay.length) + ' Questions) &rarr;' +
+      '</button>' +
+    '</div>';
+  }
+  var h=header("home")+decayCard+'<div class="sec-h"><h2>Study Chapters</h2>'<span class="hint">Mastered means your latest attempt scored 70% or more</span></div><div class="zones">';
   ZONES.forEach(function(z){
     var all=zQs(z.id),m=mastered(z.id),c={mcq:0,short:0,essay:0};all.forEach(function(q){c[q.t]++});
     h+='<button class="zone" data-z="'+z.id+'"><span class="mono">'+z.sess+'</span><h3>'+z.name+'</h3><p>'+z.blurb+'</p>'+
@@ -159,6 +197,8 @@ function home(){
    '<div class="foot"><span>Essays and short answers are evaluated against a rubric built from your notes. Progress is saved locally in your browser.</span></div>';
   app.innerHTML=h;wireNav();
   app.querySelectorAll(".zone").forEach(function(b){b.onclick=function(){startZone(b.dataset.z)}});
+  var sdb=$("#start-decay-dose");
+  if(sdb)sdb.onclick=function(){start("Daily Spaced Retention Dose",decay.slice(0,10).map(function(item){return item.q}))};
   $("#mock").onclick=startMock;
   $("#essays").onclick=function(){start("Written Case & Essay Lab",Q.filter(function(q){return q.t==="essay"}))};
   $("#traps").onclick=function(){start("Distractor Forensics",shuffle(Q.filter(function(q){return q.trick})).slice(0,12))};
@@ -238,13 +278,29 @@ function startMock(){
 }
 function start(title,list,mock){
   if(!list.length){home();return}
-  G={title:title,list:list,i:0,res:[],mock:!!mock,sess:0};view="play";
+  G={title:title,list:list,i:0,res:[],mock:!!mock,sess:0,startTime:Date.now()};view="play";
   question();
 }
 
 function question(){
   var q=G.list[G.i],n=G.list.length;
-  var top='<div class="bar-top"><button class="back" id="back">Leave</button><div class="prog"><span class="mono tnum">'+(G.i+1)+' / '+n+'</span><div class="bar"><i style="width:'+Math.round(G.i/n*100)+'%"></i></div></div><span class="mono">'+esc(G.title)+'</span></div>';
+  var pacePill="";
+  if(G.mock&&G.startTime){
+    var paceByType={mcq:75,short:180,essay:600};
+    var expectedSec=0;
+    for(var k=0;k<G.i;k++){expectedSec+=(paceByType[G.list[k].t]||90)}
+    var elapsedSec=Math.round((Date.now()-G.startTime)/1000);
+    var deltaSec=expectedSec-elapsedSec;
+    if(G.i>0){
+      var pMin=Math.floor(Math.abs(deltaSec)/60);
+      var pSec=Math.abs(deltaSec)%60;
+      var timeStr=(pMin>0?pMin+"m ":"")+pSec+"s";
+      var paceText=deltaSec>=0?"+"+timeStr+" ahead of pace":"-"+timeStr+" behind pace";
+      var paceCls=deltaSec>=0?"good":"warn";
+      pacePill='<span class="pace-pill '+paceCls+'">PACE: '+paceText+'</span>';
+    }
+  }
+  var top='<div class="bar-top"><button class="back" id="back">Leave</button><div class="prog"><span class="mono tnum">'+(G.i+1)+' / '+n+'</span><div class="bar"><i style="width:'+Math.round(G.i/n*100)+'%"></i></div></div>'+pacePill+'<span class="mono">'+esc(G.title)+'</span></div>';
   var chips='<div class="chips"><span class="chip t-'+q.t+'">'+TYPE_LABEL[q.t]+'</span><span class="chip">'+esc(q.topic)+'</span><span class="chip">up to '+XPMAX[q.t]+' XP</span></div>';
   var stim=q.fig&&q.figPos==="before"?figHTML(q,true):"";
   var body;
@@ -310,9 +366,29 @@ async function answerText(q,ans){
   var missHTML=missed_.length?'<div><div class="mono" style="margin-bottom:6px">What was missing</div><ul class="imp">'+missed_.map(function(r){return '<li>'+esc(r.p)+'</li>'}).join("")+'</ul></div>':"";
   var deepHTML=g.deep?'<div class="fb mid"><p><b>In depth.</b> '+esc(g.deep)+'</p></div>':"";
   var imp=g.improve&&g.improve.length?'<div><div class="mono" style="margin-bottom:6px">To improve</div><ul class="imp">'+g.improve.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':"";
+  var wordCount=(ans.trim().match(/\S+/g)||[]).length;
+  var splitHeatmap='<div class="split-eval">' +
+    '<div class="split-panel">' +
+      '<div class="split-title">' +
+        '<span>Your Submitted Response</span>' +
+        '<span class="hint tnum">' + wordCount + ' words</span>' +
+      '</div>' +
+      '<div class="split-content student-content">' + esc(ans) + '</div>' +
+    '</div>' +
+    '<div class="split-panel">' +
+      '<div class="split-title">' +
+        '<span>Model Formulation &amp; Rubric</span>' +
+        '<span class="chip ' + cls + '">' + hit + ' of ' + q.rub.length + ' Points Hit</span>' +
+      '</div>' +
+      '<div class="split-content model-content">' + esc(q.model) + '</div>' +
+      '<div style="margin-top:10px;"><strong style="font-size:11px; font-family:var(--f-mono); text-transform:uppercase; color:var(--text-steel); display:block; margin-bottom:6px;">Rubric Evaluation Criteria</strong>' + rub + '</div>' +
+    '</div>' +
+  '</div>';
+
   $("#after").innerHTML='<div class="grade"><div class="gh">'+ring+'<div style="min-width:0;flex:1"><div class="src">'+(g.src==="ai"?"Rubric evaluation":"Keyword check (offline)")+'</div><strong style="font-family:var(--f-display);font-size:20px">'+hit+' of '+q.rub.length+' rubric points'+(gain?' \u00b7 +'+gain+' points':'')+'</strong></div></div>'+
-   '<div class="fb '+cls+'"><p>'+esc(g.feedback)+'</p>'+(aiNote&&g.src!=="ai"?'<p class="hint">'+esc(aiNote)+'</p>':'')+'</div>'+rub+missHTML+deepHTML+imp+
-   '<details class="model"'+(s<0.7?' open':'')+'><summary>'+(s<0.7?'Model answer':'Show model answer')+(q.fig?' and diagram':'')+'</summary><p>'+esc(q.model)+'</p>'+(q.fig?'<div style="margin-top:12px">'+figHTML(q,false)+'</div>':'')+'</details>'+
+   '<div class="fb '+cls+'"><p>'+esc(g.feedback)+'</p>'+(aiNote&&g.src!=="ai"?'<p class="hint">'+esc(aiNote)+'</p>':'')+'</div>'+
+   splitHeatmap+missHTML+deepHTML+imp+
+   (q.fig?'<div style="margin-top:12px">'+figHTML(q,false)+'</div>':'')+
    '<div class="row"><button class="btn ghost" id="retry">Rewrite this answer</button><span></span></div>'+nextBtn()+'</div>';
   aiNote="";
   $("#retry").onclick=function(){G.res.pop();ta.readOnly=false;sb.hidden=false;sb.disabled=false;$("#after").innerHTML="";ta.focus()};

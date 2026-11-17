@@ -1164,7 +1164,57 @@
       font-size: 14px;
     }
 
-  </style>
+  
+    /* Multi-Document Upload Badges */
+    .attached-doc-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-family: var(--f-mono);
+      color: var(--text-ink);
+    }
+    .attached-doc-chip .remove-doc {
+      cursor: pointer;
+      color: var(--text-steel);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+      transition: color 150ms ease;
+    }
+    .attached-doc-chip .remove-doc:hover {
+      color: var(--trap-danger-text);
+    }
+
+    /* Notification Toast */
+    .app-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text-ink);
+      color: var(--bg-canvas);
+      padding: 12px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-family: var(--f-body);
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 99999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 300ms var(--ease-out), opacity 300ms ease;
+      pointer-events: none;
+    }
+    .app-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+</style>
 </head>
 <body>
 
@@ -1398,25 +1448,33 @@
             </div>
           </div>
 
-          <div class="mode-tabs">
-            <button type="button" class="mode-tab-btn active" id="tab-mode-upload" onclick="switchTab('upload')">Upload Course PDF</button>
-            <button type="button" class="mode-tab-btn" id="tab-mode-paste" onclick="switchTab('paste')">Paste Notes or Transcripts</button>
+          <!-- UNIFIED MULTI-DOCUMENT & LECTURE NOTES WORKSPACE -->
+          <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()" style="cursor:pointer;">
+            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="display:none" onchange="handleFileSelect(event)">
+            <div style="font-size:28px; margin-bottom:8px; color:var(--accent-cta);">&uarr;</div>
+            <div style="font-weight:600; font-size:16px; margin-bottom:4px; color:var(--text-ink);">Drop course PDFs, slide decks, or past exams here</div>
+            <div style="font-size:13px; color:var(--text-steel);">Upload multiple files simultaneously. Extracted directly in browser memory.</div>
+            <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
           </div>
 
-          <!-- UPLOAD PANE -->
-          <div id="pane-upload">
-            <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()">
-              <input type="file" id="file-input" accept=".pdf" style="display:none" onchange="handleFileSelect(event)">
-              <div style="font-size:24px; margin-bottom:8px; color:var(--text-steel);">&uarr;</div>
-              <div style="font-weight:600; font-size:15px; margin-bottom:4px;">Drop lecture slide PDF or course packet here</div>
-              <div style="font-size:13px; color:var(--text-steel);">Extracted directly in browser memory (Client-side privacy). Up to 80 pages.</div>
-              <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
+          <!-- ATTACHED DOCUMENTS LIST -->
+          <div id="attached-docs-container" style="display:none; margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; color:var(--text-steel); font-weight:600;">ATTACHED COURSE MATERIALS</span>
+              <span class="mono" id="attached-stats-badge" style="font-size:11px; color:var(--accent-cta);">0 documents</span>
             </div>
+            <div id="attached-docs-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
           </div>
 
-          <!-- PASTE PANE -->
-          <div id="pane-paste" style="display:none;">
-            <textarea class="notes-textarea" id="notes-input" placeholder="Paste lecture slide transcripts, syllabus bullet points, case summaries, or textbook chapters here..."></textarea>
+          <!-- SIMULTANEOUS LECTURE NOTES & TRANSCRIPTS TEXTBOX -->
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label for="notes-input" style="font-weight:600; font-size:13px; color:var(--text-ink);">
+                Supplementary Lecture Notes, Transcripts &amp; Focus Areas (Optional)
+              </label>
+              <span class="mono" id="notes-word-count" style="font-size:11px; color:var(--text-steel);">0 words</span>
+            </div>
+            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide transcripts, seminar notes, professor exam hints, or specific case rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
           </div>
 
           <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
@@ -1496,9 +1554,15 @@
             <h2>Saved Study Arenas</h2>
             <p>All previously generated courses stored locally on this machine.</p>
           </div>
-          <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
-            + Create New Arena
-          </button>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
+              &uarr; Import Shared Arena
+            </button>
+            <input type="file" id="import-arena-file" accept=".json,.html" style="display:none" onchange="handleImportArenaFile(event)">
+            <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
+              + Create New Arena
+            </button>
+          </div>
         </div>
 
         <div id="saved-arenas-container">
@@ -2062,38 +2126,238 @@ if (modal) modal.classList.add("open");
       if (f) handleFileSelect({ target: { files: [f] } });
     });
 
-    async function handleFileSelect(event) {
-      var file = event.target.files[0];
-      if (!file) return;
-      var dzEl = document.getElementById("dropzone");
-      var nameEl = document.getElementById("dz-filename");
-      nameEl.textContent = "Reading " + file.name + "...";
+    var uploadedFiles = [];
 
-      if (file.name.toLowerCase().endsWith(".pdf")) {
+    function renderAttachedDocsList() {
+      var container = document.getElementById("attached-docs-container");
+      var listEl = document.getElementById("attached-docs-list");
+      var statsBadge = document.getElementById("attached-stats-badge");
+      var dzEl = document.getElementById("dropzone");
+      if (!container || !listEl) return;
+
+      if (uploadedFiles.length === 0) {
+        container.style.display = "none";
+        listEl.innerHTML = "";
+        if (dzEl) dzEl.classList.remove("loaded");
+        return;
+      }
+
+      container.style.display = "block";
+      if (dzEl) dzEl.classList.add("loaded");
+      var totalWords = 0;
+      var html = "";
+      for (var i = 0; i < uploadedFiles.length; i++) {
+        var f = uploadedFiles[i];
+        totalWords += (f.words || 0);
+        html += '<div class="attached-doc-chip">' +
+          '<span>' + escapeHtml(f.name) + ' (' + (f.pages ? f.pages + ' pages &middot; ' : '') + f.words + ' words)</span>' +
+          '<span class="remove-doc" onclick="removeAttachedDoc(' + i + ')" title="Remove document">&times;</span>' +
+        '</div>';
+      }
+      listEl.innerHTML = html;
+      if (statsBadge) {
+        statsBadge.textContent = uploadedFiles.length + " doc" + (uploadedFiles.length > 1 ? "s" : "") + " &middot; " + totalWords.toLocaleString() + " words extracted";
+      }
+    }
+
+    function removeAttachedDoc(index) {
+      if (index >= 0 && index < uploadedFiles.length) {
+        uploadedFiles.splice(index, 1);
+        renderAttachedDocsList();
+      }
+    }
+
+    async function processIncomingFile(file) {
+      if (!file) return;
+      var name = file.name || "Untitled";
+      var fullText = "";
+      var pages = 1;
+
+      if (name.toLowerCase().endsWith(".pdf")) {
         try {
           var arrayBuffer = await file.arrayBuffer();
           var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
-          var fullText = "";
+          pages = pdf.numPages;
           for (var i = 1; i <= pdf.numPages; i++) {
             var page = await pdf.getPage(i);
             var content = await page.getTextContent();
-            var strings = content.items.map(function (item) { return item.str; });
-            fullText += "\n--- Slide / Page " + i + " ---\n" + strings.join(" ");
+            var strings = content.items.map(function(item) { return item.str; });
+            fullText += "\n--- " + name + " (Page " + i + ") ---\n" + strings.join(" ");
           }
-          document.getElementById("notes-input").value = fullText;
-          dzEl.classList.add("loaded");
-          nameEl.textContent = "Ready: " + file.name + " (" + pdf.numPages + " slides extracted)";
         } catch (err) {
-          nameEl.textContent = "Could not read PDF (" + err.message + "). Try pasting text instead.";
+          console.warn("Could not parse PDF " + name, err);
+          showToast("Could not parse " + name + ": " + err.message);
+          return;
         }
       } else {
-        var reader = new FileReader();
-        reader.onload = function (e) {
-          document.getElementById("notes-input").value = e.target.result;
-          dzEl.classList.add("loaded");
-          nameEl.textContent = "Ready: " + file.name;
-        };
-        reader.readAsText(file);
+        fullText = await file.text();
+      }
+
+      var wordCount = (fullText.trim().match(/\S+/g) || []).length;
+      uploadedFiles.push({
+        name: name,
+        pages: pages,
+        text: fullText,
+        words: wordCount
+      });
+      renderAttachedDocsList();
+    }
+
+    async function handleFileSelect(event) {
+      var files = event.target.files;
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        await processIncomingFile(files[i]);
+      }
+      event.target.value = "";
+    }
+
+    // Drag and drop multi-file support
+    document.addEventListener("DOMContentLoaded", function() {
+      var dz = document.getElementById("dropzone");
+      if (dz) {
+        dz.addEventListener("dragover", function(e) { e.preventDefault(); dz.style.borderColor = "var(--accent-cta)"; });
+        dz.addEventListener("dragleave", function(e) { e.preventDefault(); dz.style.borderColor = ""; });
+        dz.addEventListener("drop", async function(e) {
+          e.preventDefault();
+          dz.style.borderColor = "";
+          if (e.dataTransfer && e.dataTransfer.files) {
+            for (var i = 0; i < e.dataTransfer.files.length; i++) {
+              await processIncomingFile(e.dataTransfer.files[i]);
+            }
+          }
+        });
+      }
+      var notesTa = document.getElementById("notes-input");
+      var wordCountEl = document.getElementById("notes-word-count");
+      if (notesTa && wordCountEl) {
+        notesTa.addEventListener("input", function() {
+          var wc = (this.value.trim().match(/\S+/g) || []).length;
+          wordCountEl.textContent = wc.toLocaleString() + " words";
+        });
+      }
+      checkSharedArenaHash();
+    });
+
+    // Zero-Knowledge Peer Sharing
+    function showToast(msg) {
+      var t = document.getElementById("app-toast-el");
+      if (!t) {
+        t = document.createElement("div");
+        t.id = "app-toast-el";
+        t.className = "app-toast";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(function() { t.classList.remove("show"); }, 3800);
+    }
+
+    async function shareArenaLink(id) {
+      var list = getSavedArenas();
+      var target = null;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) { target = list[i]; break; }
+      }
+      if (!target || !target.courseData) {
+        alert("Course data not available for sharing.");
+        return;
+      }
+      try {
+        var jsonStr = JSON.stringify(target.courseData);
+        var stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
+        var buffer = await new Response(stream).arrayBuffer();
+        var bytes = new Uint8Array(buffer);
+        var binary = "";
+        for (var b = 0; b < bytes.byteLength; b++) binary += String.fromCharCode(bytes[b]);
+        var b64url = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        var shareUrl = window.location.origin + window.location.pathname + "#arena=" + b64url;
+        if (shareUrl.length > 25000) {
+          exportArenaJson(id);
+          showToast("Course is large: exported as file to share directly.");
+          return;
+        }
+        await navigator.clipboard.writeText(shareUrl);
+        showToast("Shareable peer link copied to clipboard!");
+      } catch (err) {
+        console.warn("Share link error:", err);
+        exportArenaJson(id);
+      }
+    }
+
+    function exportArenaJson(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          var data = list[i].courseData || { config: { title: list[i].title } };
+          var str = JSON.stringify(data, null, 2);
+          var blob = new Blob([str], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = (list[i].title || "study_arena").toLowerCase().replace(/[^a-z0-9]+/g, "_") + ".arena.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          showToast("Exported arena JSON file.");
+          return;
+        }
+      }
+    }
+
+    async function handleImportArenaFile(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      try {
+        var text = await file.text();
+        var courseData = null;
+        if (file.name.endsWith(".json")) {
+          courseData = JSON.parse(text);
+        } else if (file.name.endsWith(".html")) {
+          var m = text.match(/var\s+CONFIG\s*=\s*(\{[\s\S]*?\});/);
+          if (m) {
+            courseData = { config: JSON.parse(m[1]), zones: [], chapters: [], questions: [], exams: [] };
+          }
+        }
+        if (courseData && courseData.config) {
+          var compiled = window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(courseData) : "";
+          saveArenaToHistory(courseData, compiled);
+          renderSavedArenasList();
+          updateSavedBadge();
+          showToast("Imported: " + (courseData.config.title || "Shared Course"));
+          switchMainView("saved");
+        } else {
+          showToast("Could not recognize arena format in file.");
+        }
+      } catch (err) {
+        showToast("Import failed: " + err.message);
+      }
+      event.target.value = "";
+    }
+
+    async function checkSharedArenaHash() {
+      if (!window.location.hash || !window.location.hash.startsWith("#arena=")) return;
+      var hashData = window.location.hash.slice(7);
+      if (!hashData) return;
+      try {
+        var b64 = hashData.replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        var binary = atob(b64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+        var jsonStr = await new Response(stream).text();
+        var courseData = JSON.parse(jsonStr);
+        if (courseData && courseData.config) {
+          var compiled = window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(courseData) : "";
+          saveArenaToHistory(courseData, compiled);
+          renderSavedArenasList();
+          updateSavedBadge();
+          showToast("Imported shared arena: " + (courseData.config.title || "Custom Course"));
+          switchMainView("saved");
+          history.replaceState(null, "", window.location.pathname);
+        }
+      } catch (err) {
+        console.warn("Could not import from URL hash:", err);
       }
     }
 
@@ -2145,7 +2409,17 @@ if (modal) modal.classList.add("open");
     }
 
     async function startGeneration() {
-      var notes = document.getElementById("notes-input").value.trim();
+      var combinedSyllabus = "";
+      if (uploadedFiles && uploadedFiles.length > 0) {
+        for (var f = 0; f < uploadedFiles.length; f++) {
+          combinedSyllabus += "\n\n=== SOURCE DOCUMENT " + (f + 1) + ": " + uploadedFiles[f].name + " ===\n" + uploadedFiles[f].text;
+        }
+      }
+      var extraNotes = document.getElementById("notes-input").value.trim();
+      if (extraNotes) {
+        combinedSyllabus += "\n\n=== SUPPLEMENTARY LECTURE NOTES & EXAM RUBRICS ===\n" + extraNotes;
+      }
+      var notes = combinedSyllabus.trim();
       var teacherAnnals = document.getElementById("annals-input").value.trim();
       var isMock = new URLSearchParams(window.location.search).get("mock");
 
