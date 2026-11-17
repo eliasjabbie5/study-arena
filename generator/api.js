@@ -165,7 +165,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
 
     if (!apiKey) {
-      throw new Error("Missing API Key for " + provider + ". Please click 'AI Settings (BYOK)' to set your key.");
+      throw new Error("Missing API Key for " + provider + ". Please click \'AI Settings (BYOK)\' to set your key.");
     }
 
     onProgress("Analyzing course lecture notes...", 15);
@@ -182,28 +182,33 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
       var allModels = await this.fetchClaudeModels(apiKey);
       console.log("Anthropic /v1/models returned:", allModels);
 
-      // Model priority order
-      var userChosen = localStorage.getItem("sa_model_claude");
+      // Clear any previously-saved model (Fable, research tier IDs, etc.)
+      localStorage.removeItem("sa_model_claude");
+
+      // Proven Anthropic aliases - try these FIRST before anything from /v1/models.
+      // The /v1/models endpoint may list internal research IDs like claude-haiku-5-5
+      // that do NOT work via /v1/messages on the standard API tier.
+      var SAFE_ALIASES = [
+        "claude-3-5-haiku-latest",
+        "claude-3-haiku-20240307",
+        "claude-3-5-sonnet-latest",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-sonnet-20240229"
+      ];
+
       var candidateModels = [];
 
-      if (userChosen) candidateModels.push(userChosen);
+      // 1. Standard aliases first
+      SAFE_ALIASES.forEach(function(m) {
+        if (!candidateModels.includes(m)) candidateModels.push(m);
+      });
 
+      // 2. Any safe models from /v1/models not already in the list
       if (allModels.length > 0) {
-        // Safe budget-friendly models available on the account
-        var safe = allModels.filter(function(m) {
+        allModels.filter(function(m) {
           var l = m.toLowerCase();
           return !l.includes("fable") && !l.includes("opus") && !l.includes("mythos");
-        });
-        safe.forEach(function(m) {
-          if (!candidateModels.includes(m)) candidateModels.push(m);
-        });
-        // If only heavy models exist, add them as last resort
-        allModels.forEach(function(m) {
-          if (!candidateModels.includes(m)) candidateModels.push(m);
-        });
-      } else {
-        // Standard defaults
-        ["claude-3-5-haiku-latest", "claude-3-haiku-20240307", "claude-3-5-sonnet-latest", "claude-3-5-sonnet-20241022"].forEach(function(m) {
+        }).forEach(function(m) {
           if (!candidateModels.includes(m)) candidateModels.push(m);
         });
       }
@@ -215,8 +220,10 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
         var modelToTry = candidateModels[i];
         onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 45);
 
+        var skipThisModel = false;
+
         try {
-          var res = await fetch("https://api.anthropic.com/v1/messages", {
+          var claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
             method: "POST",
             headers: {
               "x-api-key": apiKey,
@@ -228,44 +235,49 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
               model: modelToTry,
               max_tokens: 4096,
               system: this.MASTER_PROMPT,
-              messages: [
-                { role: "user", content: userContent }
-              ]
+              messages: [{ role: "user", content: userContent }]
             })
           });
 
-          if (!res.ok) {
-            var errText = await res.text();
-            var errMsg = "Model [" + modelToTry + "] HTTP " + res.status + ": " + errText;
+          if (!claudeRes.ok) {
+            var errText = await claudeRes.text();
+            var errMsg = "HTTP " + claudeRes.status + " on [" + modelToTry + "]: " + errText;
             console.warn(errMsg);
             attemptErrors.push(errMsg);
 
-            // If 404 (model not found), try next model
-            if (res.status === 404) {
-              continue;
+            if (claudeRes.status === 404 || claudeRes.status === 400) {
+              skipThisModel = true;
+            } else {
+              throw new Error("Claude API blocked (HTTP " + claudeRes.status + "):\n\n" + errMsg);
             }
-            // For other errors (like 400 Bad Request, 401 Invalid Key, 429 Rate Limit), stop and show error
-            throw new Error(errMsg);
+          } else {
+            var claudeJson = await claudeRes.json();
+            rawResponse = claudeJson.content[0].text;
+            localStorage.setItem("sa_model_claude", modelToTry);
+            console.log("SUCCESS with model:", modelToTry);
           }
 
-          var jsonRes = await res.json();
-          rawResponse = jsonRes.content[0].text;
-          localStorage.setItem("sa_model_claude", modelToTry);
-          console.log("Successful generation with model:", modelToTry);
-          break;
         } catch (fetchErr) {
-          var fMsg = fetchErr.message || String(fetchErr);
-          if (!fMsg.includes("404") || i === candidateModels.length - 1) {
-            throw new Error(fMsg + (attemptErrors.length ? "\n\nAttempts:\n" + attemptErrors.join("\n") : ""));
+          if (!skipThisModel) {
+            var msg = fetchErr.message || String(fetchErr);
+            throw new Error(msg + (attemptErrors.length ? "\n\nAttempts so far:\n" + attemptErrors.join("\n\n") : ""));
           }
         }
+
+        if (rawResponse) break;
       }
 
       if (!rawResponse) {
-        throw new Error("All Claude models failed.\n\nAccount Models: " + JSON.stringify(allModels) + "\n\nErrors:\n" + attemptErrors.join("\n"));
+        throw new Error(
+          "DIAGNOSIS: All " + candidateModels.length + " models returned HTTP 404.\n\n" +
+          "Your Anthropic account\'s /v1/models lists: " + JSON.stringify(allModels) + "\n\n" +
+          "But /v1/messages rejects ALL of them (and all standard aliases too).\n\n" +
+          "ACTION: Switch to Gemini (free) in AI Settings (BYOK).\n\n" +
+          "--- Errors per model ---\n" + attemptErrors.join("\n\n")
+        );
       }
 
-    } else if (provider === "openai") {
+        } else if (provider === "openai") {
       onProgress("Calling OpenAI (GPT-4o) with AACSB Professor Blueprint...", 40);
       var res = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
