@@ -266,7 +266,91 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
     return [];
   },
 
+  currentController: null,
+
+  abort: function() {
+    if (this.currentController) {
+      this.currentController.abort();
+      this.currentController = null;
+    }
+  },
+
   generate: async function(courseText, teacherNotes, onProgress) {
+    this.abort();
+    this.currentController = new AbortController();
+    var signal = this.currentController.signal;
+
+    // Safe mock mode for UI testing without calling paid APIs (?mock=ok or ?mock=error)
+    var params = new URLSearchParams(window.location.search);
+    var mockMode = params.get("mock");
+    if (mockMode === "error") {
+      onProgress("Reading course notes...", 15);
+      await new Promise(function(r) { setTimeout(r, 300); });
+      throw new Error("HTTP 401 on [claude-sonnet-4-6]: {\"type\":\"error\",\"error\":{\"type\":\"authentication_error\",\"message\":\"invalid x-api-key\"}}");
+    }
+    if (mockMode === "ok") {
+      onProgress("Reading course notes...", 15);
+      await new Promise(function(r) { setTimeout(r, 250); });
+      onProgress("Creating study guide and practice questions...", 45);
+      await new Promise(function(r) { setTimeout(r, 350); });
+      onProgress("Packaging playable arena...", 92);
+      var mockData = {
+        config: {
+          key: "corporate-finance-wacc",
+          title: "Corporate Finance: Cost of Capital",
+          subtitle: "WACC, Capital Structure & Pecking Order",
+          course: "Corporate Finance",
+          ranks: [[0,"Novice"],[150,"Analyst"],[350,"Associate"],[650,"VP"],[1000,"Partner"]],
+          zshort: { "wacc": "WACC & CAPM", "mm": "Modigliani-Miller" }
+        },
+        zones: [
+          { id: "wacc", name: "WACC & Cost Components", sess: "Session 1", blurb: "After-tax debt cost and CAPM equity cost." },
+          { id: "mm", name: "Capital Structure & Trade-Off", sess: "Session 2", blurb: "Tax shields vs financial distress costs." }
+        ],
+        chapters: [
+          { id: "ch-wacc", title: "Weighted Average Cost of Capital", zone: "wacc", topic: "WACC Formula", body: "<p>WACC blends the cost of equity and after-tax cost of debt weighted by market values.</p><div class='exam'><b>Exam Trap:</b> Always tax-effect the cost of debt using (1 - Tc), never the cost of equity.</div>", src: "Slides 1-8" },
+          { id: "ch-mm", title: "Modigliani-Miller & Pecking Order", zone: "mm", topic: "Capital Structure", body: "<p>With corporate taxes, debt creates a tax shield (Tc * D), balanced against distress costs.</p>", src: "Slides 9-16" }
+        ],
+        questions: [
+          {
+            type: "mcq",
+            zone: "wacc",
+            topic: "WACC Formula",
+            question: "NovaTech GmbH has a market debt-to-value ratio of 40%, pre-tax cost of debt of 6%, cost of equity of 11%, and faces a 25% corporate tax rate. What is its WACC?",
+            options: [
+              ["8.40%, using the after-tax debt cost of 4.50% weighted at 40% plus equity at 60%.","Correct. (0.60 * 11%) + (0.40 * 6% * (1 - 0.25)) = 6.60% + 1.80% = 8.40%."],
+              ["9.00%, using the pre-tax debt cost of 6.00% weighted at 40% plus equity at 60%.","Trap: forgets the interest tax shield (1 - Tc) on debt."],
+              ["6.75%, applying the (1 - 0.25) tax shield to both debt and equity components.","Trap: dividends and equity returns are not tax-deductible at the corporate level."],
+              ["8.60%, weighting equity at 40% and after-tax debt at 60%.","Trap: reverses the capital structure weights."]
+            ],
+            correctIndex: 0,
+            deepExplanation: "Only interest is tax-deductible, so only Rd is multiplied by (1 - Tc).",
+            trick: true,
+            src: "Slide 4"
+          },
+          {
+            type: "mcq",
+            zone: "mm",
+            topic: "Capital Structure",
+            question: "A profitable manufacturer with abundant retained earnings needs to fund a new plant. Under Myers and Majluf's Pecking Order Theory, which financing source will management choose first?",
+            options: [
+              ["Internal retained earnings, to avoid adverse selection signals from external issues.","Correct. Pecking order ranks internal funds first, then debt, and equity last."],
+              ["New common equity, to preserve borrowing capacity and avoid fixed interest covenants.","Trap: issuing equity sends a negative signal that management believes shares are overvalued."],
+              ["Subordinated convertible bonds, to split the difference between debt and equity.","Trap: hybrid securities still suffer from information asymmetry compared to internal cash."],
+              ["A 50/50 mix of debt and equity to maintain a static target leverage ratio.","Trap: that describes Static Trade-Off Theory, not Pecking Order."]
+            ],
+            correctIndex: 0,
+            deepExplanation: "Asymmetric information makes external equity the most expensive signal, so firms use internal cash first.",
+            trick: false,
+            src: "Slide 14"
+          }
+        ]
+      };
+      var mockHtml = window.StudyArenaCompiler.compile(mockData);
+      onProgress("Ready to play.", 100);
+      return { courseData: mockData, compiledHtml: mockHtml };
+    }
+
     var provider = localStorage.getItem("sa_ai_provider") || "claude";
     var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
 
@@ -274,7 +358,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       throw new Error("Missing API Key for " + provider + ". Please click \'AI Settings (BYOK)\' to set your key.");
     }
 
-    onProgress("Analyzing course lecture notes...", 15);
+    onProgress("Reading course notes...", 15);
 
     var userContent = "COURSE LECTURE MATERIAL TO TRANSFORM:\n\n" + courseText;
     if (teacherNotes && teacherNotes.trim()) {
@@ -284,7 +368,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Checking models available to your API key...", 25);
+      onProgress("Checking API connection...", 25);
       var allModels = await this.fetchClaudeModels(apiKey);
       console.log("Anthropic /v1/models returned:", allModels);
 
@@ -326,12 +410,13 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
 
       for (var i = 0; i < candidateModels.length; i++) {
         var modelToTry = candidateModels[i];
-        onProgress("Calling Claude (" + modelToTry + ") with AACSB Professor Blueprint...", 45);
+        onProgress("Creating study guide and practice questions...", 45);
 
         var skipThisModel = false;
 
         try {
           var claudeRes = await fetch("https://api.anthropic.com/v1/messages", {
+            signal: signal,
             method: "POST",
             headers: {
               "x-api-key": apiKey,
@@ -366,6 +451,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
           }
 
         } catch (fetchErr) {
+          if (fetchErr && fetchErr.name === "AbortError") throw new Error("Generation cancelled.");
           if (!skipThisModel) {
             var msg = fetchErr.message || String(fetchErr);
             throw new Error(msg + (attemptErrors.length ? "\n\nAttempts so far:\n" + attemptErrors.join("\n\n") : ""));
@@ -386,8 +472,9 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       }
 
         } else if (provider === "openai") {
-      onProgress("Calling OpenAI (GPT-4o) with AACSB Professor Blueprint...", 40);
+      onProgress("Creating study guide and practice questions...", 45);
       var res = await fetch("https://api.openai.com/v1/chat/completions", {
+        signal: signal,
         method: "POST",
         headers: {
           "Authorization": "Bearer " + apiKey,
@@ -411,10 +498,11 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       rawResponse = jsonRes.choices[0].message.content;
 
     } else if (provider === "gemini") {
-      onProgress("Calling Gemini with AACSB Professor Blueprint...", 40);
+      onProgress("Creating study guide and practice questions...", 45);
       var modelName = "gemini-1.5-flash";
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
+        signal: signal,
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -432,13 +520,13 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       rawResponse = jsonRes.candidates[0].content.parts[0].text;
     }
 
-    onProgress("Parsing and validating exam schema against Content Spec...", 75);
+    onProgress("Checking questions and explanations...", 78);
     var courseData = this.cleanJsonResponse(rawResponse);
 
-    onProgress("Compiling single-file Study Arena game...", 90);
+    onProgress("Packaging playable arena...", 92);
     var compiledHtml = window.StudyArenaCompiler.compile(courseData);
 
-    onProgress("Done! Ready to play.", 100);
+    onProgress("Ready to play.", 100);
     return {
       courseData: courseData,
       compiledHtml: compiledHtml

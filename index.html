@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Study Arena | AI Course-to-Game Generator for Business Students</title>
+  <title>Study Arena | Practice Exam Generator from Lecture Slides</title>
   <script>
     (function () {
       var t = localStorage.getItem('study_arena_theme') || 'light';
@@ -12,491 +12,1414 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&display=swap">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
 
   <style>
     :root {
-      --f-ui: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --f-ui: "Hanken Grotesk", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --f-mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
-      --ease: cubic-bezier(0.16, 1, 0.3, 1);
-      --r-lg: 14px;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --r-sm: 6px;
       --r-md: 10px;
-      --r-sm: 8px;
+      --r-lg: 16px;
     }
 
-    /* ---------- LIGHT (default) ---------- */
+    /* ---------- LIGHT THEME (DEFAULT, WCAG AA VERIFIED) ---------- */
     :root[data-theme="light"] {
-      --bg-base: #f4f7f5;
-      --mesh-1: rgba(16, 185, 129, 0.13);
-      --mesh-2: rgba(52, 211, 153, 0.10);
-      --mesh-3: rgba(6, 78, 59, 0.05);
-      --card: rgba(255, 255, 255, 0.72);
-      --card-solid: #ffffff;
-      --inner: rgba(255, 255, 255, 0.85);
-      --soft: rgba(6, 78, 59, 0.04);
-      --soft-hover: rgba(6, 78, 59, 0.08);
-      --border: rgba(6, 78, 59, 0.13);
-      --border-hover: rgba(5, 150, 105, 0.55);
-      --dash: rgba(6, 78, 59, 0.28);
-      --inset: inset 0 1px 0 rgba(255, 255, 255, 0.9);
-      --shadow: 0 1px 2px rgba(6, 40, 30, 0.05), 0 10px 28px -10px rgba(6, 40, 30, 0.14);
-      --shadow-hover: 0 12px 32px -10px rgba(6, 40, 30, 0.2), 0 0 0 4px rgba(16, 185, 129, 0.10);
-      --ink: #0c1713;
-      --ink-2: #44554d;
-      --ink-3: #7a8a83;
-      --accent: #047857;
-      --accent-bright: #10b981;
-      --accent-soft: rgba(16, 185, 129, 0.12);
-      --accent-line: rgba(5, 150, 105, 0.35);
-      --btn-bg: linear-gradient(135deg, #10b981 0%, #059669 60%, #047857 100%);
-      --btn-ink: #ffffff;
-      --btn-glow: rgba(5, 150, 105, 0.32);
-      --nav-bg: rgba(244, 247, 245, 0.78);
-      --overlay: rgba(10, 24, 18, 0.45);
-      --modal-bg: #ffffff;
-      --bad: #b91c1c;
-      --bad-soft: rgba(220, 38, 38, 0.07);
-      --bad-line: rgba(220, 38, 38, 0.4);
-      --track: rgba(6, 78, 59, 0.10);
+      --bg: #F7F8F7;
+      --surface: #FFFFFF;
+      --surface-2: #EEF1EF;
+      --line: #D5DDD8;
+      --control-border: #6E7B74;
+      --ink: #0F1713;
+      --ink-2: #46524B;
+      --ink-3: #55625C;
+      --accent: #0B7A4F;
+      --accent-hover: #08603E;
+      --accent-tint: #E4F3EA;
+      --accent-text: #096A44;
+      --btn-ink: #FFFFFF;
+      --fresh: #34D17F;
+      --danger: #B42318;
+      --danger-tint: #FDECEA;
+      --danger-line: #E4A9A3;
+      --nav-bg: rgba(247, 248, 247, 0.88);
+      --overlay: rgba(15, 23, 19, 0.48);
+      --grid-line: rgba(15, 23, 19, 0.045);
+      --shadow-raised: 0 1px 0 rgba(15, 23, 19, 0.04), 0 10px 28px -14px rgba(15, 23, 19, 0.16);
       color-scheme: light;
     }
 
-    /* ---------- DARK ---------- */
+    /* ---------- DARK THEME (WCAG AA VERIFIED) ---------- */
     :root[data-theme="dark"] {
-      --bg-base: #07090a;
-      --mesh-1: rgba(16, 185, 129, 0.12);
-      --mesh-2: rgba(5, 150, 105, 0.08);
-      --mesh-3: rgba(6, 78, 59, 0.07);
-      --card: rgba(18, 23, 22, 0.72);
-      --card-solid: #0e1312;
-      --inner: rgba(8, 11, 10, 0.6);
-      --soft: rgba(255, 255, 255, 0.03);
-      --soft-hover: rgba(255, 255, 255, 0.07);
-      --border: rgba(255, 255, 255, 0.09);
-      --border-hover: rgba(52, 211, 153, 0.5);
-      --dash: rgba(255, 255, 255, 0.18);
-      --inset: inset 0 1px 0 rgba(255, 255, 255, 0.07);
-      --shadow: 0 14px 36px -12px rgba(0, 0, 0, 0.7);
-      --shadow-hover: 0 14px 34px -10px rgba(0, 0, 0, 0.8), 0 0 0 4px rgba(16, 185, 129, 0.12);
-      --ink: #f2f5f4;
-      --ink-2: #9aa7a1;
-      --ink-3: #63706a;
-      --accent: #34d399;
-      --accent-bright: #34d399;
-      --accent-soft: rgba(16, 185, 129, 0.12);
-      --accent-line: rgba(52, 211, 153, 0.35);
-      --btn-bg: linear-gradient(135deg, #34d399 0%, #10b981 55%, #059669 100%);
-      --btn-ink: #03140d;
-      --btn-glow: rgba(16, 185, 129, 0.4);
-      --nav-bg: rgba(7, 9, 10, 0.75);
-      --overlay: rgba(2, 5, 4, 0.78);
-      --modal-bg: #0e1312;
-      --bad: #f87171;
-      --bad-soft: rgba(239, 68, 68, 0.1);
-      --bad-line: rgba(248, 113, 113, 0.45);
-      --track: rgba(255, 255, 255, 0.08);
+      --bg: #0B0F0D;
+      --surface: #121815;
+      --surface-2: #18201C;
+      --line: #232D28;
+      --control-border: #67766E;
+      --ink: #EEF2EF;
+      --ink-2: #A3AFA8;
+      --ink-3: #8A9790;
+      --accent: #3DDC84;
+      --accent-hover: #5CE69A;
+      --accent-tint: #12261C;
+      --accent-text: #4ADE90;
+      --btn-ink: #04130B;
+      --fresh: #3DDC84;
+      --danger: #F97066;
+      --danger-tint: #2A1513;
+      --danger-line: #7A2E27;
+      --nav-bg: rgba(11, 15, 13, 0.86);
+      --overlay: rgba(2, 5, 4, 0.76);
+      --grid-line: rgba(238, 242, 239, 0.04);
+      --shadow-raised: 0 1px 0 rgba(0, 0, 0, 0.4), 0 14px 32px -12px rgba(0, 0, 0, 0.65);
       color-scheme: dark;
     }
 
     * { box-sizing: border-box; }
 
-    html { transition: background-color 0.35s ease; }
+    html {
+      background-color: var(--bg);
+      color: var(--ink);
+      transition: background-color 150ms ease, color 150ms ease;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: var(--f-ui);
-      font-size: 14px;
+      font-size: 15px;
       line-height: 1.55;
       color: var(--ink);
-      background:
-        radial-gradient(circle at 12% 0%, var(--mesh-1) 0%, transparent 42%),
-        radial-gradient(circle at 88% 10%, var(--mesh-2) 0%, transparent 46%),
-        radial-gradient(circle at 50% 60%, var(--mesh-3) 0%, transparent 60%),
-        var(--bg-base);
-      background-attachment: fixed;
+      background-color: var(--bg);
       -webkit-font-smoothing: antialiased;
       padding-bottom: 80px;
+      position: relative;
       overflow-x: hidden;
-      transition: color 0.35s ease;
     }
 
-    .wrap {
-      max-width: 1360px;
-      margin: 0 auto;
-      padding: 0 28px;
-      display: flex;
-      flex-direction: column;
-      gap: 28px;
+    /* Single disciplined background idea: quiet 48px ruled study grid fading by 520px */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 520px;
+      background-image:
+        linear-gradient(to right, var(--grid-line) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--grid-line) 1px, transparent 1px);
+      background-size: 48px 48px;
+      -webkit-mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,1) 0%, rgba(0,0,0,0) 100%);
+      pointer-events: none;
+      z-index: 0;
     }
 
-    svg.ic { width: 16px; height: 16px; flex: none; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    /* Screen-reader only utility */
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
 
-    /* ---------- NAV ---------- */
+    /* Consistent keyboard focus ring across all interactive controls */
+    a:focus-visible,
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible,
+    summary:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    svg.ic {
+      width: 16px;
+      height: 16px;
+      flex: none;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.75;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    /* ---------- STICKY HEADER NAV (1 of 2 places with backdrop-filter) ---------- */
     .nav-wrap {
       position: sticky;
       top: 0;
       z-index: 50;
       background: var(--nav-bg);
-      backdrop-filter: blur(22px) saturate(180%);
-      -webkit-backdrop-filter: blur(22px) saturate(180%);
-      border-bottom: 1px solid var(--border);
-      padding: 10px 0;
-      margin-bottom: 14px;
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--line);
     }
+
     .nav {
-      max-width: 1360px;
+      max-width: 1280px;
       margin: 0 auto;
-      padding: 0 28px;
+      padding: 8px 24px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 16px;
     }
-    .logo-group { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--ink); }
-    .logo-emblem {
-      width: 28px; height: 28px; border-radius: 8px;
-      background: var(--btn-bg);
-      display: flex; align-items: center; justify-content: center;
-      color: #fff;
-      box-shadow: 0 0 14px var(--btn-glow);
-    }
-    .logo-emblem svg.ic { width: 15px; height: 15px; stroke-width: 2.4; }
-    .logo-text { font-size: 15px; font-weight: 700; letter-spacing: -0.02em; }
-    .tag {
-      font-family: var(--f-mono);
-      font-size: 10.5px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 2px 7px;
-      border-radius: 5px;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border: 1px solid var(--accent-line);
-    }
-    .nav-actions { display: flex; align-items: center; gap: 8px; }
 
-    .btn-nav {
-      display: inline-flex; align-items: center; gap: 8px;
-      height: 34px; padding: 0 12px;
-      border-radius: var(--r-sm);
-      background: var(--soft);
-      border: 1px solid var(--border);
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+    }
+
+    .logo-group {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      text-decoration: none;
       color: var(--ink);
+      min-height: 44px;
+    }
+
+    .logo-mark {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--r-sm);
+      background: var(--accent);
+      color: var(--btn-ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .logo-text {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-tabs {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--line);
+    }
+
+    .nav-tab {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: var(--r-sm);
+      border: none;
+      background: transparent;
+      color: var(--ink-2);
       font-family: var(--f-ui);
-      font-size: 12.5px;
+      font-size: 14px;
       font-weight: 500;
       cursor: pointer;
-      transition: all 0.25s var(--ease);
+      transition: background-color 150ms ease, color 150ms ease, transform 120ms var(--ease-out);
     }
-    .btn-nav:hover { background: var(--soft-hover); border-color: var(--border-hover); transform: translateY(-1px); }
 
-    .key-indicator { width: 7px; height: 7px; border-radius: 50%; background: var(--ink-3); transition: all 0.3s ease; }
-    .key-indicator.configured { background: var(--accent-bright); box-shadow: 0 0 9px var(--accent-bright); animation: pulse 2.2s infinite ease-in-out; }
-    @keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.6; } }
+    .nav-tab.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15, 23, 19, 0.06);
+    }
 
-    /* theme icon swap */
+    .nav-tab:active {
+      transform: scale(0.97);
+    }
+
+    .count-chip {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 500;
+      padding: 2px 6px;
+      border-radius: var(--r-sm);
+      background: var(--accent-tint);
+      color: var(--accent-text);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      min-height: 44px;
+      padding: 0 12px;
+      border-radius: var(--r-md);
+      background: var(--surface);
+      border: 1px solid var(--control-border);
+      color: var(--ink);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 500;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background-color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
+    }
+
+    .btn-ghost:active {
+      transform: scale(0.97);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-ghost:hover {
+        background: var(--surface-2);
+      }
+    }
+
+    .theme-btn {
+      width: 44px;
+      padding: 0;
+    }
+
     .theme-btn .i-sun { display: none; }
     :root[data-theme="dark"] .theme-btn .i-sun { display: block; }
     :root[data-theme="dark"] .theme-btn .i-moon { display: none; }
-    .theme-btn svg.ic { transition: transform 0.5s var(--ease); }
-    .theme-btn:hover svg.ic { transform: rotate(20deg); }
-
-    /* ---------- HERO ---------- */
-    .hero { display: flex; flex-direction: column; gap: 12px; padding: 6px 0 2px; }
-    .eyebrow {
-      align-self: flex-start;
-      display: inline-flex; align-items: center; gap: 8px;
-      font-family: var(--f-mono);
-      font-size: 11px; font-weight: 600;
-      letter-spacing: 0.05em; text-transform: uppercase;
-      color: var(--accent);
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-line);
-      padding: 4px 11px;
-      border-radius: 99px;
+    .theme-btn svg.ic {
+      width: 18px;
+      height: 18px;
+      transition: transform 200ms var(--ease-out);
     }
-    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-bright); box-shadow: 0 0 8px var(--accent-bright); }
+
+    @media (hover: hover) and (pointer: fine) {
+      .theme-btn:hover svg.ic {
+        transform: rotate(20deg);
+      }
+    }
+
+    /* ---------- MAIN CONTAINER ---------- */
+    .wrap {
+      position: relative;
+      z-index: 1;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 24px 24px 0;
+    }
+
+    .view-pane {
+      display: none;
+    }
+
+    .view-pane.active {
+      display: block;
+    }
+
+    /* ---------- WORKSPACE GRID (Desktop 2-col, Mobile stacked with tool above sample) ---------- */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    .col-pitch {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .col-tool {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .col-proof {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    @media (min-width: 980px) {
+      .workspace {
+        grid-template-columns: 1.05fr 0.95fr;
+        grid-template-areas:
+          "pitch tool"
+          "proof tool";
+        column-gap: 48px;
+        row-gap: 24px;
+      }
+      .col-pitch { grid-area: pitch; }
+      .col-proof { grid-area: proof; }
+      .col-tool  { grid-area: tool; }
+    }
+
+    /* ---------- HERO TYPOGRAPHY ---------- */
     .hero-title {
       margin: 0;
-      font-size: clamp(26px, 2.9vw, 40px);
+      font-size: 38px;
+      line-height: 1.08;
       font-weight: 700;
-      line-height: 1.12;
-      letter-spacing: -0.035em;
-      max-width: 880px;
+      letter-spacing: -0.04em;
+      color: var(--ink);
     }
-    .hero-title em { font-style: normal; color: var(--accent); }
-    .hero-sub { margin: 0; font-size: 14.5px; color: var(--ink-2); max-width: 720px; line-height: 1.6; }
 
-    /* ---------- GRID ---------- */
-    .bento { display: grid; grid-template-columns: 1fr; gap: 20px; align-items: start; }
-    @media (min-width: 980px) { .bento { grid-template-columns: 2.1fr 1fr; } }
+    @media (min-width: 980px) {
+      .hero-title {
+        font-size: 56px;
+        line-height: 1.02;
+      }
+    }
 
-    .glass {
-      position: relative;
-      overflow: hidden;
-      background: var(--card);
-      backdrop-filter: blur(24px) saturate(180%);
-      -webkit-backdrop-filter: blur(24px) saturate(180%);
-      border: 1px solid var(--border);
+    .hero-sub {
+      margin: 0;
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--ink-2);
+      max-width: 58ch;
+    }
+
+    /* ---------- SAMPLE QUESTION PROOF CARD (REAL ETHICS QUESTION) ---------- */
+    .sample-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: var(--r-lg);
-      box-shadow: var(--shadow), var(--inset);
-      transition: border-color 0.3s ease, box-shadow 0.3s ease;
-    }
-    .glass::before {
-      content: ""; position: absolute; top: 0; left: 0; right: 0; height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.7), transparent);
-      pointer-events: none; opacity: 0.8;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    .main-tile { padding: 20px; display: flex; flex-direction: column; gap: 16px; }
-    .side { display: flex; flex-direction: column; gap: 20px; }
+    .sample-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
 
-    /* ---------- DROPZONE ---------- */
-    .dropzone {
-      border: 1.5px dashed var(--dash);
+    .sample-kicker {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-3);
+    }
+
+    .chip {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      background: var(--accent-tint);
+      color: var(--accent-text);
+    }
+
+    .sample-q {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      line-height: 1.45;
+      color: var(--ink);
+    }
+
+    .sample-opts {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .sample-opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
       border-radius: var(--r-md);
-      padding: 24px 18px;
-      background: var(--soft);
-      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      line-height: 1.4;
+      text-align: left;
       cursor: pointer;
-      transition: all 0.3s var(--ease);
+      transition: background-color 150ms ease, border-color 150ms ease, transform 120ms var(--ease-out);
     }
-    .dropzone:hover, .dropzone.drag { border-color: var(--accent-bright); background: var(--accent-soft); box-shadow: 0 0 0 4px rgba(16,185,129,0.10); transform: translateY(-1px); }
-    .dropzone input { display: none; }
-    .dz-icon {
-      width: 40px; height: 40px; border-radius: 10px;
-      background: var(--accent-soft); border: 1px solid var(--accent-line);
-      display: flex; align-items: center; justify-content: center;
-      color: var(--accent);
-    }
-    .dz-icon svg.ic { width: 20px; height: 20px; }
-    .dz-text { text-align: center; display: flex; flex-direction: column; gap: 2px; }
-    .dz-text b { font-size: 13.5px; font-weight: 600; }
-    .dz-text span { font-size: 11.5px; color: var(--ink-2); font-family: var(--f-mono); }
 
-    .divider { display: flex; align-items: center; gap: 12px; color: var(--ink-3); font-size: 10.5px; font-family: var(--f-mono); text-transform: uppercase; letter-spacing: 0.09em; }
-    .divider::before, .divider::after { content: ""; flex: 1; height: 1px; background: var(--border); }
+    .sample-opt:active {
+      transform: scale(0.98);
+    }
+
+    .sample-opt .opt-letter {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 600;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--control-border);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      margin-top: 1px;
+    }
+
+    .sample-opt.selected-trap {
+      border-color: var(--danger);
+      background: var(--danger-tint);
+    }
+
+    .sample-opt.selected-trap .opt-letter {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #FFFFFF;
+    }
+
+    .sample-opt.selected-right {
+      border-color: var(--accent);
+      background: var(--accent-tint);
+    }
+
+    .sample-opt.selected-right .opt-letter {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--btn-ink);
+    }
+
+    .sample-explain {
+      padding: 12px;
+      border-radius: var(--r-md);
+      background: var(--surface-2);
+      border-left: 3px solid var(--accent);
+      font-size: 14px;
+      line-height: 1.45;
+      color: var(--ink-2);
+    }
+
+    .sample-explain strong {
+      color: var(--ink);
+      font-weight: 600;
+    }
+
+    /* ---------- 3-STEP TOOL PANEL ---------- */
+    .tool-panel {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-block {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .step-block:last-of-type {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .step-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .step-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 600;
+      width: 24px;
+      height: 24px;
+      border-radius: var(--r-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .step-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* Segmented input tabs (Upload | Paste) */
+    .seg-tabs {
+      display: inline-flex;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--line);
+      gap: 4px;
+    }
+
+    .seg-tab {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: var(--r-sm);
+      border: none;
+      background: transparent;
+      color: var(--ink-2);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 150ms ease, color 150ms ease;
+    }
+
+    .seg-tab.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15, 23, 19, 0.06);
+    }
+
+    /* Dropzone button */
+    .dropzone {
+      width: 100%;
+      min-height: 108px;
+      border: 1.5px dashed var(--control-border);
+      border-radius: var(--r-md);
+      padding: 16px;
+      background: var(--surface-2);
+      color: var(--ink);
+      font-family: var(--f-ui);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: border-color 120ms ease-out, background-color 120ms ease-out, transform 120ms var(--ease-out);
+    }
+
+    .dropzone:active {
+      transform: scale(0.99);
+    }
+
+    .dropzone.drag,
+    .dropzone.loaded {
+      border-style: solid;
+      border-color: var(--accent);
+      background: var(--accent-tint);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .dropzone:hover {
+        border-color: var(--accent);
+      }
+    }
+
+    .dz-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--accent-text);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dz-title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+      word-break: break-word;
+      transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
+    }
+
+    .dz-sub {
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    .field-label {
+      display: block;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+      margin-bottom: 4px;
+    }
 
     textarea {
       width: 100%;
-      min-height: 150px;
-      background: var(--inner);
-      border: 1px solid var(--border);
+      min-height: 112px;
+      background: var(--surface-2);
+      border: 1px solid var(--control-border);
       border-radius: var(--r-md);
-      padding: 12px 14px;
+      padding: 12px;
       color: var(--ink);
-      font-family: var(--f-mono);
-      font-size: 12.5px;
-      line-height: 1.6;
+      font-family: var(--f-ui);
+      font-size: 14px;
+      line-height: 1.5;
       resize: vertical;
-      outline: none;
-      transition: all 0.25s ease;
+      transition: border-color 150ms ease, background-color 150ms ease;
     }
-    textarea::placeholder { color: var(--ink-3); }
-    textarea:focus { border-color: var(--accent-bright); box-shadow: 0 0 0 4px rgba(16,185,129,0.12); }
 
-    /* ---------- ANNALS ---------- */
-    .optional { border: 1px solid var(--border); border-radius: var(--r-md); background: var(--soft); overflow: hidden; }
-    .optional-toggle {
-      padding: 10px 14px;
-      display: flex; justify-content: space-between; align-items: center;
-      cursor: pointer; user-select: none;
-      font-size: 13px; font-weight: 500; color: var(--ink-2);
-      transition: color 0.2s ease;
+    textarea::placeholder {
+      color: var(--ink-3);
     }
-    .optional-toggle:hover { color: var(--ink); }
-    .optional-toggle .right { display: inline-flex; align-items: center; gap: 6px; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
-    .optional-toggle .chev { transition: transform 0.35s var(--ease); }
-    .optional.open .chev { transform: rotate(180deg); }
-    .optional-body { display: none; padding: 0 12px 12px; }
-    .optional.open .optional-body { display: block; animation: fade 0.3s var(--ease); }
 
-    /* ---------- ACTIONS ---------- */
-    .action-bar { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
-    .pill {
-      display: inline-flex; align-items: center; gap: 7px;
-      height: 30px; padding: 0 12px;
-      border-radius: 99px;
-      background: var(--soft); border: 1px solid var(--border);
-      font-family: var(--f-mono); font-size: 11px; color: var(--ink-2);
+    textarea:focus {
+      background: var(--surface);
+      border-color: var(--accent);
     }
-    .pill b { color: var(--accent); font-weight: 600; }
 
-    .btn-generate {
-      position: relative; overflow: hidden;
-      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-      height: 40px; padding: 0 20px;
-      font-family: var(--f-ui); font-size: 13.5px; font-weight: 600; letter-spacing: -0.005em;
-      color: var(--btn-ink);
-      background: var(--btn-bg);
-      border: 1px solid rgba(255,255,255,0.35);
+    /* Optional Professor Annals Disclosure */
+    .annals-wrap {
+      border: 1px solid var(--line);
       border-radius: var(--r-md);
+      background: var(--surface);
+    }
+
+    .annals-toggle {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 12px;
+      border: none;
+      background: transparent;
+      color: var(--ink-2);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 500;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
       cursor: pointer;
-      box-shadow: 0 4px 16px var(--btn-glow), inset 0 1px 0 rgba(255,255,255,0.35);
-      transition: all 0.25s var(--ease);
+      text-align: left;
     }
-    .btn-generate:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 26px var(--btn-glow), inset 0 1px 0 rgba(255,255,255,0.5); filter: brightness(1.05); }
-    .btn-generate:active:not(:disabled) { transform: translateY(0); }
-    .btn-generate:disabled { opacity: 0.55; cursor: not-allowed; }
-    .btn-generate::after {
-      content: ""; position: absolute; top: -60%; left: -60%; width: 36%; height: 220%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-      transform: rotate(25deg);
-      animation: shimmer 3.6s infinite ease-in-out;
-      pointer-events: none;
-    }
-    @keyframes shimmer { 0% { left: -70%; } 30%, 100% { left: 140%; } }
 
-    /* ---------- STEPPER ---------- */
+    .annals-toggle-right {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--ink-3);
+      flex: none;
+    }
+
+    .annals-body {
+      display: none;
+      padding: 0 12px 12px;
+    }
+
+    .annals-wrap.open .annals-body {
+      display: block;
+    }
+
+    /* Step 2: Inline AI Key Bar & Onboarding */
+    .ai-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      border-radius: var(--r-md);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      flex-wrap: wrap;
+    }
+
+    .ai-status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .key-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: var(--r-sm);
+      background: var(--ink-3);
+      flex: none;
+    }
+
+    .key-indicator.configured {
+      background: var(--accent);
+    }
+
+    .ai-help-box {
+      padding: 12px;
+      border-radius: var(--r-md);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .ai-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .ai-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      min-height: 36px;
+      padding: 0 8px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--control-border);
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 500;
+      text-decoration: none;
+    }
+
+    /* Step 3: Primary CTA Button */
+    .btn-generate {
+      width: 100%;
+      min-height: 48px;
+      padding: 0 24px;
+      border-radius: var(--r-md);
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: var(--btn-ink);
+      font-family: var(--f-ui);
+      font-size: 15px;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+      transition: background-color 150ms ease, transform 120ms var(--ease-out);
+    }
+
+    .btn-generate:active:not(:disabled) {
+      transform: scale(0.97);
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-generate:hover:not(:disabled) {
+        background: var(--accent-hover);
+      }
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    .cta-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--ink-3);
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* Honest Progress Stepper */
     .stepper {
-      display: none; flex-direction: column; gap: 10px;
-      padding: 14px 16px;
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
       border-radius: var(--r-md);
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-line);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
     }
-    .stepper.active { display: flex; animation: fade 0.3s var(--ease); }
-    .prog-head { display: flex; align-items: center; gap: 10px; }
-    .spinner { width: 13px; height: 13px; border: 2px solid var(--accent-line); border-top-color: var(--accent-bright); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    .prog-msg { font-family: var(--f-mono); font-size: 12px; color: var(--accent); font-weight: 500; }
-    .prog-bar { height: 5px; background: var(--track); border-radius: 99px; overflow: hidden; }
-    .prog-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #059669, #34d399); border-radius: 99px; box-shadow: 0 0 10px var(--accent-bright); transition: width 0.5s var(--ease); }
 
-    /* ---------- ERROR / RESULT ---------- */
+    .stepper.active {
+      display: flex;
+    }
+
+    .prog-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .prog-head {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--line);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 750ms linear infinite;
+      flex: none;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .prog-msg {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .prog-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .prog-timer {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .btn-cancel {
+      min-height: 36px;
+      padding: 0 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--control-border);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--f-ui);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .prog-bar {
+      height: 6px;
+      background: var(--line);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .prog-fill {
+      height: 100%;
+      width: 100%;
+      background: var(--accent);
+      transform-origin: left center;
+      transform: scaleX(0.08);
+      transition: transform 300ms var(--ease-out);
+    }
+
+    /* Plain-language Error Card */
     #error-card {
-      display: none; flex-direction: column; gap: 10px;
-      background: var(--bad-soft); border: 1px solid var(--bad-line);
-      border-radius: var(--r-md); padding: 14px 16px;
-    }
-    #error-card h4 { margin: 0; display: flex; align-items: center; gap: 8px; color: var(--bad); font-size: 13.5px; font-weight: 600; }
-    #error-details {
-      margin: 0; white-space: pre-wrap; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink);
-      max-height: 240px; overflow-y: auto;
-      background: var(--inner); padding: 12px; border-radius: var(--r-sm); border: 1px solid var(--border);
-    }
-
-    .result-card {
-      display: none; flex-direction: column; gap: 14px;
-      background: var(--accent-soft);
-      border: 1px solid var(--accent-line);
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
       border-radius: var(--r-md);
-      padding: 16px 18px;
-      box-shadow: 0 0 0 4px rgba(16,185,129,0.07);
+      background: var(--danger-tint);
+      border: 1px solid var(--danger-line);
     }
-    .result-card.active { display: flex; animation: fade 0.4s var(--ease); }
-    .result-title { margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
-    .result-title svg.ic { color: var(--accent); width: 18px; height: 18px; }
-    .result-stats { display: flex; flex-wrap: wrap; gap: 8px; }
-    .result-stats span { padding: 4px 10px; background: var(--inner); border: 1px solid var(--border); border-radius: 6px; font-family: var(--f-mono); font-size: 11.5px; color: var(--ink-2); }
-    .result-stats b { color: var(--accent); font-weight: 600; }
-    .result-btns { display: flex; gap: 10px; flex-wrap: wrap; }
+
+    #error-card h4 {
+      margin: 0;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--danger);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .error-friendly {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink);
+    }
+
+    .error-actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .error-tech summary {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-2);
+      cursor: pointer;
+    }
+
+    #error-details {
+      margin: 8px 0 0;
+      white-space: pre-wrap;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink);
+      max-height: 180px;
+      overflow-y: auto;
+      background: var(--surface);
+      padding: 12px;
+      border-radius: var(--r-sm);
+      border: 1px solid var(--line);
+    }
+
+    /* Result Card (Raised surface) */
+    .result-card {
+      display: none;
+      flex-direction: column;
+      gap: 12px;
+      padding: 16px;
+      border-radius: var(--r-md);
+      background: var(--accent-tint);
+      border: 1px solid var(--accent);
+      box-shadow: var(--shadow-raised);
+      animation: reveal 280ms var(--ease-out);
+    }
+
+    @keyframes reveal {
+      from { opacity: 0; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-card.active {
+      display: flex;
+    }
+
+    .result-title {
+      margin: 0;
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .result-stats {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .result-stats span {
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      background: var(--surface);
+      border: 1px solid var(--line);
+    }
+
+    .result-stats b {
+      color: var(--accent-text);
+      font-weight: 600;
+    }
+
+    .result-btns {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
     .btn-play {
-      height: 36px; padding: 0 16px; border: none; border-radius: var(--r-sm);
-      background: var(--btn-bg); color: var(--btn-ink);
-      font-family: var(--f-ui); font-size: 13px; font-weight: 600; cursor: pointer;
-      box-shadow: 0 3px 12px var(--btn-glow);
-      transition: all 0.2s var(--ease);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: var(--r-md);
+      border: 1px solid transparent;
+      background: var(--accent);
+      color: var(--btn-ink);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 150ms ease, transform 120ms var(--ease-out);
     }
-    .btn-play:hover { transform: translateY(-2px); box-shadow: 0 6px 20px var(--btn-glow); }
+
+    .btn-play:active {
+      transform: scale(0.97);
+    }
+
     .btn-download {
-      height: 36px; padding: 0 16px; border-radius: var(--r-sm);
-      background: var(--soft); border: 1px solid var(--border); color: var(--ink);
-      font-family: var(--f-ui); font-size: 13px; font-weight: 500; cursor: pointer;
-      transition: all 0.2s var(--ease);
+      min-height: 44px;
+      padding: 0 16px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--control-border);
+      background: var(--surface);
+      color: var(--ink);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: background-color 150ms ease, transform 120ms var(--ease-out);
     }
-    .btn-download:hover { background: var(--soft-hover); border-color: var(--border-hover); }
 
-    /* ---------- SIDEBAR ---------- */
-    .tile { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
-    .tile h3 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
-    .tile p { margin: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
-    .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12.5px; }
-    .row:last-child { border-bottom: none; padding-bottom: 0; }
-    .row .k { color: var(--ink-2); }
-    .row .v { font-family: var(--f-mono); font-size: 11.5px; font-weight: 500; text-align: right; }
-    .row .v.acc { color: var(--accent); }
-
-    .demo {
-      display: flex; flex-direction: column; gap: 8px;
-      padding: 14px; border-radius: var(--r-md);
-      background: var(--soft); border: 1px solid var(--border);
-      text-decoration: none; color: inherit;
-      transition: all 0.3s var(--ease);
+    .btn-download:active {
+      transform: scale(0.97);
     }
-    .demo:hover { border-color: var(--border-hover); background: var(--accent-soft); transform: translateY(-2px); box-shadow: var(--shadow-hover); }
-    .demo h4 { margin: 0; font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
-    .demo p { margin: 0; font-size: 12px; color: var(--ink-2); line-height: 1.5; }
-    .demo-meta { display: flex; justify-content: space-between; align-items: center; font-family: var(--f-mono); font-size: 11px; color: var(--ink-3); }
-    .demo-meta .go { display: inline-flex; align-items: center; gap: 4px; color: var(--accent); font-weight: 600; }
-    .demo-meta .go svg.ic { width: 13px; height: 13px; transition: transform 0.3s var(--ease); }
-    .demo:hover .go svg.ic { transform: translateX(3px); }
 
-    /* ---------- MODALS ---------- */
-    .modal-backdrop {
-      display: none; position: fixed; inset: 0; z-index: 1000;
-      background: var(--overlay);
-      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      align-items: center; justify-content: center; padding: 20px;
+    /* ---------- DEMO STRIP BELOW WORKSPACE ---------- */
+    .demo-strip {
+      margin-top: 24px;
+      padding: 16px 24px;
+      border-radius: var(--r-lg);
+      background: var(--surface);
+      border: 1px solid var(--line);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
     }
-    .modal-backdrop.open { display: flex; animation: fade 0.25s ease; }
-    .modal {
-      background: var(--modal-bg);
-      border: 1px solid var(--border);
+
+    .demo-strip-info {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .demo-strip-title {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink);
+    }
+
+    .demo-strip-sub {
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    .demo-strip-meta {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink-3);
+    }
+
+    /* ---------- VIEW 2: SAVED ARENAS PAGE ---------- */
+    .saved-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 16px;
+      flex-wrap: wrap;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 24px;
+    }
+
+    .saved-header h2 {
+      margin: 0 0 4px;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+    }
+
+    .saved-header p {
+      margin: 0;
+      font-size: 15px;
+      color: var(--ink-2);
+      max-width: 62ch;
+    }
+
+    .arenas-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+    }
+
+    @media (min-width: 768px) {
+      .arenas-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .arena-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
       border-radius: var(--r-lg);
       padding: 24px;
-      max-width: 480px; width: 100%;
-      display: flex; flex-direction: column; gap: 16px;
-      box-shadow: 0 24px 60px rgba(0,0,0,0.35);
-      animation: pop 0.3s var(--ease);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 16px;
     }
-    @keyframes pop { from { opacity: 0; transform: scale(0.97) translateY(8px); } to { opacity: 1; transform: scale(1) translateY(0); } }
-    .modal h2 { margin: 0; font-size: 17px; font-weight: 600; letter-spacing: -0.02em; }
-    .modal .note { margin: 0; font-size: 12.5px; color: var(--ink-2); line-height: 1.55; }
 
-    .provider-tabs { display: flex; gap: 4px; background: var(--soft); padding: 3px; border-radius: var(--r-md); border: 1px solid var(--border); }
-    .tab-btn { flex: 1; height: 30px; border-radius: 7px; background: transparent; border: none; color: var(--ink-2); font-family: var(--f-ui); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s ease; }
-    .tab-btn.active { background: var(--card-solid); color: var(--ink); box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
-
-    .input-grp { display: flex; flex-direction: column; gap: 5px; }
-    .input-grp label { font-family: var(--f-mono); font-size: 10.5px; color: var(--ink-2); text-transform: uppercase; letter-spacing: 0.06em; }
-    .input-grp input, .input-grp select {
-      height: 38px; background: var(--inner); border: 1px solid var(--border);
-      border-radius: var(--r-sm); padding: 0 12px; color: var(--ink);
-      font-family: var(--f-mono); font-size: 12.5px; outline: none; transition: all 0.2s ease;
+    .arena-card-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 12px;
     }
-    .input-grp input:focus, .input-grp select:focus { border-color: var(--accent-bright); box-shadow: 0 0 0 4px rgba(16,185,129,0.12); }
-    .modal-foot { display: flex; justify-content: flex-end; gap: 8px; margin-top: 4px; }
 
-    /* ---------- PLAYER ---------- */
-    #arena-player-modal {
-      display: none; position: fixed; inset: 0; z-index: 10000;
+    .arena-card h3 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .arena-date {
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      white-space: nowrap;
+    }
+
+    .arena-sub {
+      margin: 4px 0 0;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    .arena-metrics {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      color: var(--ink-2);
+    }
+
+    .arena-metrics span {
+      padding: 4px 8px;
+      border-radius: var(--r-sm);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+
+    .arena-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding-top: 12px;
+      border-top: 1px solid var(--line);
+    }
+
+    .empty-saved {
+      padding: 32px 24px;
+      border-radius: var(--r-lg);
+      border: 1px dashed var(--control-border);
+      background: var(--surface);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    /* ---------- MODALS (2 of 2 places with backdrop-filter) ---------- */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
       background: var(--overlay);
-      backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .modal-backdrop.open {
+      display: flex;
+    }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--r-lg);
+      padding: 24px;
+      max-width: 480px;
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-raised);
+      animation: modal-in 200ms var(--ease-out);
+    }
+
+    @keyframes modal-in {
+      from { opacity: 0; transform: scale(0.96); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    .modal h2 {
+      margin: 0;
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.015em;
+    }
+
+    .modal .note {
+      margin: 0;
+      font-size: 14px;
+      color: var(--ink-2);
+    }
+
+    .provider-tabs {
+      display: flex;
+      gap: 4px;
+      background: var(--surface-2);
+      padding: 4px;
+      border-radius: var(--r-md);
+      border: 1px solid var(--line);
+    }
+
+    .tab-btn {
+      flex: 1;
+      min-height: 44px;
+      border-radius: var(--r-sm);
+      background: transparent;
+      border: none;
+      color: var(--ink-2);
+      font-family: var(--f-ui);
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    .tab-btn.active {
+      background: var(--surface);
+      color: var(--ink);
+      font-weight: 600;
+      box-shadow: 0 1px 2px rgba(15, 23, 19, 0.08);
+    }
+
+    .input-grp {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-grp label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .input-grp input,
+    .input-grp select {
+      min-height: 44px;
+      background: var(--surface-2);
+      border: 1px solid var(--control-border);
+      border-radius: var(--r-md);
+      padding: 0 12px;
+      color: var(--ink);
+      font-family: var(--f-mono);
+      font-size: 13px;
+    }
+
+    .modal-foot {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* ---------- IN-PAGE ARENA PLAYER MODAL ---------- */
+    #arena-player-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 10000;
+      background: var(--bg);
       flex-direction: column;
     }
-    #arena-player-modal.open { display: flex; animation: fade 0.3s ease; }
-    .player-bar {
-      display: flex; justify-content: space-between; align-items: center;
-      padding: 10px 22px;
-      background: var(--nav-bg);
-      border-bottom: 1px solid var(--border);
-      backdrop-filter: blur(20px);
-    }
-    .player-title { font-size: 14px; font-weight: 600; letter-spacing: -0.01em; }
-    .player-actions { display: flex; gap: 8px; align-items: center; }
-    .btn-link { text-decoration: none; }
-    .btn-danger { color: var(--bad); border-color: var(--bad-line); background: var(--bad-soft); }
-    .btn-danger:hover { background: var(--bad-soft); border-color: var(--bad); }
-    #arena-player-iframe { flex: 1; width: 100%; border: none; background: #fff; }
 
-    @keyframes fade { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+    #arena-player-modal.open {
+      display: flex;
+    }
+
+    .player-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 24px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--line);
+      gap: 12px;
+    }
+
+    .player-title {
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .player-actions {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    #arena-player-iframe {
+      flex: 1;
+      width: 100%;
+      border: none;
+      background: #FFFFFF;
+    }
+
+    @media (max-width: 640px) {
+      .nav {
+        padding: 8px 16px;
+      }
+      .wrap {
+        padding: 16px 16px 0;
+      }
+      .tool-panel,
+      .sample-card,
+      .arena-card {
+        padding: 16px;
+      }
+      .logo-text {
+        font-size: 15px;
+      }
+    }
 
     @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation: none !important; transition: none !important; }
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
     }
   </style>
 </head>
@@ -504,186 +1427,630 @@
 
   <div class="nav-wrap">
     <header class="nav">
-      <a href="index.html" class="logo-group">
-        <div class="logo-emblem"><svg class="ic" viewBox="0 0 24 24"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg></div>
-        <span class="logo-text">Study Arena</span>
-        <span class="tag">Generator</span>
-      </a>
+      <div class="nav-left">
+        <a href="index.html" class="logo-group" onclick="switchMainView('create'); return false;">
+          <span class="logo-mark" aria-hidden="true">
+            <svg class="ic" viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          </span>
+          <span class="logo-text">Study Arena</span>
+        </a>
+
+        <nav class="nav-tabs" aria-label="Primary navigation">
+          <button type="button" class="nav-tab active" id="nav-create" onclick="switchMainView('create')">
+            <span>Create Arena</span>
+          </button>
+          <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
+            <span>Saved Arenas</span>
+            <span class="count-chip" id="saved-count-badge">0</span>
+          </button>
+        </nav>
+      </div>
+
       <div class="nav-actions">
-        <button class="btn-nav" onclick="openKeyModal()">
-          <span class="key-indicator" id="key-ind"></span>
-          <span id="key-label">Configure AI Key</span>
-        </button>
-        <button class="btn-nav theme-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle light and dark theme" title="Toggle theme">
-          <svg class="ic i-moon" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
-          <svg class="ic i-sun" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
-          <span id="theme-label">Theme</span>
+        <a href="dist/ethics.html" class="btn-ghost">Try demo</a>
+        <button type="button" class="btn-ghost theme-btn" id="theme-btn" onclick="toggleTheme()" aria-label="Toggle light and dark theme" title="Toggle light and dark theme">
+          <svg class="ic i-moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+          <svg class="ic i-sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"></circle><line x1="12" y1="2" x2="12" y2="4"></line><line x1="12" y1="20" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="6.34" y2="6.34"></line><line x1="17.66" y1="17.66" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="4" y2="12"></line><line x1="20" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="6.34" y2="17.66"></line><line x1="17.66" y1="6.34" x2="19.07" y2="4.93"></line></svg>
         </button>
       </div>
     </header>
   </div>
 
-  <div class="wrap">
+  <main class="wrap">
 
-    <section class="hero">
-      <div class="eyebrow"><span class="dot"></span>AACSB Professor Engine / v2.6</div>
-      <h1 class="hero-title">Turn course material into an interactive <em>study arena</em>.</h1>
-      <p class="hero-sub">Drop in lecture slides, notes, or a syllabus. The AI extracts core frameworks, writes tricky micro-case exam questions, builds chapter guides, and compiles a single-file playable game.</p>
-    </section>
+    <!-- ==================== VIEW 1: CREATE ARENA ==================== -->
+    <div class="view-pane active" id="view-create">
 
-    <div class="bento">
+      <div class="workspace">
 
-      <section class="glass main-tile">
+        <!-- Left top: Headline & pitch -->
+        <div class="col-pitch">
+          <h1 class="hero-title">Upload your slides. Get a practice exam that tries to trick you.</h1>
+          <p class="hero-sub">Scenario questions with believable wrong answers, an explanation for every option, and study notes that point back to your slides. Playable in your browser in about two minutes.</p>
+        </div>
 
-        <div class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
-          <input type="file" id="file-input" accept=".pdf,.txt,.md,.json" onchange="handleFileSelect(event)">
-          <div class="dz-icon"><svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg></div>
-          <div class="dz-text">
-            <b id="dz-filename">Click or drag and drop course slides (PDF, TXT, MD)</b>
-            <span>Text is parsed 100% inside your browser. Nothing is uploaded.</span>
+        <!-- Right column: 3-Step Tool Panel (appears right below headline on mobile so Generate is above fold) -->
+        <section class="col-tool tool-panel" aria-label="Create a Study Arena">
+
+          <!-- STEP 1: Material -->
+          <div class="step-block">
+            <div class="step-head">
+              <div class="step-title-group">
+                <span class="step-num">1</span>
+                <h2 class="step-title">Add your course material</h2>
+              </div>
+              <div class="seg-tabs" role="tablist" aria-label="Input method">
+                <button type="button" class="seg-tab active" id="tab-mode-upload" role="tab" aria-selected="true" onclick="setInputMode('upload')">Upload file</button>
+                <button type="button" class="seg-tab" id="tab-mode-paste" role="tab" aria-selected="false" onclick="setInputMode('paste')">Paste text</button>
+              </div>
+            </div>
+
+            <input type="file" id="file-input" class="sr-only" accept=".pdf,.txt,.md,.json" aria-label="Upload course slides file" onchange="handleFileSelect(event)">
+
+            <div id="pane-upload">
+              <button type="button" class="dropzone" id="dropzone" onclick="document.getElementById('file-input').click()">
+                <span class="dz-icon" aria-hidden="true">
+                  <svg class="ic" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                </span>
+                <span class="dz-title" id="dz-filename">Drop PDF, TXT, or MD slides here, or click to browse</span>
+                <span class="dz-sub">Extracted in your browser. Nothing is uploaded to a server.</span>
+              </button>
+            </div>
+
+            <div id="pane-paste" style="display: none;">
+              <label for="notes-input" class="field-label">Course notes or extracted slide text</label>
+              <textarea id="notes-input" placeholder="Paste syllabus, lecture transcript, slide bullet points, or chapter summaries here..."></textarea>
+            </div>
+
+            <div class="annals-wrap" id="annals-box">
+              <button type="button" class="annals-toggle" id="annals-toggle-btn" aria-expanded="false" aria-controls="annals-body" onclick="toggleAnnals()">
+                <span>Add professor's past exams or grading notes (optional)</span>
+                <span class="annals-toggle-right">
+                  <span id="annals-arrow">Show</span>
+                  <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </span>
+              </button>
+              <div class="annals-body" id="annals-body">
+                <label for="annals-input" class="field-label">Past exam questions or rubrics so new questions match your professor's style</label>
+                <textarea id="annals-input" style="min-height: 80px;" placeholder="Optional: paste past exam questions, grading rubrics, or exam tips..."></textarea>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 2: Connect AI -->
+          <div class="step-block">
+            <div class="step-head">
+              <div class="step-title-group">
+                <span class="step-num">2</span>
+                <h2 class="step-title">Connect your AI key</h2>
+              </div>
+            </div>
+
+            <div class="ai-bar" id="provider-hint">
+              <div class="ai-status">
+                <span class="key-indicator" id="key-ind"></span>
+                <span id="key-label">No API key saved yet</span>
+                <span class="sr-only" id="active-prov-name">CLAUDE</span>
+              </div>
+              <button type="button" class="btn-ghost" onclick="openKeyModal()">Configure key</button>
+            </div>
+
+            <div class="ai-help-box" id="ai-onboarding-help">
+              <span>You use your own key and pay the provider directly (typically a few cents per arena). Your key is stored only in this browser.</span>
+              <div class="ai-links">
+                <a class="ai-link" href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener noreferrer">Get Claude key</a>
+                <a class="ai-link" href="https://platform.openai.com/api-keys" target="_blank" rel="noopener noreferrer">Get OpenAI key</a>
+                <a class="ai-link" href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener noreferrer">Get Gemini key (free tier)</a>
+              </div>
+            </div>
+          </div>
+
+          <!-- STEP 3: Generate -->
+          <div class="step-block">
+            <button type="button" class="btn-generate" id="gen-btn" onclick="startGeneration()">
+              <span>Generate Study Arena</span>
+              <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            <div class="cta-meta">
+              <span>Takes about 2 minutes</span>
+              <span>Saved automatically in Saved Arenas</span>
+            </div>
+
+            <!-- Honest Progress Stepper -->
+            <div class="stepper" id="stepper" role="status" aria-live="polite">
+              <div class="prog-top">
+                <div class="prog-head">
+                  <div class="spinner" aria-hidden="true"></div>
+                  <div class="prog-msg" id="prog-msg">Reading course notes...</div>
+                </div>
+                <div class="prog-right">
+                  <span class="prog-timer" id="prog-elapsed">0:00</span>
+                  <button type="button" class="btn-cancel" onclick="cancelGeneration()">Cancel</button>
+                </div>
+              </div>
+              <div class="prog-bar" aria-hidden="true">
+                <div class="prog-fill" id="prog-fill"></div>
+              </div>
+            </div>
+
+            <!-- Error Card -->
+            <div id="error-card" role="alert" aria-live="assertive">
+              <h4 id="error-summary-title">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <span>Could not finish generating</span>
+              </h4>
+              <p class="error-friendly" id="error-summary-body">Check your API key or try again.</p>
+              <div class="error-actions">
+                <button type="button" class="btn-ghost" onclick="startGeneration()">Try again</button>
+                <button type="button" class="btn-ghost" onclick="openKeyModal()">Check API key</button>
+              </div>
+              <details class="error-tech">
+                <summary>Technical details</summary>
+                <pre id="error-details"></pre>
+              </details>
+            </div>
+
+            <!-- Result Card -->
+            <div class="result-card" id="result-card" aria-live="polite">
+              <h3 class="result-title">
+                <svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Study Arena ready and saved</span>
+              </h3>
+              <div class="result-stats" id="result-stats"></div>
+              <div class="result-btns">
+                <button type="button" class="btn-play" id="btn-play-main" onclick="playGeneratedArena()">Play Arena</button>
+                <button type="button" class="btn-download" onclick="downloadGeneratedArena()">Download (.html)</button>
+                <button type="button" class="btn-ghost" onclick="switchMainView('saved')">All saved arenas</button>
+              </div>
+            </div>
+          </div>
+
+        </section>
+
+        <!-- Left bottom: Interactive Proof Card (Real Ethics question) -->
+        <div class="col-proof">
+          <div class="sample-card" aria-label="Interactive sample question from Business Ethics Arena">
+            <div class="sample-head">
+              <span class="sample-kicker">Sample output from Business Ethics Arena (Zone 1: CSR)</span>
+              <span class="chip">Trap question - click any option</span>
+            </div>
+            <p class="sample-q">Which of these is NOT one of Friedman's arguments against corporate social responsibility?</p>
+            <div class="sample-opts">
+              <button type="button" class="sample-opt" id="sopt-0" onclick="selectSampleOpt(0)">
+                <span class="opt-letter">A</span>
+                <span>Only individuals can bear moral responsibility, so a corporation cannot itself have social duties</span>
+              </button>
+              <button type="button" class="sample-opt selected-trap" id="sopt-1" onclick="selectSampleOpt(1)">
+                <span class="opt-letter">B</span>
+                <span>Executives who spend company money on social goals are effectively taxing shareholders without their consent</span>
+              </button>
+              <button type="button" class="sample-opt" id="sopt-2" onclick="selectSampleOpt(2)">
+                <span class="opt-letter">C</span>
+                <span>Managers are not trained to make public-policy decisions, which belong to elected governments</span>
+              </button>
+              <button type="button" class="sample-opt" id="sopt-3" onclick="selectSampleOpt(3)">
+                <span class="opt-letter">D</span>
+                <span>Social initiatives are justified whenever they build goodwill, even if they never raise shareholder wealth</span>
+              </button>
+            </div>
+            <div class="sample-explain" id="sample-explain-box" aria-live="polite">
+              <strong>Why B is a trap:</strong> This IS one of Friedman's core arguments: managers are agents of the shareholders, so spending company money on social causes imposes an unapproved tax. Try option D.
+            </div>
           </div>
         </div>
 
-        <div class="divider">Or paste lecture notes</div>
+      </div>
 
-        <textarea id="notes-input" placeholder="Paste syllabus, lecture transcript, slide bullet points, or chapter summaries here..."></textarea>
-
-        <div class="optional" id="annals-box">
-          <div class="optional-toggle" onclick="toggleAnnals()">
-            <span>Professor annals and exam rubrics (optional)</span>
-            <span class="right"><span id="annals-arrow">Show</span><svg class="ic chev" viewBox="0 0 24 24"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
-          </div>
-          <div class="optional-body" id="annals-body">
-            <textarea id="annals-input" style="min-height: 90px;" placeholder="Optional: paste past exam questions, grading rubrics, or exam tips to match your professor's grading style..."></textarea>
-          </div>
+      <!-- Full-width Demo Strip -->
+      <section class="demo-strip" aria-label="Finished demo arena">
+        <div class="demo-strip-info">
+          <div class="demo-strip-title">No key yet? Try a finished arena first: Business Ethics Arena</div>
+          <div class="demo-strip-sub">Built from full lecture slides with scenario traps, per-option feedback, study chapters, and mock papers.</div>
+          <div class="demo-strip-meta">109 questions / 6 zones / 32 study chapters / 2 mock exams</div>
         </div>
-
-        <div class="action-bar">
-          <div class="pill" id="provider-hint"><span>Provider</span><b id="active-prov-name">CLAUDE</b></div>
-          <button class="btn-generate" id="gen-btn" onclick="startGeneration()">
-            <span>Generate Study Arena</span>
-            <svg class="ic" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-          </button>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <a href="dist/ethics.html" class="btn-play" style="text-decoration:none;">Play Business Ethics Arena</a>
+          <button type="button" class="btn-ghost" onclick="switchMainView('saved')">Open Saved Arenas</button>
         </div>
-
-        <div class="stepper" id="stepper">
-          <div class="prog-head"><div class="spinner"></div><div class="prog-msg" id="prog-msg">Initializing generation...</div></div>
-          <div class="prog-bar"><div class="prog-fill" id="prog-fill"></div></div>
-        </div>
-
-        <div id="error-card">
-          <h4><svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>Generation error</h4>
-          <pre id="error-details"></pre>
-        </div>
-
-        <div class="result-card" id="result-card">
-          <h3 class="result-title"><svg class="ic" viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>Study Arena generated</h3>
-          <div class="result-stats" id="result-stats"></div>
-          <div class="result-btns">
-            <button class="btn-play" onclick="playGeneratedArena()">Play Arena</button>
-            <button class="btn-download" onclick="downloadGeneratedArena()">Download (.html)</button>
-          </div>
-        </div>
-
       </section>
 
-      <aside class="side">
-
-        <div class="glass tile">
-          <h3>System status</h3>
-          <div class="row"><span class="k">Architecture</span><span class="v acc">AACSB Blueprint v2.6</span></div>
-          <div class="row"><span class="k">Active model</span><span class="v">Sonnet 4.6 / Haiku</span></div>
-          <div class="row"><span class="k">Privacy</span><span class="v acc">100% client-side BYOK</span></div>
-          <div class="row"><span class="k">Output</span><span class="v">Standalone HTML game</span></div>
-        </div>
-
-        <div class="glass tile">
-          <h3>Gold standard demo</h3>
-          <p>The flagship reference game: 109 questions, 6 exam zones, 32 study chapters.</p>
-          <a href="dist/ethics.html" class="demo">
-            <span class="tag" style="align-self:flex-start;">Pre-compiled</span>
-            <h4>Business Ethics Arena</h4>
-            <p>109 questions, 6 zones, 2 full mock papers and scenario traps.</p>
-            <div class="demo-meta">
-              <span>AACSB aligned</span>
-              <span class="go">Play demo<svg class="ic" viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg></span>
-            </div>
-          </a>
-        </div>
-
-      </aside>
     </div>
-  </div>
 
+    <!-- ==================== VIEW 2: SAVED ARENAS PAGE ==================== -->
+    <section class="view-pane" id="view-saved" aria-label="Saved Arenas">
+      <div class="saved-header">
+        <div>
+          <h2>Saved Arenas</h2>
+          <p>Every arena you generate is saved in this browser automatically. Play directly in the browser or download a standalone .html file to keep forever or share.</p>
+        </div>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <button type="button" class="btn-play" onclick="switchMainView('create')">Create new arena</button>
+        </div>
+      </div>
+
+      <div id="saved-arenas-container"></div>
+    </section>
+
+  </main>
+
+  <!-- ==================== AI KEY SETTINGS MODAL ==================== -->
   <div class="modal-backdrop" id="key-modal" onclick="if(event.target===this) closeKeyModal()">
-    <div class="modal">
-      <h2>AI settings (BYOK)</h2>
-      <p class="note">Bring your own key. Tokens are charged to your own AI account. Your key is stored only in this browser's local storage and is never sent to our servers.</p>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="key-modal-title">
+      <h2 id="key-modal-title">Connect your AI key</h2>
+      <p class="note">Your key is saved only in this browser's local storage and is sent directly to the provider when you generate an arena. Tip: set a $5-$10 monthly spend cap in your provider billing settings for peace of mind.</p>
 
-      <div class="provider-tabs">
-        <button class="tab-btn active" id="tab-claude" onclick="selectProvider('claude')">Claude</button>
-        <button class="tab-btn" id="tab-openai" onclick="selectProvider('openai')">OpenAI</button>
-        <button class="tab-btn" id="tab-gemini" onclick="selectProvider('gemini')">Gemini</button>
+      <div class="provider-tabs" role="tablist" aria-label="AI provider">
+        <button type="button" class="tab-btn active" id="tab-claude" onclick="selectProvider('claude')">Claude</button>
+        <button type="button" class="tab-btn" id="tab-openai" onclick="selectProvider('openai')">OpenAI</button>
+        <button type="button" class="tab-btn" id="tab-gemini" onclick="selectProvider('gemini')">Gemini</button>
       </div>
 
       <div class="input-grp">
-        <label id="key-input-label">Anthropic API key (sk-ant-...)</label>
-        <input type="password" id="api-key-field" placeholder="Paste your API key here...">
+        <label id="key-input-label" for="api-key-field">Anthropic API key (sk-ant-...)</label>
+        <input type="password" id="api-key-field" placeholder="Paste your API key here..." autocomplete="off">
       </div>
+
       <div class="input-grp">
-        <label>Model</label>
+        <label for="model-select">Model</label>
         <select id="model-select"></select>
       </div>
+
       <div class="modal-foot">
-        <button class="btn-nav" onclick="closeKeyModal()">Cancel</button>
-        <button class="btn-generate" style="height:34px; padding:0 16px; font-size:12.5px;" onclick="saveKeySettings()">Save key</button>
+        <button type="button" class="btn-ghost" onclick="closeKeyModal()">Cancel</button>
+        <button type="button" class="btn-play" onclick="saveKeySettings()">Save key</button>
       </div>
     </div>
   </div>
 
-  <script src="generator/engine_bundle.js?v=2.6"></script>
-  <script src="generator/compiler.js?v=2.6"></script>
-  <script src="generator/api.js?v=2.6"></script>
+  <!-- ==================== IN-PAGE ARENA PLAYER MODAL ==================== -->
+  <div id="arena-player-modal" role="dialog" aria-modal="true" aria-labelledby="player-title">
+    <div class="player-bar">
+      <div class="player-title" id="player-title">Playing Study Arena</div>
+      <div class="player-actions">
+        <a id="player-newtab-btn" class="btn-ghost" href="#" target="_blank" rel="noopener noreferrer">Open in new tab</a>
+        <button type="button" class="btn-ghost" onclick="closeArenaPlayer()">Close</button>
+      </div>
+    </div>
+    <iframe id="arena-player-iframe" title="Study Arena Player" sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"></iframe>
+  </div>
+
+  <script src="generator/engine_bundle.js?v=2.7"></script>
+  <script src="generator/compiler.js?v=2.7"></script>
+  <script src="generator/api.js?v=2.7"></script>
 
   <script>
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
     var generatedHtmlBlob = null;
     var generatedHtmlString = '';
     var generatedCourseData = null;
+    var elapsedTimerId = null;
+    var SAVED_ARENAS_KEY = "sa_saved_arenas_v1";
 
+    /* ---------- SAMPLE QUESTION INTERACTION (REAL ETHICS QUESTION) ---------- */
+    var SAMPLE_EXPLANATIONS = [
+      {
+        right: false,
+        label: "Why A is a trap:",
+        text: "This IS one of Friedman's arguments: he holds that only individuals have moral responsibilities, not corporations. Try option D."
+      },
+      {
+        right: false,
+        label: "Why B is a trap:",
+        text: "This IS one of Friedman's core arguments: managers are agents of the shareholders, so spending company money on social causes imposes an unapproved tax. Try option D."
+      },
+      {
+        right: false,
+        label: "Why C is a trap:",
+        text: "This IS one of Friedman's arguments: executives are hired for business expertise, whereas public-policy trade-offs belong to elected governments. Try option D."
+      },
+      {
+        right: true,
+        label: "Correct (D):",
+        text: "This is a negation question. Friedman only accepts social initiatives when they serve as a means to raise shareholder wealth, so justifying them 'even if they never raise shareholder wealth' reverses his position."
+      }
+    ];
+
+    function selectSampleOpt(idx) {
+      for (var i = 0; i < 4; i++) {
+        var btn = document.getElementById("sopt-" + i);
+        if (!btn) continue;
+        btn.classList.remove("selected-trap", "selected-right");
+        if (i === idx) {
+          btn.classList.add(SAMPLE_EXPLANATIONS[i].right ? "selected-right" : "selected-trap");
+        }
+      }
+      var box = document.getElementById("sample-explain-box");
+      if (box && SAMPLE_EXPLANATIONS[idx]) {
+        box.innerHTML = "<strong>" + SAMPLE_EXPLANATIONS[idx].label + "</strong> " + SAMPLE_EXPLANATIONS[idx].text;
+      }
+    }
+
+    /* ---------- VIEW SWITCHING (CREATE vs SAVED ARENAS) ---------- */
+    function switchMainView(viewName) {
+      var createPane = document.getElementById("view-create");
+      var savedPane = document.getElementById("view-saved");
+      var navCreate = document.getElementById("nav-create");
+      var navSaved = document.getElementById("nav-saved");
+
+      if (viewName === "saved") {
+        createPane.classList.remove("active");
+        savedPane.classList.add("active");
+        navCreate.classList.remove("active");
+        navSaved.classList.add("active");
+        renderSavedArenasList();
+        if (history.replaceState) history.replaceState(null, "", "#saved");
+      } else {
+        savedPane.classList.remove("active");
+        createPane.classList.add("active");
+        navSaved.classList.remove("active");
+        navCreate.classList.add("active");
+        if (history.replaceState) history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ---------- SAVED ARENAS STORAGE ---------- */
+    function getSavedArenas() {
+      try {
+        var raw = localStorage.getItem(SAVED_ARENAS_KEY);
+        if (!raw) return [];
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function updateSavedBadge() {
+      var list = getSavedArenas();
+      var badge = document.getElementById("saved-count-badge");
+      if (badge) badge.textContent = String(list.length);
+    }
+
+    function saveArenaToHistory(courseData, compiledHtml) {
+      try {
+        var list = getSavedArenas();
+        var cfg = (courseData && courseData.config) || {};
+        var entry = {
+          id: "arena_" + Date.now(),
+          key: cfg.key || "study-arena",
+          title: cfg.title || "Custom Study Arena",
+          subtitle: cfg.subtitle || cfg.course || "Generated practice exam",
+          createdAt: new Date().toISOString(),
+          zonesCount: (courseData.zones || []).length,
+          questionsCount: (courseData.questions || []).length,
+          chaptersCount: (courseData.chapters || []).length,
+          courseData: courseData,
+          compiledHtml: compiledHtml
+        };
+        list.unshift(entry);
+        // Keep up to 8 saved arenas in localStorage, trimming oldest if quota is tight
+        while (list.length > 8) list.pop();
+        while (list.length > 0) {
+          try {
+            localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
+            break;
+          } catch (quotaErr) {
+            list.pop();
+          }
+        }
+        updateSavedBadge();
+        return entry;
+      } catch (e) {
+        console.warn("Could not persist arena to localStorage:", e);
+        return null;
+      }
+    }
+
+    function formatSavedDate(iso) {
+      try {
+        var d = new Date(iso);
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " +
+               d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+      } catch (e) {
+        return "Saved locally";
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderSavedArenasList() {
+      var container = document.getElementById("saved-arenas-container");
+      if (!container) return;
+      var list = getSavedArenas();
+      var html = "";
+
+      if (list.length === 0) {
+        html += '<div class="empty-saved">' +
+          '<h3 style="margin:0; font-size:18px; font-weight:600;">No custom arenas saved in this browser yet</h3>' +
+          '<p style="margin:0; font-size:14px; color:var(--ink-2);">When you generate a Study Arena from your slides or notes, it is automatically saved here so you can replay or download it anytime.</p>' +
+          '<button type="button" class="btn-play" onclick="switchMainView(\'create\')">Create your first arena</button>' +
+        '</div>';
+      }
+
+      html += '<div class="arenas-grid">';
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i];
+        html += '<article class="arena-card">' +
+          '<div>' +
+            '<div class="arena-card-head">' +
+              '<h3>' + escapeHtml(item.title) + '</h3>' +
+              '<span class="arena-date">' + escapeHtml(formatSavedDate(item.createdAt)) + '</span>' +
+            '</div>' +
+            '<p class="arena-sub">' + escapeHtml(item.subtitle) + '</p>' +
+          '</div>' +
+          '<div class="arena-metrics">' +
+            '<span>' + Number(item.zonesCount || 0) + ' zones</span>' +
+            '<span>' + Number(item.questionsCount || 0) + ' questions</span>' +
+            '<span>' + Number(item.chaptersCount || 0) + ' study chapters</span>' +
+          '</div>' +
+          '<div class="arena-actions">' +
+            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena</button>' +
+            '<button type="button" class="btn-download" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">Download (.html)</button>' +
+            '<button type="button" class="btn-ghost" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">Delete</button>' +
+          '</div>' +
+        '</article>';
+      }
+
+      // Always include the built-in Reference Arena so students can play immediately
+      html += '<article class="arena-card">' +
+        '<div>' +
+          '<div class="arena-card-head">' +
+            '<h3>Business Ethics Arena</h3>' +
+            '<span class="chip">Built-in reference</span>' +
+          '</div>' +
+          '<p class="arena-sub">Complete course game with scenario traps, per-option feedback, study guides, and 2 mock exams.</p>' +
+        '</div>' +
+        '<div class="arena-metrics">' +
+          '<span>6 zones</span>' +
+          '<span>109 questions</span>' +
+          '<span>32 study chapters</span>' +
+          '<span>2 mock exams</span>' +
+        '</div>' +
+        '<div class="arena-actions">' +
+          '<a href="dist/ethics.html" class="btn-play" style="text-decoration:none;">Play Reference Arena</a>' +
+        '</div>' +
+      '</article>';
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function playSavedArenaById(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          generatedCourseData = list[i].courseData;
+          generatedHtmlString = list[i].compiledHtml || (window.StudyArenaCompiler && list[i].courseData ? window.StudyArenaCompiler.compile(list[i].courseData) : "");
+          generatedHtmlBlob = new Blob([generatedHtmlString], { type: "text/html" });
+          playGeneratedArena();
+          return;
+        }
+      }
+    }
+
+    function downloadSavedArenaById(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          var htmlStr = list[i].compiledHtml || (window.StudyArenaCompiler && list[i].courseData ? window.StudyArenaCompiler.compile(list[i].courseData) : "");
+          var blob = new Blob([htmlStr], { type: "text/html" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = (list[i].key || "study-arena") + ".html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          return;
+        }
+      }
+    }
+
+    function deleteSavedArenaById(id) {
+      var list = getSavedArenas().filter(function (x) { return x.id !== id; });
+      try {
+        localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
+      } catch (e) {}
+      updateSavedBadge();
+      renderSavedArenasList();
+    }
+
+    function hydrateLastSavedArena() {
+      var list = getSavedArenas();
+      if (list.length > 0) {
+        var latest = list[0];
+        generatedCourseData = latest.courseData;
+        generatedHtmlString = latest.compiledHtml || "";
+        if (generatedHtmlString) {
+          generatedHtmlBlob = new Blob([generatedHtmlString], { type: "text/html" });
+        }
+        var resCard = document.getElementById("result-card");
+        var statsEl = document.getElementById("result-stats");
+        if (resCard && statsEl && generatedHtmlString) {
+          resCard.classList.add("active");
+          statsEl.innerHTML =
+            "<span>Course: <b>" + escapeHtml(latest.title) + "</b></span>" +
+            "<span>Zones: <b>" + Number(latest.zonesCount || 0) + "</b></span>" +
+            "<span>Questions: <b>" + Number(latest.questionsCount || 0) + "</b></span>" +
+            "<span>Chapters: <b>" + Number(latest.chaptersCount || 0) + "</b></span>";
+        }
+      }
+    }
+
+    /* ---------- INPUT MODE TABS (UPLOAD vs PASTE) ---------- */
+    function setInputMode(mode) {
+      var upPane = document.getElementById("pane-upload");
+      var paPane = document.getElementById("pane-paste");
+      var upTab = document.getElementById("tab-mode-upload");
+      var paTab = document.getElementById("tab-mode-paste");
+
+      if (mode === "paste") {
+        upPane.style.display = "none";
+        paPane.style.display = "block";
+        upTab.classList.remove("active");
+        upTab.setAttribute("aria-selected", "false");
+        paTab.classList.add("active");
+        paTab.setAttribute("aria-selected", "true");
+        document.getElementById("notes-input").focus();
+      } else {
+        paPane.style.display = "none";
+        upPane.style.display = "block";
+        paTab.classList.remove("active");
+        paTab.setAttribute("aria-selected", "false");
+        upTab.classList.add("active");
+        upTab.setAttribute("aria-selected", "true");
+      }
+    }
+
+    /* ---------- AI KEY SETTINGS ---------- */
     function updateKeyUI() {
       var key = localStorage.getItem("sa_api_key_" + currentProvider);
       var ind = document.getElementById("key-ind");
       var label = document.getElementById("key-label");
       var provHint = document.getElementById("active-prov-name");
+      var helpBox = document.getElementById("ai-onboarding-help");
+
       if (provHint) provHint.textContent = currentProvider.toUpperCase();
       if (key && key.trim().length > 5) {
         ind.classList.add("configured");
-        label.textContent = currentProvider.toUpperCase() + " (key set)";
+        label.textContent = currentProvider.toUpperCase() + " key connected";
+        if (helpBox) helpBox.style.display = "none";
       } else {
         ind.classList.remove("configured");
-        label.textContent = "Configure AI Key";
+        label.textContent = "No API key saved yet (" + currentProvider.toUpperCase() + ")";
+        if (helpBox) helpBox.style.display = "flex";
       }
     }
 
     function openKeyModal() {
       selectProvider(currentProvider);
       document.getElementById("key-modal").classList.add("open");
+      setTimeout(function () {
+        var f = document.getElementById("api-key-field");
+        if (f) f.focus();
+      }, 50);
     }
+
     function closeKeyModal() {
       document.getElementById("key-modal").classList.remove("open");
     }
 
     var MODELS = {
       claude: [
-        { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6 (recommended, proven)" },
+        { id: "claude-sonnet-4-6", name: "Claude Sonnet 4.6 (recommended)" },
         { id: "claude-haiku-4-5-20251001", name: "Claude Haiku 4.5 (fast, lowest cost)" },
         { id: "claude-3-5-haiku-latest", name: "Claude 3.5 Haiku" },
         { id: "claude-3-5-sonnet-latest", name: "Claude 3.5 Sonnet" }
       ],
       openai: [
-        { id: "gpt-4o-mini", name: "GPT-4o Mini (fast, cheap, recommended)" },
-        { id: "gpt-4o", name: "GPT-4o (high intelligence)" }
+        { id: "gpt-4o-mini", name: "GPT-4o Mini (fast, lowest cost)" },
+        { id: "gpt-4o", name: "GPT-4o (standard)" }
       ],
       gemini: [
         { id: "gemini-1.5-flash", name: "Gemini 1.5 Flash (fast, free tier)" },
@@ -719,11 +2086,16 @@
       if (p === 'claude' && apiKey && window.StudyArenaAPI) {
         window.StudyArenaAPI.fetchClaudeModels(apiKey).then(function (models) {
           if (models && models.length > 0) {
+            var safeModels = models.filter(function (id) {
+              var l = id.toLowerCase();
+              return l.indexOf("fable") === -1 && l.indexOf("opus") === -1 && l.indexOf("mythos") === -1;
+            });
+            var listToUse = safeModels.length > 0 ? safeModels : models;
             sel.innerHTML = "";
-            models.forEach(function (id) {
+            listToUse.forEach(function (id) {
               var opt = document.createElement("option");
               opt.value = id;
-              opt.textContent = id + (id.indexOf("sonnet-4-6") > -1 ? " (proven)" : id.indexOf("haiku") > -1 ? " (fast/cheap)" : "");
+              opt.textContent = id + (id.indexOf("sonnet-4-6") > -1 ? " (recommended)" : id.indexOf("haiku") > -1 ? " (fast, low cost)" : "");
               if (savedModel === id || (!savedModel && id.indexOf("sonnet-4-6") > -1)) opt.selected = true;
               sel.appendChild(opt);
             });
@@ -744,11 +2116,14 @@
 
     function toggleAnnals() {
       var box = document.getElementById("annals-box");
+      var btn = document.getElementById("annals-toggle-btn");
       var arr = document.getElementById("annals-arrow");
       var open = box.classList.toggle("open");
+      if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
       arr.textContent = open ? "Hide" : "Show";
     }
 
+    /* ---------- FILE DROP & PDF EXTRACTION ---------- */
     var dz = document.getElementById("dropzone");
     ["dragenter", "dragover"].forEach(function (ev) {
       dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
@@ -764,10 +2139,11 @@
     async function handleFileSelect(event) {
       var file = event.target.files[0];
       if (!file) return;
-      document.getElementById("dz-filename").textContent = "Selected: " + file.name;
+      var dzEl = document.getElementById("dropzone");
+      var nameEl = document.getElementById("dz-filename");
+      nameEl.textContent = "Reading " + file.name + "...";
 
       if (file.name.toLowerCase().endsWith(".pdf")) {
-        document.getElementById("dz-filename").textContent = "Extracting text from PDF...";
         try {
           var arrayBuffer = await file.arrayBuffer();
           var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
@@ -779,31 +2155,82 @@
             fullText += "\n--- Slide / Page " + i + " ---\n" + strings.join(" ");
           }
           document.getElementById("notes-input").value = fullText;
-          document.getElementById("dz-filename").textContent = "Extracted " + pdf.numPages + " slides from " + file.name;
+          dzEl.classList.add("loaded");
+          nameEl.textContent = "Ready: " + file.name + " (" + pdf.numPages + " slides extracted)";
         } catch (err) {
-          alert("Error reading PDF: " + err.message);
-          document.getElementById("dz-filename").textContent = "Click or drag and drop course slides (PDF, TXT, MD)";
+          nameEl.textContent = "Could not read PDF (" + err.message + "). Try pasting text instead.";
         }
       } else {
         var reader = new FileReader();
         reader.onload = function (e) {
           document.getElementById("notes-input").value = e.target.result;
-          document.getElementById("dz-filename").textContent = "Loaded " + file.name;
+          dzEl.classList.add("loaded");
+          nameEl.textContent = "Ready: " + file.name;
         };
         reader.readAsText(file);
       }
     }
 
+    /* ---------- GENERATION WITH HONEST TIMER & PLAIN-LANGUAGE ERRORS ---------- */
+    function formatFriendlyError(rawMessage) {
+      var msg = String(rawMessage || "");
+      if (msg.indexOf("cancelled") > -1 || msg.indexOf("AbortError") > -1) {
+        return { title: "Generation cancelled", body: "You stopped the generation. Your notes are still in Step 1 whenever you want to try again." };
+      }
+      if (msg.indexOf("401") > -1 || msg.toLowerCase().indexOf("authentication") > -1 || msg.toLowerCase().indexOf("invalid") > -1) {
+        return { title: "Your API key was rejected", body: "The provider returned an authentication error (HTTP 401). Open Step 2 and check that you pasted a valid key for " + currentProvider.toUpperCase() + "." };
+      }
+      if (msg.indexOf("429") > -1 || msg.toLowerCase().indexOf("rate") > -1 || msg.toLowerCase().indexOf("quota") > -1) {
+        return { title: "Provider rate limit or credit limit reached", body: "Your AI account hit a rate or billing limit (HTTP 429). Wait a moment or check your provider billing dashboard." };
+      }
+      if (msg.toLowerCase().indexOf("json") > -1 || msg.toLowerCase().indexOf("unterminated") > -1) {
+        return { title: "The response was cut off before finishing", body: "The model ran out of space while writing questions. Click Try again or upload a shorter section of slides." };
+      }
+      return { title: "Could not complete generation", body: "Something interrupted the request. You can retry immediately or expand Technical details below." };
+    }
+
+    function startElapsedTimer() {
+      stopElapsedTimer();
+      var start = Date.now();
+      var el = document.getElementById("prog-elapsed");
+      if (el) el.textContent = "0:00";
+      elapsedTimerId = setInterval(function () {
+        var sec = Math.floor((Date.now() - start) / 1000);
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        if (el) el.textContent = m + ":" + (s < 10 ? "0" + s : s);
+      }, 1000);
+    }
+
+    function stopElapsedTimer() {
+      if (elapsedTimerId) {
+        clearInterval(elapsedTimerId);
+        elapsedTimerId = null;
+      }
+    }
+
+    function cancelGeneration() {
+      if (window.StudyArenaAPI && window.StudyArenaAPI.abort) {
+        window.StudyArenaAPI.abort();
+      }
+      stopElapsedTimer();
+      document.getElementById("stepper").classList.remove("active");
+      document.getElementById("gen-btn").disabled = false;
+    }
+
     async function startGeneration() {
       var notes = document.getElementById("notes-input").value.trim();
       var teacherAnnals = document.getElementById("annals-input").value.trim();
+      var isMock = new URLSearchParams(window.location.search).get("mock");
 
-      if (!notes) {
-        alert("Please paste course notes or upload slides first.");
+      if (!notes && !isMock) {
+        setInputMode("paste");
+        document.getElementById("notes-input").focus();
         return;
       }
+
       var key = localStorage.getItem("sa_api_key_" + currentProvider);
-      if (!key) {
+      if (!key && !isMock) {
         openKeyModal();
         return;
       }
@@ -813,22 +2240,28 @@
       var progMsg = document.getElementById("prog-msg");
       var progFill = document.getElementById("prog-fill");
       var resCard = document.getElementById("result-card");
+      var prevErr = document.getElementById("error-card");
 
       genBtn.disabled = true;
       resCard.classList.remove("active");
-      stepper.classList.add("active");
-      var prevErr = document.getElementById("error-card");
       if (prevErr) prevErr.style.display = "none";
+      stepper.classList.add("active");
+      progFill.style.transform = "scaleX(0.1)";
+      startElapsedTimer();
 
       try {
-        var result = await window.StudyArenaAPI.generate(notes, teacherAnnals, function (msg, pct) {
+        var result = await window.StudyArenaAPI.generate(notes || "Sample notes", teacherAnnals, function (msg, pct) {
           progMsg.textContent = msg;
-          progFill.style.width = pct + "%";
+          var ratio = Math.max(0.08, Math.min(1, (pct || 15) / 100));
+          progFill.style.transform = "scaleX(" + ratio + ")";
         });
 
+        stopElapsedTimer();
         generatedCourseData = result.courseData;
         generatedHtmlString = result.compiledHtml;
         generatedHtmlBlob = new Blob([result.compiledHtml], { type: "text/html" });
+
+        saveArenaToHistory(result.courseData, result.compiledHtml);
 
         stepper.classList.remove("active");
         resCard.classList.add("active");
@@ -837,21 +2270,27 @@
         var zCount = (result.courseData.zones || []).length;
         var cCount = (result.courseData.chapters || []).length;
         document.getElementById("result-stats").innerHTML =
-          "<span>Course: <b>" + (result.courseData.config.title || "Custom Arena") + "</b></span>" +
+          "<span>Course: <b>" + escapeHtml(result.courseData.config.title || "Custom Arena") + "</b></span>" +
           "<span>Zones: <b>" + zCount + "</b></span>" +
           "<span>Questions: <b>" + qCount + "</b></span>" +
           "<span>Chapters: <b>" + cCount + "</b></span>";
+
+        var playBtn = document.getElementById("btn-play-main");
+        if (playBtn) playBtn.focus();
       } catch (err) {
+        stopElapsedTimer();
+        stepper.classList.remove("active");
         var errorCard = document.getElementById("error-card");
         var errorDetails = document.getElementById("error-details");
+        var friendly = formatFriendlyError(err && err.message);
+        var tEl = document.getElementById("error-summary-title");
+        var bEl = document.getElementById("error-summary-body");
+        if (tEl) tEl.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><span>' + escapeHtml(friendly.title) + '</span>';
+        if (bEl) bEl.textContent = friendly.body;
         if (errorCard && errorDetails) {
-          errorDetails.textContent = err.message;
+          errorDetails.textContent = (err && err.message) || String(err);
           errorCard.style.display = "flex";
-          errorCard.scrollIntoView({ behavior: "smooth", block: "center" });
-        } else {
-          alert("Generation Error: " + err.message);
         }
-        stepper.classList.remove("active");
       } finally {
         genBtn.disabled = false;
       }
@@ -890,7 +2329,7 @@
 
     function downloadGeneratedArena() {
       if (!generatedHtmlBlob) return;
-      var title = (generatedCourseData && generatedCourseData.config.key) || "study-arena";
+      var title = (generatedCourseData && generatedCourseData.config && generatedCourseData.config.key) || "study-arena";
       var a = document.createElement("a");
       a.href = URL.createObjectURL(generatedHtmlBlob);
       a.download = title + ".html";
@@ -901,8 +2340,6 @@
 
     function applyTheme(t) {
       document.documentElement.setAttribute('data-theme', t);
-      var lbl = document.getElementById('theme-label');
-      if (lbl) lbl.textContent = t === 'dark' ? 'Light' : 'Dark';
     }
 
     function toggleTheme() {
@@ -912,22 +2349,23 @@
       applyTheme(next);
     }
 
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        closeKeyModal();
+        closeArenaPlayer();
+      }
+    });
+
     (function init() {
       applyTheme(localStorage.getItem('study_arena_theme') || 'light');
       updateKeyUI();
+      updateSavedBadge();
+      hydrateLastSavedArena();
+      if (window.location.hash === "#saved" || new URLSearchParams(window.location.search).get("view") === "saved") {
+        switchMainView("saved");
+      }
     })();
   </script>
-
-  <div id="arena-player-modal">
-    <div class="player-bar">
-      <div class="player-title" id="player-title">Playing Study Arena</div>
-      <div class="player-actions">
-        <a id="player-newtab-btn" class="btn-nav btn-link" href="#" target="_blank">Open in new tab</a>
-        <button class="btn-nav btn-danger" onclick="closeArenaPlayer()">Close</button>
-      </div>
-    </div>
-    <iframe id="arena-player-iframe" sandbox="allow-scripts allow-same-origin allow-modals allow-downloads"></iframe>
-  </div>
 
 </body>
 </html>
