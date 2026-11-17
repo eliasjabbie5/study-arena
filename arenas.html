@@ -1574,7 +1574,6 @@
       <div class="player-header">
         <span class="mono" id="player-title" style="font-weight:600;">Playing Study Arena</span>
         <div style="display:flex; align-items:center; gap:8px;">
-          <a id="player-newtab-btn" href="#" target="_blank" class="btn-ghost" style="padding:4px 12px; font-size:12px;">Open Full Page &rarr;</a>
           <button type="button" class="btn-ghost" style="padding:4px 12px; font-size:12px;" onclick="closeArenaPlayer()">Close &times;</button>
         </div>
       </div>
@@ -1817,7 +1816,7 @@
         '</div>' +
         '<div class="arena-actions">' +
           '<button type="button" class="btn-play" onclick="playReferenceInModal()">Play Reference Arena</button>' +
-          '<a href="dist/ethics.html?v=3.5.0" target="_blank" class="btn-download" style="text-decoration:none;">Open in New Tab &rarr;</a>' +
+
         '</div>' +
       '</article>';
 
@@ -1828,13 +1827,11 @@
     function playReferenceInModal() {
       var modal = document.getElementById("arena-player-modal");
       var iframe = document.getElementById("arena-player-iframe");
-      var newtabBtn = document.getElementById("player-newtab-btn");
-      var title = document.getElementById("player-title");
+var title = document.getElementById("player-title");
       if (title) title.textContent = "Business Ethics Arena";
       var url = "dist/ethics.html?v=" + Date.now();
       if (iframe) iframe.src = url;
-      if (newtabBtn) newtabBtn.href = url;
-      if (modal) modal.classList.add("open");
+if (modal) modal.classList.add("open");
     }
 
     function playSavedArenaById(id) {
@@ -2230,9 +2227,7 @@
       var modal = document.getElementById("arena-player-modal");
       var iframe = document.getElementById("arena-player-iframe");
       var title = document.getElementById("player-title");
-      var newTabBtn = document.getElementById("player-newtab-btn");
-
-      if (title && generatedCourseData && generatedCourseData.config) {
+if (title && generatedCourseData && generatedCourseData.config) {
         title.textContent = "Playing: " + (generatedCourseData.config.title || "Custom Arena");
       }
       var blobUrl = generatedHtmlBlob ? URL.createObjectURL(generatedHtmlBlob) : "";

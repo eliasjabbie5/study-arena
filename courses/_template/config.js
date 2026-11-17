@@ -6,6 +6,6 @@ var CONFIG={
   examName:"Sample course",
   examFormat:"a sample paper",
   examTotal:20,
-  ranks:[[0,"Rookie"],[100,"Student"],[300,"Regular"],[600,"Pro"],[900,"Expert"],[1250,"Master"]],
+  ranks:[[0,"Foundational Standing"],[150,"Proficiency Standing"],[350,"Advanced Practice"],[650,"Executive Mastery"],[1000,"Distinction Honors"]],
   zshort:{mkt:"Markets"}
 };

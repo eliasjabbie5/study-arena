@@ -135,9 +135,9 @@ var G=null;
 function header(active){
   var r=rankInfo(),m=Q.filter(isMas).length;
   return '<header class="top"><div class="brand"><h1>'+esc(CONFIG.title)+'</h1><div class="mono">'+esc(CONFIG.subtitle)+'</div></div>'+
-   '<div class="stats"><div class="stat"><b class="tnum">'+S.xp+'</b><span>XP</span></div><div class="stat"><b class="tnum">'+S.streak+'</b><span>Streak</span></div><div class="stat"><b class="tnum">'+m+'/'+Q.length+'</b><span>Mastered</span></div></div></header>'+
+   '<div class="stats"><div class="stat"><b class="tnum">'+S.xp+'</b><span>Score</span></div><div class="stat"><b class="tnum">'+S.streak+'</b><span>Consistency</span></div><div class="stat"><b class="tnum">'+m+'/'+Q.length+'</b><span>Mastery</span></div></div></header>'+
    '<nav class="nav" aria-label="Sections"><button data-go="home"'+(active==="home"?' aria-current="page"':'')+'>Chapters</button><button data-go="learn"'+(active==="learn"?' aria-current="page"':'')+'>Learn</button><button data-go="exams"'+(active==="exams"?' aria-current="page"':'')+'>Mock exams</button><button data-go="progress"'+(active==="progress"?' aria-current="page"':'')+'>My progress</button></nav>'+
-   '<div class="rankbar"><div class="rankrow"><strong>'+r.name+'</strong><span class="hint">'+(r.next?r.toGo+' XP to '+r.next:'Top rank reached')+'</span></div><div class="bar"><i style="width:'+r.pct+'%"></i></div></div>';
+   '<div class="rankbar"><div class="rankrow"><strong>'+r.name+'</strong><span class="hint">'+(r.next?r.toGo+' points to '+r.next:'Distinction Honors Achieved')+'</span></div><div class="bar"><i style="width:'+r.pct+'%"></i></div></div>';
 }
 function wireNav(){app.querySelectorAll(".nav button").forEach(function(b){b.onclick=function(){var g=b.dataset.go;stopClock();if(g==="home")home();else if(g==="progress")progress();else if(g==="learn")learn();else if(g==="exams")exams();else diagrams()}})}
 
@@ -152,17 +152,17 @@ function home(){
       '<div class="meta"><span>'+c.mcq+' MCQ \u00b7 '+c.short+' short \u00b7 '+c.essay+' essay</span><span class="tnum">'+m+'/'+all.length+'</span></div></button>';
   });
   h+='</div><div class="modes">'+
-   '<button class="mode" id="mock"><h3>Quick mock</h3><p>14 multiple choice (3 of them traps), 3 short answers and 1 essay drawn from every chapter.</p></button>'+
-   '<button class="mode alt" id="essays"><h3>Essay lab</h3><p>All 6 essays, graded one by one against a rubric.</p></button>'+
-   '<button class="mode alt" id="traps"><h3>Trap round</h3><p>'+Q.filter(function(q){return q.trick}).length+' trick questions: negations, near-synonyms and combined statements.</p></button>'+
-   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'Nothing to retry yet.')+'</p></button></div>'+
+   '<button class="mode" id="mock"><h3>Timed Diagnostic Mock</h3><p>14 multiple choice (3 of them scenario traps), 3 short answers and 1 essay drawn from across the syllabus.</p></button>'+
+   '<button class="mode alt" id="essays"><h3>Written Case &amp; Essay Lab</h3><p>All 6 case essays, rigorously evaluated against academic grading criteria.</p></button>'+
+   '<button class="mode alt" id="traps"><h3>Distractor Forensics</h3><p>'+Q.filter(function(q){return q.trick}).length+' scenario traps: deceptive distractors, edge cases, and combined assertions.</p></button>'+
+   '<button class="mode alt" id="missed"'+(miss?'':' disabled')+'><h3>Retry misses</h3><p>'+(miss?miss+' question'+(miss>1?'s':'')+' where your last attempt was below 70%.':'No incorrect responses to review yet.')+'</p></button></div>'+
    '<div class="foot"><span>Essays and short answers are evaluated against a rubric built from your notes. Progress is saved locally in your browser.</span></div>';
   app.innerHTML=h;wireNav();
   app.querySelectorAll(".zone").forEach(function(b){b.onclick=function(){startZone(b.dataset.z)}});
   $("#mock").onclick=startMock;
-  $("#essays").onclick=function(){start("Essay lab",Q.filter(function(q){return q.t==="essay"}))};
-  $("#traps").onclick=function(){start("Trap round",shuffle(Q.filter(function(q){return q.trick})).slice(0,12))};
-  var mb=$("#missed");if(!mb.disabled)mb.onclick=function(){start("Retry misses",shuffle(missed()))};
+  $("#essays").onclick=function(){start("Written Case & Essay Lab",Q.filter(function(q){return q.t==="essay"}))};
+  $("#traps").onclick=function(){start("Distractor Forensics",shuffle(Q.filter(function(q){return q.trick})).slice(0,12))};
+  var mb=$("#missed");if(!mb.disabled)mb.onclick=function(){start("Review Incorrect Responses",shuffle(missed()))};
   window.scrollTo(0,0);
 }
 
@@ -194,7 +194,7 @@ function progress(){
   var weak=wk.filter(function(t){return t.st.att&&t.st.ratio<0.8});
   var focus=weak.length?'<div class="focus"><b>Focus next:</b> '+weak.slice(0,3).map(function(t){return esc(t.name)+' ('+pct(t.st.ratio)+' of tried questions mastered)'}).join(', ')+'.</div>':
     (all.att?'<div class="focus"><b>Nice.</b> Nothing you have tried is below 80%. Cover the questions you have not seen yet.</div>':'');
-  h+=focus+'<div class="btns"><button class="btn" id="pw">Practice my weakest topics</button><button class="btn ghost" id="pu"'+(all.n-all.att?'':' disabled')+'>Try unseen questions</button><button class="btn ghost" id="pm"'+(missed().length?'':' disabled')+'>Retry misses ('+missed().length+')</button></div>';
+  h+=focus+'<div class="btns"><button class="btn" id="pw">Strengthen Priority Topics</button><button class="btn ghost" id="pu"'+(all.n-all.att?'':' disabled')+'>Explore Unseen Questions</button><button class="btn ghost" id="pm"'+(missed().length?'':' disabled')+'>Review Incorrect Responses ('+missed().length+')</button></div>';
   h+='<div class="card"><div class="sec-h"><h2>Topics, weakest first</h2><span class="hint">Green is mastered, red needs work</span></div><div>';
   wk.forEach(function(t){var s=status(t.st);
     h+='<div class="trow"><div><h4>'+esc(t.name)+'</h4><div class="sub">'+esc(ZSHORT[t.z])+' \u00b7 '+t.st.att+' of '+t.st.n+' tried'+(t.st.right+t.st.wrong?' \u00b7 '+t.st.right+' right, '+t.st.wrong+' wrong':'')+'</div></div>'+
@@ -203,19 +203,14 @@ function progress(){
   h+='</div></div>';
   var ex=(S.exams||[]).slice().reverse().slice(0,6);
   h+='<div class="card"><div class="sec-h"><h2>Written mock exams</h2><span class="hint">'+(ex.length?'Latest first':'None yet')+'</span></div>'+(ex.length?'<ul class="act">'+ex.map(function(x){var e=exById(x.p),pc=x.s/x.m,k=pc>=0.7?"y":pc>=0.5?"p":"n";return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(e?e.title+" \u00b7 "+e.sub:x.p)+'<div class="sub hint">'+x.d.map(function(d){return d.n+": "+d.s+"/"+d.m}).join(" \u00b7 ")+'</div></span><span class="hint"><b>'+x.s+'/'+x.m+'</b> \u00b7 '+ago(x.t)+'</span></li>'}).join("")+'</ul>':'<p class="hint">Sit a paper under Mock exams to see your written-exam scores here.</p>')+'</div>';
-  var recent=S.log.slice(-10).reverse();
-  h+='<div class="card"><div class="sec-h"><h2>Recent answers</h2><span class="hint">Your last '+recent.length+'</span></div>';
-  if(!recent.length)h+='<p class="hint">No answers yet. Open a chapter to start.</p>';
-  else h+='<ul class="act">'+recent.map(function(l){var q=qOf(l.id);if(!q)return "";var k=l.s>=0.7?"y":l.s>=0.4?"p":"n";
-    return '<li><span class="m '+k+'">'+(k==="y"?"\u2713":k==="n"?"\u2717":"~")+'</span><span class="q">'+esc(q.q.length>110?q.q.slice(0,108)+"...":q.q)+'<div class="sub hint">'+esc(q.topic)+' \u00b7 '+TYPE_LABEL[q.t]+(q.t!=="mcq"?' \u00b7 '+Math.round(l.s*100)+'%':'')+'</div></span><span class="hint">'+ago(l.t)+'</span></li>'}).join("")+'</ul>';
-  h+='</div><div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
+<div class="foot"><span>Progress is saved locally on this browser session.</span><span id="resetwrap"><button class="link" id="reset">Reset progress</button></span></div>';
   app.innerHTML=h;wireNav();
   $("#pw").onclick=function(){
     var pick=weak.length?weak:wk.filter(function(t){return !t.st.att});if(!pick.length)pick=wk;
     var qs=[];pick.slice(0,3).forEach(function(t){qs=qs.concat(t.qs)});
-    start("Weakest topics",practiceQs(qs,14))};
-  var pu=$("#pu");if(!pu.disabled)pu.onclick=function(){start("Unseen questions",practiceQs(Q.filter(function(q){return !S.done[q.id]}),12))};
-  var pm=$("#pm");if(!pm.disabled)pm.onclick=function(){start("Retry misses",shuffle(missed()))};
+    start("Priority Topics",practiceQs(qs,14))};
+  var pu=$("#pu");if(!pu.disabled)pu.onclick=function(){start("Unseen Questions",practiceQs(Q.filter(function(q){return !S.done[q.id]}),12))};
+  var pm=$("#pm");if(!pm.disabled)pm.onclick=function(){start("Review Incorrect Responses",shuffle(missed()))};
   app.querySelectorAll("[data-topic]").forEach(function(b){b.onclick=function(){var t=ts.filter(function(x){return x.name===b.dataset.topic})[0];start("Practice: "+t.name,practiceQs(t.qs,12))}});
   $("#reset").onclick=function(){
     $("#resetwrap").innerHTML='<span>Erase all progress? </span><button class="link" id="yes">Yes, erase</button> \u00b7 <button class="link" id="no">Cancel</button>';
@@ -286,7 +281,7 @@ function answerMcq(q,pick){
   var html;
   if(ok){
     var others=q.o.map(function(_,i){return i}).filter(function(i){return i!==q.a});
-    html='<div class="fb good"><strong>Correct'+(gain?' \u00b7 +'+gain+' XP':'')+'</strong>'+trap+'<p>'+esc(q.w[q.a])+'</p><p><b>In depth.</b> '+esc(q.e)+'</p></div>'+
+    html='<div class="fb good"><strong>Correct'+(gain?' \u00b7 +'+gain+' points':'')+'</strong>'+trap+'<p>'+esc(q.w[q.a])+'</p><p><b>In depth.</b> '+esc(q.e)+'</p></div>'+
       '<details class="model"><summary>Why the other options are wrong</summary><ul class="why">'+others.map(li).join("")+'</ul></details>';
   }else{
     var rest=q.o.map(function(_,i){return i}).filter(function(i){return i!==q.a&&i!==pick});
@@ -315,7 +310,7 @@ async function answerText(q,ans){
   var missHTML=missed_.length?'<div><div class="mono" style="margin-bottom:6px">What was missing</div><ul class="imp">'+missed_.map(function(r){return '<li>'+esc(r.p)+'</li>'}).join("")+'</ul></div>':"";
   var deepHTML=g.deep?'<div class="fb mid"><p><b>In depth.</b> '+esc(g.deep)+'</p></div>':"";
   var imp=g.improve&&g.improve.length?'<div><div class="mono" style="margin-bottom:6px">To improve</div><ul class="imp">'+g.improve.map(function(x){return '<li>'+esc(x)+'</li>'}).join("")+'</ul></div>':"";
-  $("#after").innerHTML='<div class="grade"><div class="gh">'+ring+'<div style="min-width:0;flex:1"><div class="src">'+(g.src==="ai"?"Rubric evaluation":"Keyword check (offline)")+'</div><strong style="font-family:var(--f-display);font-size:20px">'+hit+' of '+q.rub.length+' rubric points'+(gain?' \u00b7 +'+gain+' XP':'')+'</strong></div></div>'+
+  $("#after").innerHTML='<div class="grade"><div class="gh">'+ring+'<div style="min-width:0;flex:1"><div class="src">'+(g.src==="ai"?"Rubric evaluation":"Keyword check (offline)")+'</div><strong style="font-family:var(--f-display);font-size:20px">'+hit+' of '+q.rub.length+' rubric points'+(gain?' \u00b7 +'+gain+' points':'')+'</strong></div></div>'+
    '<div class="fb '+cls+'"><p>'+esc(g.feedback)+'</p>'+(aiNote&&g.src!=="ai"?'<p class="hint">'+esc(aiNote)+'</p>':'')+'</div>'+rub+missHTML+deepHTML+imp+
    '<details class="model"'+(s<0.7?' open':'')+'><summary>'+(s<0.7?'Model answer':'Show model answer')+(q.fig?' and diagram':'')+'</summary><p>'+esc(q.model)+'</p>'+(q.fig?'<div style="margin-top:12px">'+figHTML(q,false)+'</div>':'')+'</details>'+
    '<div class="row"><button class="btn ghost" id="retry">Rewrite this answer</button><span></span></div>'+nextBtn()+'</div>';
@@ -329,16 +324,16 @@ function summary(){
   var byZ={};G.res.forEach(function(r){var q=qOf(r.id);(byZ[q.z]=byZ[q.z]||[]).push(r.s)});
   var verdict=pc>=85?"Exam ready":pc>=70?"Solid":pc>=50?"Getting there":"Needs another pass";
   var wrong=G.res.filter(function(r){return r.s<0.7}).map(function(r){return qOf(r.id)});
-  var h=header("")+'<div class="res"><div><div class="mono">'+esc(G.title)+' \u00b7 '+n+' question'+(n>1?"s":"")+'</div><h2>'+verdict+' \u00b7 '+pc+'%</h2><p class="hint" style="margin:6px 0 0">+'+G.sess+' XP this run</p></div>';
+  var h=header("")+'<div class="res"><div><div class="mono">'+esc(G.title)+' \u00b7 '+n+' question'+(n>1?"s":"")+'</div><h2>'+verdict+' \u00b7 '+pc+'%</h2><p class="hint" style="margin:6px 0 0">+'+G.sess+' points earned</p></div>';
   h+='<div style="display:grid;gap:12px">';
   Object.keys(byZ).forEach(function(z){var a=byZ[z],p=Math.round(a.reduce(function(x,y){return x+y},0)/a.length*100);
     h+='<div class="zrow"><span>'+esc(zname(z))+'</span><span class="tnum mono">'+p+'%</span><div class="bar"><i style="width:'+p+'%"></i></div></div>'});
   h+='</div>';
   if(wrong.length)h+='<div><div class="mono" style="margin-bottom:6px">To review ('+wrong.length+')</div><ul class="imp">'+wrong.map(function(q){return '<li>'+esc(q.topic)+': '+esc(q.q.length>100?q.q.slice(0,98)+"...":q.q)+'</li>'}).join("")+'</ul></div>';
-  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to chapters</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Retry the ones I missed</button>':'')+'</div></div>';
+  h+='<div class="btns"><button class="btn" id="prog">See my progress</button><button class="btn ghost" id="home">Back to chapters</button>'+(G.mock?'<button class="btn ghost" id="again">New mock exam</button>':'')+(wrong.length?'<button class="btn ghost" id="redo">Review Incorrect Responses</button>':'')+'</div></div>';
   app.innerHTML=h;wireNav();
   $("#prog").onclick=progress;$("#home").onclick=home;if(G.mock)$("#again").onclick=startMock;
-  var rd=$("#redo");if(rd)rd.onclick=function(){start("Retry misses",wrong)};
+  var rd=$("#redo");if(rd)rd.onclick=function(){start("Review Incorrect Responses",wrong)};
   window.scrollTo(0,0);
 }
 

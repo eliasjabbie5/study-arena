@@ -38,7 +38,7 @@ Your mission is to transform raw student course material (slides, readings, lect
    Every question and chapter must trace strictly to the provided student material. Mark references with slide/page citations.
 
 6. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
-   - Zero AI Cliché Vocabulary: Never use flowery, meta, or clichéd AI words such as "delve", "testament", "tapestry", "beacon", "multifaceted", "pivotal", "plethora", "crucial role", "in conclusion", "it is important to remember", "realm", "furthermore".
+   - Zero AI Cliche Vocabulary: Never use flowery, meta, or cliched AI words such as "delve", "testament", "tapestry", "beacon", "multifaceted", "pivotal", "plethora", "crucial role", "in conclusion", "it is important to remember", "realm", "furthermore".
    - Terse, Concrete Instructor Tone: Write like an exacting exam writer who values precision and respect for the student's revision time. Use real operational details, balance sheet constraints, customer dynamics, and regulatory limits.
    - Genuine Plausibility: Every distractor option in multiple-choice questions must sound like a defensible real-world management option that an inexperienced manager or student might mistakenly choose.
 
@@ -61,11 +61,11 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     "subtitle": "Course Name \u00b7 Exam Prep Simulator",
     "course": "Full course name and university context",
     "ranks": [
-      [0, "Novice"],
-      [150, "Apprentice Analyst"],
-      [350, "Associate Consultant"],
-      [650, "Senior Strategist"],
-      [1000, "Managing Director"]
+      [0, "Foundational Standing"],
+      [150, "Proficiency Standing"],
+      [350, "Advanced Practice"],
+      [650, "Executive Mastery"],
+      [1000, "Distinction Honors"]
     ],
     "zshort": {
       "zone_id": "Short Zone Name"
@@ -305,7 +305,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
           title: "Corporate Finance: Cost of Capital",
           subtitle: "WACC, Capital Structure & Pecking Order",
           course: "Corporate Finance",
-          ranks: [[0,"Novice"],[150,"Analyst"],[350,"Associate"],[650,"VP"],[1000,"Partner"]],
+          ranks:[[0,"Foundational Standing"],[150,"Proficiency Standing"],[350,"Advanced Practice"],[650,"Executive Mastery"],[1000,"Distinction Honors"]],
           zshort: { "wacc": "WACC & CAPM", "mm": "Modigliani-Miller" }
         },
         zones: [
