@@ -815,20 +815,24 @@
   <!-- STICKY EDITORIAL NAVBAR -->
   <header class="editorial-nav">
     <div class="container nav-inner">
-      <a href="index.html" class="brand-mark" onclick="switchMainView('create'); return false;">
+      <a href="index.html" class="brand-mark" onclick="switchMainView('landing'); return false;">
         <div class="brand-logo-sq">SA</div>
         <div class="brand-text">Study Arena</div>
         <span class="brand-badge">ED. 2026</span>
       </a>
 
       <div class="nav-tabs-group">
-        <button type="button" class="nav-tab active" id="nav-create" onclick="switchMainView('create')">Generator</button>
+        <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
+        <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')">Generator</button>
         <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
           Saved Arenas <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
         </button>
       </div>
 
       <div class="nav-right-actions">
+        <button type="button" class="btn-primary" id="nav-try-btn" style="padding:7px 16px; font-size:13px;" onclick="switchMainView('generator')">
+          Try Now
+        </button>
         <button type="button" class="provider-pill" id="key-label" onclick="openKeyModal()">
           <span class="dot-status" id="key-ind"></span>
           <span id="active-prov-name">CLAUDE</span>
@@ -854,7 +858,7 @@
   <main class="container">
 
     <!-- CREATE VIEW -->
-    <div id="view-create">
+    <div id="view-landing" class="main-view active">
 
       <!-- HERO SECTION -->
       <section class="hero-section">
@@ -877,6 +881,20 @@
           <span class="school-pill">Strategic Management</span>
           <span class="school-pill">Business Ethics &amp; Governance</span>
           <span class="school-pill">Operations &amp; Supply Chain</span>
+        </div>
+
+        <!-- PRIMARY CALL TO ACTION -->
+        <div style="display:flex; justify-content:center; gap:14px; flex-wrap:wrap; margin-top:32px;">
+          <button type="button" class="btn-primary" style="padding:15px 36px; font-size:16px; border-radius:var(--r-md);" onclick="switchMainView('generator')">
+            <span>Try Now</span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+              <polyline points="12 5 19 12 12 19"></polyline>
+            </svg>
+          </button>
+          <button type="button" class="btn-ghost" style="padding:15px 26px; font-size:15px; border-radius:var(--r-md);" onclick="loadPreloadedMock()">
+            Try Pre-loaded Demo
+          </button>
         </div>
       </section>
 
@@ -967,6 +985,50 @@
           </article>
         </div>
       </section>
+
+      <!-- 3-STEP VALUE SECTION ON LANDING -->
+      <section style="margin-bottom:80px; padding: 48px 0; border-top: 1px solid var(--line);">
+        <div style="text-align:center; max-width:640px; margin: 0 auto 36px;">
+          <h3 class="serif-title" style="font-size:26px; margin-bottom:8px;">How Study Arena Works</h3>
+          <p style="margin:0; color:var(--ink-2); font-size:14px;">From raw slide deck to interactive practice exam in under 60 seconds.</p>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px;">
+          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
+            <div class="mono" style="color:var(--accent); margin-bottom:8px;">01 &middot; INGEST</div>
+            <h4 style="font-size:17px; margin-bottom:6px;">Upload Slides or Readings</h4>
+            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">Drop your course deck (.PDF). Text is extracted directly in your browser with zero server data storage.</p>
+          </div>
+          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
+            <div class="mono" style="color:var(--accent); margin-bottom:8px;">02 &middot; COMPILE</div>
+            <h4 style="font-size:17px; margin-bottom:6px;">Multi-Logical Question Traps</h4>
+            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">The compiler identifies core dilemmas, realistic managerial constraints, and plausible distractors professors test.</p>
+          </div>
+          <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--r-lg); padding:24px;">
+            <div class="mono" style="color:var(--accent); margin-bottom:8px;">03 &middot; SIMULATE</div>
+            <h4 style="font-size:17px; margin-bottom:6px;">Play the Game Offline</h4>
+            <p style="margin:0; font-size:13px; color:var(--ink-2); line-height:1.5;">Get an interactive standalone HTML game. Play on your laptop or phone, track XP, and review full rubrics.</p>
+          </div>
+        </div>
+
+        <div style="text-align:center; margin-top:40px;">
+          <button type="button" class="btn-primary" style="padding:14px 32px; font-size:15px;" onclick="switchMainView('generator')">
+            Get Started - Open Generation Console
+          </button>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- ==================== SCREEN 2: GENERATION CONSOLE ==================== -->
+    <div id="view-generator" class="main-view" style="display:none; padding: 36px 0;">
+      <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:24px; flex-wrap:wrap; gap:12px;">
+        <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="switchMainView('landing')">
+          &larr; Back to Overview
+        </button>
+        <div class="mono" style="color:var(--ink-3); font-size:11px;">
+          SCREEN 2 OF 2 &middot; WORKSPACE CONSOLE
+        </div>
+      </div>
 
       <!-- THE ARENA GENERATION CONSOLE -->
       <section class="console-section" id="generator-console">
@@ -1081,7 +1143,7 @@
           <h2 class="serif-title" style="font-size:32px; margin-bottom:6px;">Saved Study Arenas</h2>
           <p style="margin:0; color:var(--ink-2); font-size:14px;">All previously generated courses stored locally on this machine.</p>
         </div>
-        <button type="button" class="btn-primary" onclick="switchMainView('create')">Create New Arena</button>
+        <button type="button" class="btn-primary" onclick="switchMainView('generator')">Create New Arena</button>
       </div>
 
       <div class="saved-grid" id="saved-arenas-container">
@@ -1213,25 +1275,34 @@
       }
     }
 
-    /* ---------- VIEW SWITCHING (CREATE vs SAVED ARENAS) ---------- */
+    /* ---------- MULTI-SCREEN VIEW SWITCHING (LANDING vs GENERATOR vs SAVED) ---------- */
     function switchMainView(viewName) {
-      var createPane = document.getElementById("view-create");
-      var savedPane = document.getElementById("view-saved");
-      var navCreate = document.getElementById("nav-create");
+      if (viewName === "create") viewName = "generator";
+
+      var viewLanding = document.getElementById("view-landing");
+      var viewGenerator = document.getElementById("view-generator");
+      var viewSaved = document.getElementById("view-saved");
+
+      var navLanding = document.getElementById("nav-landing");
+      var navGenerator = document.getElementById("nav-generator") || document.getElementById("nav-create");
       var navSaved = document.getElementById("nav-saved");
+      var navTryBtn = document.getElementById("nav-try-btn");
+
+      if (viewLanding) viewLanding.style.display = (viewName === "landing") ? "block" : "none";
+      if (viewGenerator) viewGenerator.style.display = (viewName === "generator") ? "block" : "none";
+      if (viewSaved) viewSaved.style.display = (viewName === "saved") ? "block" : "none";
+
+      if (navLanding) navLanding.classList.toggle("active", viewName === "landing");
+      if (navGenerator) navGenerator.classList.toggle("active", viewName === "generator");
+      if (navSaved) navSaved.classList.toggle("active", viewName === "saved");
+      if (navTryBtn) navTryBtn.style.display = (viewName === "generator") ? "none" : "inline-flex";
 
       if (viewName === "saved") {
-        createPane.classList.remove("active");
-        savedPane.classList.add("active");
-        navCreate.classList.remove("active");
-        navSaved.classList.add("active");
         renderSavedArenasList();
         if (history.replaceState) history.replaceState(null, "", "#saved");
+      } else if (viewName === "generator") {
+        if (history.replaceState) history.replaceState(null, "", "#generator");
       } else {
-        savedPane.classList.remove("active");
-        createPane.classList.add("active");
-        navSaved.classList.remove("active");
-        navCreate.classList.add("active");
         if (history.replaceState) history.replaceState(null, "", window.location.pathname + window.location.search);
       }
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -1811,6 +1882,10 @@
       hydrateLastSavedArena();
       if (window.location.hash === "#saved" || new URLSearchParams(window.location.search).get("view") === "saved") {
         switchMainView("saved");
+      } else if (window.location.hash === "#generator" || window.location.hash === "#create" || new URLSearchParams(window.location.search).get("view") === "generator" || new URLSearchParams(window.location.search).get("mock") === "ok") {
+        switchMainView("generator");
+      } else {
+        switchMainView("landing");
       }
     })();
   </script>
@@ -1868,6 +1943,7 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
 
     function loadPreloadedMock() {
+      switchMainView("generator");
       var notes = document.getElementById("notes-input");
       if (notes) {
         notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
