@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@500;600&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400;1,600&display=swap">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
 
   <style>
     :root {
@@ -1275,7 +1276,7 @@
       }
     }
 
-    /* ---------- MULTI-SCREEN VIEW SWITCHING (LANDING vs GENERATOR vs SAVED) ---------- */
+    /* ---------- GSAP CHOREOGRAPHED MULTI-SCREEN TRANSITIONS ---------- */
     function switchMainView(viewName) {
       if (viewName === "create") viewName = "generator";
 
@@ -1288,14 +1289,37 @@
       var navSaved = document.getElementById("nav-saved");
       var navTryBtn = document.getElementById("nav-try-btn");
 
-      if (viewLanding) viewLanding.style.display = (viewName === "landing") ? "block" : "none";
-      if (viewGenerator) viewGenerator.style.display = (viewName === "generator") ? "block" : "none";
-      if (viewSaved) viewSaved.style.display = (viewName === "saved") ? "block" : "none";
+      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : viewSaved;
+      var otherViews = [viewLanding, viewGenerator, viewSaved].filter(function(v) { return v && v !== targetView; });
 
       if (navLanding) navLanding.classList.toggle("active", viewName === "landing");
       if (navGenerator) navGenerator.classList.toggle("active", viewName === "generator");
       if (navSaved) navSaved.classList.toggle("active", viewName === "saved");
       if (navTryBtn) navTryBtn.style.display = (viewName === "generator") ? "none" : "inline-flex";
+
+      var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (window.gsap && !prefersReduced) {
+        gsap.to(otherViews, {
+          opacity: 0,
+          y: -10,
+          duration: 0.18,
+          ease: "power2.inOut",
+          onComplete: function() {
+            otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
+            if (targetView) {
+              targetView.style.display = "block";
+              gsap.fromTo(targetView, 
+                { opacity: 0, y: 16 }, 
+                { opacity: 1, y: 0, duration: 0.32, ease: "power3.out" }
+              );
+            }
+          }
+        });
+      } else {
+        otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
+        if (targetView) targetView.style.display = "block";
+      }
 
       if (viewName === "saved") {
         renderSavedArenasList();
@@ -1905,12 +1929,18 @@ function revealTrap(btn, isCorrect, debriefText) {
     if (debrief) {
       debrief.style.display = 'block';
       debrief.innerHTML = '<strong>Optimal Strategy:</strong> ' + debriefText;
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(debrief, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+      }
     }
   } else {
     btn.classList.add('trap');
     if (debrief) {
       debrief.style.display = 'block';
       debrief.innerHTML = '<strong>Professor Trap Analysis:</strong> ' + debriefText;
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(debrief, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+      }
     }
   }
 }
@@ -1970,6 +2000,55 @@ function revealTrap(btn, isCorrect, debriefText) {
         var card = track.children[curCardIdx];
         if (card) card.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
       };
+    }
+
+
+    // GSAP Organic Motion & Micro-interactions
+    function initMotionDesign() {
+      if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      // 1. Zenarate-style ambient floating for subject pills
+      gsap.utils.toArray('.school-pill').forEach(function(pill, i) {
+        gsap.to(pill, {
+          y: (i % 2 === 0 ? -4 : 4),
+          duration: 2.2 + (i * 0.3),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: i * 0.15
+        });
+      });
+
+      // 2. 3D Parallax tilt on Exam Cards (Latente & Good Times tactility)
+      gsap.utils.toArray('.exam-card').forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+          var rect = card.getBoundingClientRect();
+          var x = e.clientX - rect.left - (rect.width / 2);
+          var y = e.clientY - rect.top - (rect.height / 2);
+          gsap.to(card, {
+            rotationY: x * 0.04,
+            rotationX: -y * 0.04,
+            transformPerspective: 900,
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        });
+        card.addEventListener('mouseleave', function() {
+          gsap.to(card, {
+            rotationY: 0,
+            rotationX: 0,
+            duration: 0.5,
+            ease: 'power3.out'
+          });
+        });
+      });
+    }
+
+    // Call after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMotionDesign);
+    } else {
+      initMotionDesign();
     }
 
 </script>
