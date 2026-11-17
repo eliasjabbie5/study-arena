@@ -36,26 +36,30 @@
       --r-full: 9999px;
     }
 
-    /* LIGHT THEME: Apple White Gallery & Craft Tactile Paper */
+    /* LIGHT THEME: Apple White Gallery & Luxury Emerald Precision */
     :root[data-theme="light"] {
       --bg-canvas: #FFFFFF;
-      --bg-studio: #F5F5F7;
+      --bg-studio: #F6F8F6;
       --bg-card: #FFFFFF;
-      --bg-nav: rgba(255, 255, 255, 0.88);
+      --bg-nav: rgba(255, 255, 255, 0.78);
 
       --border-hairline: 0.5px solid rgba(0, 0, 0, 0.08);
       --border-control: 1px solid rgba(0, 0, 0, 0.12);
-      --border-focus: 1px solid #0071E3;
+      --border-focus: 1px solid #0B7A4F;
 
-      --text-ink: #1D1D1F;
-      --text-graphite: #424245;
-      --text-steel: #86868B;
+      --text-ink: #111815;
+      --text-graphite: #3E4A44;
+      --text-steel: #718077;
 
-      --accent-cta: #0071E3;
-      --accent-cta-hover: #0077ED;
+      --accent-cta: #0B7A4F;
+      --accent-cta-hover: #08603E;
       --accent-cta-text: #FFFFFF;
-      --accent-pill-bg: #E8F2FF;
-      --accent-pill-text: #0066CC;
+      --accent-pill-bg: #E7F5EE;
+      --accent-pill-text: #0B7A4F;
+      --accent-glow: rgba(11, 122, 79, 0.32);
+      --btn-metallic-grad: linear-gradient(180deg, #138E5E 0%, #0B7A4F 60%, #075C3B 100%);
+      --glass-bg: rgba(255, 255, 255, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.7);
 
       --trap-danger-bg: #FFF1F0;
       --trap-danger-border: #FFCCC7;
@@ -92,26 +96,30 @@
       color-scheme: light;
     }
 
-    /* DARK THEME: Linear Midnight Precision Instrument */
+    /* DARK THEME: Obsidian Precision with Luminous Mint Accents */
     :root[data-theme="dark"] {
-      --bg-canvas: #08090A;
-      --bg-studio: #0F1011;
-      --bg-card: #161718;
-      --bg-nav: rgba(8, 9, 10, 0.88);
+      --bg-canvas: #090C0B;
+      --bg-studio: #101513;
+      --bg-card: #151C18;
+      --bg-nav: rgba(9, 12, 11, 0.78);
 
-      --border-hairline: 0.5px solid #23252A;
-      --border-control: 1px solid #383B3F;
-      --border-focus: 1px solid #E4F222;
+      --border-hairline: 0.5px solid #1E2822;
+      --border-control: 1px solid #2A3830;
+      --border-focus: 1px solid #3DDC84;
 
-      --text-ink: #FFFFFF;
-      --text-graphite: #D0D6E0;
-      --text-steel: #8A8F98;
+      --text-ink: #EEF4F0;
+      --text-graphite: #B0C0B7;
+      --text-steel: #75867C;
 
-      --accent-cta: #E4F222;
-      --accent-cta-hover: #EEFA38;
-      --accent-cta-text: #08090A;
-      --accent-pill-bg: rgba(228, 242, 34, 0.12);
-      --accent-pill-text: #E4F222;
+      --accent-cta: #3DDC84;
+      --accent-cta-hover: #5CE69A;
+      --accent-cta-text: #04140B;
+      --accent-pill-bg: rgba(61, 220, 132, 0.12);
+      --accent-pill-text: #3DDC84;
+      --accent-glow: rgba(61, 220, 132, 0.4);
+      --btn-metallic-grad: linear-gradient(180deg, #5CE69A 0%, #3DDC84 65%, #2CB86B 100%);
+      --glass-bg: rgba(21, 28, 24, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
 
       --trap-danger-bg: rgba(235, 87, 87, 0.12);
       --trap-danger-border: rgba(235, 87, 87, 0.3);
@@ -196,15 +204,16 @@
       padding: 0 24px;
     }
 
-    /* COMPACT 48PX EDITORIAL TOP NAV */
+    /* COMPACT 48PX EDITORIAL TOP NAV (ENHANCED FROSTED GLASS) */
     .editorial-nav {
       position: sticky;
       top: 0;
       z-index: 100;
       background: var(--bg-nav);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
       border-bottom: 1px solid var(--line);
+      box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
       transition: border-color 200ms ease;
     }
     .nav-inner {
@@ -322,11 +331,11 @@
     }
     .theme-btn:active { transform: scale(0.94); }
 
-    /* HIGH-CONVERSION CTA & BUTTONS */
+    /* HIGH-CONVERSION CTA & METALLIC / FROSTED BUTTONS */
     .btn-primary {
-      background: var(--accent-cta);
+      background: var(--btn-metallic-grad);
       color: var(--accent-cta-text);
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.22);
       padding: 8px 18px;
       border-radius: var(--radius-pill);
       font-family: var(--f-sans);
@@ -339,21 +348,32 @@
       justify-content: center;
       gap: 6px;
       text-decoration: none;
-      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-      transition: transform 140ms var(--ease-out), background-color 150ms ease, box-shadow 140ms ease;
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.42), 
+                  inset 0 -1px 1px 0 rgba(0, 0, 0, 0.2), 
+                  0 2px 8px var(--accent-glow), 
+                  0 1px 2px rgba(0, 0, 0, 0.12);
+      transition: transform 140ms var(--ease-out), box-shadow 150ms ease, filter 150ms ease;
+      position: relative;
+      overflow: hidden;
     }
     .btn-primary:hover {
-      background: var(--accent-cta-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 12px rgba(0, 113, 227, 0.25);
+      transform: translateY(-1.5px);
+      box-shadow: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.65), 
+                  inset 0 -1px 1px 0 rgba(0, 0, 0, 0.15), 
+                  0 4px 18px var(--accent-glow), 
+                  0 2px 4px rgba(0, 0, 0, 0.16);
+      filter: brightness(1.05);
     }
-    [data-theme="dark"] .btn-primary:hover {
-      box-shadow: 0 4px 16px rgba(228, 242, 34, 0.35);
+    .btn-primary:active {
+      transform: scale(0.98) translateY(0);
+      box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.1);
     }
-    .btn-primary:active { transform: scale(0.98); }
 
+    /* FROSTED GLASS SECONDARY BUTTONS */
     .btn-ghost {
-      background: transparent;
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
       color: var(--text-ink);
       border: 1px solid var(--control-border);
       padding: 8px 18px;
@@ -368,12 +388,14 @@
       justify-content: center;
       gap: 6px;
       text-decoration: none;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.04);
       transition: all 140ms var(--ease-out);
     }
     .btn-ghost:hover {
       border-color: var(--text-ink);
-      background: var(--surface-2);
-      transform: translateY(-1px);
+      background: var(--surface);
+      transform: translateY(-1.5px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.7), 0 4px 12px rgba(0, 0, 0, 0.08);
     }
     .btn-ghost:active { transform: scale(0.98); }
 
@@ -1000,9 +1022,9 @@
       align-items: center;
     }
     .btn-play {
-      background: var(--accent-cta);
+      background: var(--btn-metallic-grad);
       color: var(--accent-cta-text);
-      border: none;
+      border: 1px solid rgba(255, 255, 255, 0.2);
       padding: 8px 16px;
       border-radius: var(--radius-pill);
       font-family: var(--f-sans);
@@ -1013,11 +1035,15 @@
       align-items: center;
       gap: 6px;
       text-decoration: none;
-      transition: transform 120ms var(--ease-out), background-color 150ms ease;
+      box-shadow: inset 0 1px 1px 0 rgba(255, 255, 255, 0.4), 
+                  0 2px 8px var(--accent-glow);
+      transition: transform 120ms var(--ease-out), box-shadow 150ms ease, filter 150ms ease;
     }
     .btn-play:hover {
-      background: var(--accent-cta-hover);
       transform: translateY(-1px);
+      box-shadow: inset 0 1px 1.5px 0 rgba(255, 255, 255, 0.6), 
+                  0 4px 14px var(--accent-glow);
+      filter: brightness(1.05);
     }
     .btn-download {
       background: var(--surface-2);
@@ -1157,7 +1183,6 @@
           <div class="brand-logo-sq">SA</div>
           <span class="brand-text">Study Arena</span>
         </a>
-        <span class="brand-badge">ED. 2026</span>
       </div>
 
       <div class="nav-tabs-group">
@@ -1204,7 +1229,7 @@
       <section class="hero-section">
         <div class="container">
           <div class="hero-eyebrow">
-            <span>ACADEMIC RIGOR ENGINE &middot; ED. 2026</span>
+            <span>ACADEMIC RIGOR SIMULATOR</span>
           </div>
           <h1 class="hero-heading">
             Don't let exam traps catch you off guard.
@@ -1213,21 +1238,13 @@
             Transform syllabi, lecture slides, and past papers into battle-tested scenario simulations with per-option distractor analysis.
           </p>
 
-          <div class="hero-action-cluster">
+          <div class="hero-action-cluster" style="margin-bottom: 20px;">
             <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
               Launch Arena Generator &rarr;
             </button>
             <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
               Play Live Sample &darr;
             </a>
-          </div>
-
-          <div class="proof-row">
-            <span class="proof-pill">Corporate Finance</span>
-            <span class="proof-pill">Managerial Economics</span>
-            <span class="proof-pill">Strategic Management</span>
-            <span class="proof-pill">Operations &middot; Supply Chain</span>
-            <span class="proof-pill">Contract Law</span>
           </div>
         </div>
       </section>
@@ -1523,7 +1540,7 @@
       <div class="footer-huge-mark">STUDY ARENA</div>
       <div class="footer-cols">
         <div>
-          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Study Arena &middot; Ed. 2026</div>
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Study Arena</div>
           <div>Academic Exam Simulation &amp; Distractor Diagnostics.</div>
         </div>
         <div>
@@ -1591,6 +1608,7 @@
 
 
   <script>
+
 
     var currentProvider = localStorage.getItem("sa_ai_provider") || "claude";
     var generatedHtmlBlob = null;
@@ -2275,9 +2293,11 @@
       }
     })();
   
+  
   </script>
 
   <script>
+
 
 // Trap reveal helper for carousel
 function revealTrap(btn, isCorrect, debriefText) {
@@ -2416,6 +2436,19 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
 
 
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
 
         (function() {
           var params = new URLSearchParams(window.location.search);
