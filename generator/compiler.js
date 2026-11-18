@@ -211,19 +211,22 @@ window.StudyArenaCompiler = {
       throw new Error("Engine template bundle not loaded.");
     }
 
-    var customCss = "<style>\n" +
+    var customCss = "\n" +
       ".formula-breakdown{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:14px 18px;margin:14px 0}\n" +
       ".formula-breakdown b{color:var(--ink);font-weight:600}\n" +
       ".formula-breakdown ul{margin:8px 0 0;padding-left:20px}\n" +
       ".formula-breakdown li{margin-bottom:6px;line-height:1.55}\n" +
       ".how-to-apply{background:var(--surface2);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
       ".micro-example{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
-      ".exam{background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
-      "</style>\n";
+      ".exam{background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;border-radius:8px;padding:12px 16px;margin:12px 0}\n";
+
+    var headHtml = b.head || "";
+    if (headHtml.indexOf("</style>") !== -1) {
+      headHtml = headHtml.replace("</style>", customCss + "\n</style>");
+    }
 
     var fullHtml = [
-      b.head,
-      customCss,
+      headHtml,
       configJs,
       b.prelude,
       zonesJs,
