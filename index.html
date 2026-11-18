@@ -1,0 +1,3439 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Study Arena | Academic Exam Simulator</title>
+  <script>
+    (function () {
+      var t = localStorage.getItem('study_arena_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', t);
+    })();
+    </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="generator/engine_bundle.js?v=3.6.0"></script>
+  <script src="generator/compiler.js?v=3.6.0"></script>
+  <script src="generator/api.js?v=3.6.0"></script>
+
+  <style>
+
+    :root {
+      --f-serif: "Lora", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+      --f-sans: "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      
+      --radius-card: 28px;
+      --radius-pill: 9999px;
+      --radius-control: 10px;
+      --radius-badge: 4px;
+
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 28px;
+      --r-full: 9999px;
+    }
+
+    /* LIGHT THEME: Apple White Gallery & Luxury Emerald Precision */
+    :root[data-theme="light"] {
+      --bg-canvas: #FFFFFF;
+      --bg-studio: #F6F8F6;
+      --bg-card: #FFFFFF;
+      --bg-nav: rgba(255, 255, 255, 0.78);
+
+      --border-hairline: 0.5px solid rgba(0, 0, 0, 0.08);
+      --border-control: 1px solid rgba(0, 0, 0, 0.12);
+      --border-focus: 1px solid #0B7A4F;
+
+      --text-ink: #111815;
+      --text-graphite: #3E4A44;
+      --text-steel: #718077;
+
+      --accent-cta: #0B7A4F;
+      --accent-cta-hover: #08603E;
+      --accent-cta-text: #FFFFFF;
+      --accent-pill-bg: #E7F5EE;
+      --accent-pill-text: #0B7A4F;
+      --accent-glow: rgba(11, 122, 79, 0.32);
+      --btn-metallic-grad: linear-gradient(180deg, #138E5E 0%, #0B7A4F 60%, #075C3B 100%);
+      --glass-bg: rgba(255, 255, 255, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.7);
+
+      --trap-danger-bg: #FFF1F0;
+      --trap-danger-border: #FFCCC7;
+      --trap-danger-text: #CF1322;
+      --correct-bg: #F6FFED;
+      --correct-border: #B7EB8F;
+      --correct-text: #389E0D;
+
+      --shadow-float: rgba(0, 0, 0, 0.02) 0px 40px 30px, 
+                      rgba(0, 0, 0, 0.04) 0px 20px 20px, 
+                      rgba(0, 0, 0, 0.06) 0px 4px 10px;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --overlay: rgba(29, 29, 31, 0.55);
+
+      /* Compatibility aliases */
+      --bg: var(--bg-canvas);
+      --surface: var(--bg-card);
+      --surface-2: var(--bg-studio);
+      --line: rgba(0, 0, 0, 0.08);
+      --line-subtle: rgba(0, 0, 0, 0.04);
+      --control-border: rgba(0, 0, 0, 0.14);
+      --ink: var(--text-ink);
+      --ink-2: var(--text-graphite);
+      --ink-3: var(--text-steel);
+      --accent: var(--accent-cta);
+      --accent-hover: var(--accent-cta-hover);
+      --accent-soft: var(--accent-pill-bg);
+      --btn-ink: var(--accent-cta-text);
+      --danger: var(--trap-danger-text);
+      --danger-soft: var(--trap-danger-bg);
+      --danger-line: var(--trap-danger-border);
+      --nav-bg: var(--bg-nav);
+      --card-shadow: var(--shadow-float);
+      color-scheme: light;
+    }
+
+    /* DARK THEME: Obsidian Precision with Luminous Mint Accents */
+    :root[data-theme="dark"] {
+      --bg-canvas: #090C0B;
+      --bg-studio: #101513;
+      --bg-card: #151C18;
+      --bg-nav: rgba(9, 12, 11, 0.78);
+
+      --border-hairline: 0.5px solid #1E2822;
+      --border-control: 1px solid #2A3830;
+      --border-focus: 1px solid #3DDC84;
+
+      --text-ink: #EEF4F0;
+      --text-graphite: #B0C0B7;
+      --text-steel: #75867C;
+
+      --accent-cta: #3DDC84;
+      --accent-cta-hover: #5CE69A;
+      --accent-cta-text: #04140B;
+      --accent-pill-bg: rgba(61, 220, 132, 0.12);
+      --accent-pill-text: #3DDC84;
+      --accent-glow: rgba(61, 220, 132, 0.4);
+      --btn-metallic-grad: linear-gradient(180deg, #5CE69A 0%, #3DDC84 65%, #2CB86B 100%);
+      --glass-bg: rgba(21, 28, 24, 0.65);
+      --glass-border: rgba(255, 255, 255, 0.08);
+
+      --trap-danger-bg: rgba(235, 87, 87, 0.12);
+      --trap-danger-border: rgba(235, 87, 87, 0.3);
+      --trap-danger-text: #FF7875;
+      --correct-bg: rgba(39, 166, 68, 0.12);
+      --correct-border: rgba(39, 166, 68, 0.3);
+      --correct-text: #49AA19;
+
+      --shadow-float: rgba(0, 0, 0, 0.6) 0px 20px 40px -10px, 
+                      0 0 0 1px #23252A;
+      --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.5);
+      --overlay: rgba(0, 0, 0, 0.85);
+
+      /* Compatibility aliases */
+      --bg: var(--bg-canvas);
+      --surface: var(--bg-card);
+      --surface-2: var(--bg-studio);
+      --line: #23252A;
+      --line-subtle: #191B1F;
+      --control-border: #383B3F;
+      --ink: var(--text-ink);
+      --ink-2: var(--text-graphite);
+      --ink-3: var(--text-steel);
+      --accent: var(--accent-cta);
+      --accent-hover: var(--accent-cta-hover);
+      --accent-soft: var(--accent-pill-bg);
+      --btn-ink: var(--accent-cta-text);
+      --danger: var(--trap-danger-text);
+      --danger-soft: var(--trap-danger-bg);
+      --danger-line: var(--trap-danger-border);
+      --nav-bg: var(--bg-nav);
+      --card-shadow: var(--shadow-float);
+      color-scheme: dark;
+    }
+
+    * { box-sizing: border-box; }
+    html {
+      background-color: var(--bg-canvas);
+      color: var(--text-ink);
+      transition: background-color 200ms ease, color 200ms ease;
+      scroll-behavior: smooth;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--f-sans);
+      font-size: 16px;
+      line-height: 1.5;
+      letter-spacing: -0.011em;
+      color: var(--text-ink);
+      background-color: var(--bg-canvas);
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+      max-width: 100vw;
+      position: relative;
+    }
+
+    /* TYPOGRAPHY */
+    h1, h2, h3, h4 { margin: 0; color: var(--text-ink); }
+    .serif-title {
+      font-family: var(--f-serif);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      line-height: 1.15;
+    }
+    .serif-italic {
+      font-family: var(--f-serif);
+      font-style: italic;
+      font-weight: 400;
+    }
+    .mono {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .tnum { font-variant-numeric: tabular-nums; }
+
+    /* LAYOUT CONTAINER */
+    .container {
+      width: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* COMPACT 48PX EDITORIAL TOP NAV (ENHANCED FROSTED GLASS) */
+    .editorial-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg-nav);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--line);
+      box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      transition: border-color 200ms ease;
+    }
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 48px;
+      gap: 16px;
+    }
+    .brand-mark {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: var(--text-ink);
+    }
+    .brand-logo-sq {
+      width: 26px;
+      height: 26px;
+      background: var(--text-ink);
+      color: var(--bg-canvas);
+      display: grid;
+      place-items: center;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: var(--radius-badge);
+    }
+    .brand-text {
+      font-weight: 600;
+      font-size: 14px;
+      letter-spacing: -0.02em;
+    }
+    .brand-badge {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      padding: 2px 6px;
+      border-radius: var(--radius-badge);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-steel);
+    }
+
+    .nav-tabs-group {
+      display: flex;
+      background: var(--surface-2);
+      padding: 3px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+    }
+    .nav-tab {
+      background: none;
+      border: none;
+      padding: 5px 14px;
+      font-family: var(--f-sans);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-graphite);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 140ms var(--ease-out);
+    }
+    .nav-tab.active {
+      background: var(--surface);
+      color: var(--text-ink);
+      font-weight: 600;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+    }
+    .nav-tab:hover:not(.active) {
+      color: var(--text-ink);
+    }
+
+    .nav-right-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .settings-cog-btn {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text-ink);
+      cursor: pointer;
+      transition: all 140ms var(--ease-out);
+    }
+    .settings-cog-btn:hover {
+      border-color: var(--control-border);
+      background: var(--surface-2);
+      transform: scale(1.05);
+    }
+    .settings-cog-btn:active {
+      transform: scale(0.96);
+    }
+    .settings-cog-dot {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #27A644;
+      border: 1.5px solid var(--surface);
+    }
+    .settings-cog-dot.unconfigured {
+      background: #E57A00;
+    }
+
+    .theme-choice-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text-graphite);
+      font-size: 13px;
+      font-family: var(--f-sans);
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .theme-choice-btn.active {
+      border-color: var(--accent-cta);
+      background: var(--surface);
+      color: var(--text-ink);
+      font-weight: 600;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+
+    .provider-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      font-family: var(--f-sans);
+      font-size: 12.5px;
+      font-weight: 500;
+      color: var(--text-graphite);
+    }
+    .provider-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      font-size: 11px;
+      font-family: var(--f-mono);
+      color: var(--text-ink);
+      cursor: pointer;
+      transition: transform 120ms var(--ease-out), border-color 140ms ease;
+    }
+    .provider-pill:hover { border-color: var(--control-border); }
+    .provider-pill:active { transform: scale(0.97); }
+    .dot-status {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #E57A00;
+    }
+    .dot-status.configured {
+      background: #27A644;
+    }
+
+    .theme-btn {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text-graphite);
+      cursor: pointer;
+      transition: transform 120ms var(--ease-out);
+    }
+    .theme-btn:active { transform: scale(0.94); }
+
+    /* SLEEK LUXURY PILL BUTTON (SOLID & CRISP) */
+    .btn-primary {
+      background: var(--accent-cta);
+      color: var(--accent-cta-text);
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 3px 10px var(--accent-glow);
+      transition: transform 140ms var(--ease-out), background-color 150ms ease, box-shadow 150ms ease;
+    }
+    .btn-primary:hover {
+      background: var(--accent-cta-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 6px 18px var(--accent-glow);
+    }
+    .btn-primary:active {
+      transform: scale(0.98);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* FROSTED GLASS SECONDARY BUTTONS */
+    .btn-ghost {
+      background: var(--glass-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: var(--text-ink);
+      border: 1px solid var(--control-border);
+      padding: 8px 18px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 500;
+      font-size: 13px;
+      letter-spacing: -0.01em;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.4), 0 1px 3px rgba(0, 0, 0, 0.04);
+      transition: all 140ms var(--ease-out);
+    }
+    .btn-ghost:hover {
+      border-color: var(--text-ink);
+      background: var(--surface);
+      transform: translateY(-1.5px);
+      box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.7), 0 4px 12px rgba(0, 0, 0, 0.08);
+    }
+    .btn-ghost:active { transform: scale(0.98); }
+
+    /* SCREEN 1: HERO GALLERY STAGE */
+    .hero-section {
+      padding: 96px 0 56px;
+      text-align: center;
+    }
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 24px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
+      padding: 5px 14px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+    }
+    .hero-heading {
+      font-family: var(--f-serif);
+      font-weight: 500;
+      font-size: clamp(38px, 5.6vw, 64px);
+      letter-spacing: -0.035em;
+      line-height: 1.05;
+      max-width: 900px;
+      margin: 0 auto 20px;
+      color: var(--text-ink);
+    }
+    .hero-sub {
+      font-size: clamp(16px, 1.8vw, 19px);
+      max-width: 660px;
+      margin: 0 auto 36px;
+      color: var(--text-graphite);
+      line-height: 1.5;
+      letter-spacing: -0.011em;
+    }
+    .hero-action-cluster {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 44px;
+    }
+    .proof-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+    .proof-pill {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
+      padding: 4px 12px;
+      border-radius: var(--radius-pill);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      letter-spacing: 0.04em;
+    }
+
+    /* SCREEN 1: INTERACTIVE HERO DEMO CARD */
+    .interactive-hero-section {
+      margin-bottom: 96px;
+    }
+    .interactive-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      gap: 16px;
+    }
+    .carousel-nav-btns {
+      display: flex;
+      gap: 8px;
+    }
+    .carousel-arrow {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      color: var(--text-ink);
+      display: grid;
+      place-items: center;
+      cursor: pointer;
+      font-size: 15px;
+      transition: all 120ms var(--ease-out);
+    }
+    .carousel-arrow:hover {
+      border-color: var(--control-border);
+      background: var(--surface-2);
+      transform: scale(1.05);
+    }
+
+    .carousel-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+      transition: transform 300ms var(--ease-out);
+    }
+    @media (max-width: 960px) {
+      .carousel-track {
+        grid-template-columns: 1fr;
+      }
+    }
+    .exam-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-float);
+      transition: transform 180ms var(--ease-out), border-color 180ms ease;
+    }
+    .exam-card:hover {
+      border-color: var(--control-border);
+      transform: translateY(-2px);
+    }
+    .exam-card-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 14px;
+    }
+    .card-badge {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: var(--radius-badge);
+      background: var(--surface-2);
+      color: var(--text-steel);
+      border: 1px solid var(--line);
+    }
+    .card-trap-tag {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--accent-cta);
+      font-weight: 600;
+    }
+    .exam-card-title {
+      font-family: var(--f-serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 10px;
+      line-height: 1.25;
+      color: var(--text-ink);
+    }
+    .exam-card-case {
+      font-size: 14px;
+      color: var(--text-graphite);
+      margin-bottom: 20px;
+      line-height: 1.55;
+    }
+    .exam-card-options {
+      display: grid;
+      gap: 10px;
+      margin-top: auto;
+    }
+    .exam-card-opt {
+      padding: 12px 14px;
+      border-radius: var(--radius-control);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      font-family: var(--f-sans);
+      font-size: 13px;
+      color: var(--text-ink);
+      text-align: left;
+      cursor: pointer;
+      line-height: 1.45;
+      transition: all 120ms ease;
+    }
+    .exam-card-opt:hover {
+      border-color: var(--control-border);
+      transform: translateY(-1px);
+    }
+    .exam-card-opt.correct {
+      border-color: var(--correct-border);
+      background: var(--correct-bg);
+      color: var(--correct-text);
+      font-weight: 600;
+    }
+    .exam-card-opt.trap {
+      border-color: var(--trap-danger-border);
+      background: var(--trap-danger-bg);
+      color: var(--trap-danger-text);
+    }
+    .exam-card-debrief {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: var(--radius-control);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      font-size: 13px;
+      color: var(--text-graphite);
+      line-height: 1.5;
+    }
+
+    /* SCREEN 1: PRODUCT BLUEPRINT / FEATURE BAND */
+    .feature-band {
+      background: var(--bg-studio);
+      padding: 96px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 96px;
+    }
+    .feature-band-head {
+      text-align: center;
+      max-width: 680px;
+      margin: 0 auto 56px;
+    }
+    .feature-band-head h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(28px, 3.8vw, 42px);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      margin-bottom: 12px;
+    }
+    .feature-band-head p {
+      font-size: 16px;
+      color: var(--text-graphite);
+      margin: 0;
+    }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    @media (max-width: 900px) {
+      .feature-grid { grid-template-columns: 1fr; }
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: var(--shadow-float);
+      transition: transform 180ms var(--ease-out), border-color 180ms ease;
+    }
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--control-border);
+    }
+    .feature-tag {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      color: var(--accent-pill-text);
+      background: var(--accent-pill-bg);
+      padding: 3px 8px;
+      border-radius: var(--radius-badge);
+      align-self: flex-start;
+      margin-bottom: 16px;
+      letter-spacing: 0.05em;
+    }
+    .feature-title {
+      font-family: var(--f-serif);
+      font-size: 24px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+      color: var(--text-ink);
+    }
+    .feature-desc {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text-graphite);
+      margin: 0;
+    }
+
+    /* BOTTOM CONVERSION CALLOUT */
+    .cta-banner-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 56px 40px;
+      text-align: center;
+      box-shadow: var(--shadow-float);
+      margin-bottom: 96px;
+      position: relative;
+    }
+    .cta-banner-card h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(28px, 4vw, 44px);
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+    .cta-banner-card p {
+      font-size: 16px;
+      color: var(--text-graphite);
+      max-width: 580px;
+      margin: 0 auto 28px;
+    }
+
+    /* SCREEN 2: GENERATION CONSOLE */
+    .console-section {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 40px;
+      box-shadow: var(--shadow-float);
+      margin-bottom: 64px;
+    }
+    @media (max-width: 640px) {
+      .console-section { padding: 24px 18px; border-radius: 20px; }
+    }
+    .back-nav-bar {
+      margin-bottom: 28px;
+    }
+    .back-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-graphite);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .back-btn:hover {
+      color: var(--text-ink);
+      border-color: var(--control-border);
+      transform: translateX(-2px);
+    }
+    .console-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 28px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .console-title-group h2 {
+      font-family: var(--f-serif);
+      font-size: 26px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      margin-bottom: 4px;
+    }
+    .console-title-group p {
+      margin: 0;
+      font-size: 13px;
+      color: var(--text-steel);
+    }
+
+    /* SUBJECT PRESETS CHIPS */
+    .presets-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 24px;
+    }
+    .preset-label {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
+      margin-right: 4px;
+    }
+    .preset-chip {
+      font-size: 12px;
+      font-family: var(--f-sans);
+      font-weight: 500;
+      color: var(--text-graphite);
+      padding: 5px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .preset-chip:hover {
+      border-color: var(--control-border);
+      color: var(--text-ink);
+      transform: translateY(-1px);
+    }
+
+    .mode-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+    .mode-tab-btn {
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-graphite);
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .mode-tab-btn.active {
+      background: var(--text-ink);
+      color: var(--bg-canvas);
+      border-color: var(--text-ink);
+      font-weight: 600;
+    }
+
+    .dropzone-box {
+      border: 1.5px dashed var(--line);
+      border-radius: var(--radius-card);
+      padding: 48px 24px;
+      text-align: center;
+      cursor: pointer;
+      background: var(--surface-2);
+      transition: all 150ms var(--ease-out);
+    }
+    .dropzone-box:hover {
+      border-color: var(--accent-cta);
+      background: var(--accent-pill-bg);
+    }
+    .notes-textarea {
+      width: 100%;
+      min-height: 180px;
+      padding: 16px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text-ink);
+      font-family: var(--f-sans);
+      font-size: 14px;
+      line-height: 1.6;
+      resize: vertical;
+      transition: border-color 150ms ease;
+    }
+    .notes-textarea:focus {
+      outline: none;
+      border-color: var(--accent-cta);
+      background: var(--surface);
+    }
+
+    .annals-toggle-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: none;
+      border: none;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-steel);
+      cursor: pointer;
+      margin-top: 14px;
+      padding: 4px 0;
+    }
+    .annals-toggle-btn:hover { color: var(--text-ink); }
+    .annals-content {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .console-controls-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-top: 24px;
+      padding-top: 20px;
+      border-top: 1px solid var(--line);
+    }
+    .model-select {
+      padding: 9px 14px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text-ink);
+      font-size: 13px;
+      font-family: var(--f-sans);
+      font-weight: 500;
+      cursor: pointer;
+    }
+
+    /* TELEMETRY STEPPER & RESULTS */
+    .stepper-card {
+      display: none;
+      margin-top: 24px;
+      padding: 24px;
+      border-radius: var(--radius-card);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+    }
+    .prog-track {
+      width: 100%;
+      height: 6px;
+      background: var(--line);
+      border-radius: var(--radius-pill);
+      overflow: hidden;
+      margin: 12px 0;
+    }
+    
+    .stepper-card.active {
+      display: block !important;
+    }
+    .result-card.active {
+      display: block !important;
+    }
+    
+    .result-card {
+      display: none;
+      margin-top: 24px;
+      padding: 32px;
+      border-radius: var(--radius-card);
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      text-align: center;
+    }
+    .result-stats-row {
+      display: flex;
+      justify-content: center;
+      gap: 16px;
+      margin-top: 16px;
+      flex-wrap: wrap;
+    }
+
+    /* SCREEN 3: SAVED ARENAS VIEW */
+    .saved-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 16px;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid var(--line);
+    }
+    .saved-header h2 {
+      font-family: var(--f-serif);
+      font-size: clamp(26px, 3.6vw, 38px);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      margin-bottom: 6px;
+    }
+    .saved-header p {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-steel);
+    }
+
+    .arenas-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+      gap: 24px;
+    }
+    @media (max-width: 640px) {
+      .arenas-grid { grid-template-columns: 1fr; }
+    }
+    .arena-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 28px;
+      box-shadow: var(--shadow-float);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 18px;
+      transition: transform 180ms var(--ease-out), border-color 180ms ease;
+    }
+    .arena-card:hover {
+      transform: translateY(-2px);
+      border-color: var(--control-border);
+    }
+    .arena-card-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 6px;
+    }
+    .arena-card-head h3 {
+      font-family: var(--f-serif);
+      font-size: 21px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin: 0;
+      color: var(--text-ink);
+    }
+    .arena-date {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      color: var(--text-steel);
+      white-space: nowrap;
+      padding: 3px 8px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-badge);
+    }
+    .arena-sub {
+      margin: 0;
+      font-size: 14px;
+      color: var(--text-graphite);
+      line-height: 1.5;
+    }
+    .arena-metrics {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      padding: 12px 0;
+      border-top: 1px solid var(--line);
+      border-bottom: 1px solid var(--line);
+    }
+    .arena-metrics span {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--text-graphite);
+      padding: 4px 10px;
+      background: var(--surface-2);
+      border-radius: var(--radius-badge);
+      border: 1px solid var(--line);
+    }
+    .arena-actions {
+      display: flex;
+      gap: 12px;
+      align-items: stretch;
+    }
+    .arena-actions .btn-play {
+      flex: 1;
+      background: var(--accent-cta);
+      color: var(--accent-cta-text);
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 600;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-decoration: none;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 3px 8px var(--accent-glow);
+      transition: transform 120ms var(--ease-out), background-color 150ms ease, box-shadow 150ms ease;
+    }
+    .arena-actions .btn-play:hover {
+      background: var(--accent-cta-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1), 0 5px 14px var(--accent-glow);
+    }
+    .arena-actions .btn-share {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-ink);
+      padding: 10px 18px;
+      border-radius: var(--radius-pill);
+      font-family: var(--f-sans);
+      font-weight: 500;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: border-color 150ms ease, transform 120ms ease, background-color 150ms ease;
+    }
+    .arena-actions .btn-share:hover {
+      border-color: var(--control-border);
+      background: var(--surface);
+      transform: translateY(-1px);
+    }
+
+    /* Settings Cog & Dropdown */
+    .arena-settings-wrap {
+      position: relative;
+    }
+    .btn-settings-cog {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-steel);
+      width: 26px;
+      height: 26px;
+      border-radius: var(--radius-badge);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: color 150ms ease, border-color 150ms ease, background-color 150ms ease;
+      padding: 0;
+    }
+    .btn-settings-cog:hover {
+      color: var(--text-ink);
+      border-color: var(--control-border);
+      background: var(--surface);
+    }
+    .arena-settings-dropdown {
+      display: none;
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 100;
+      min-width: 175px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      box-shadow: var(--shadow-float);
+      padding: 6px;
+      animation: fadeIn 120ms var(--ease-out);
+    }
+    .arena-settings-dropdown.open {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .settings-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 8px 12px;
+      background: transparent;
+      border: none;
+      border-radius: 6px;
+      color: var(--text-ink);
+      font-family: var(--f-sans);
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background-color 120ms ease, color 120ms ease;
+    }
+    .settings-menu-item:hover {
+      background: var(--surface-2);
+    }
+    .settings-menu-item.danger {
+      color: var(--trap-danger-text);
+    }
+    .settings-menu-item.danger:hover {
+      background: var(--trap-danger-bg);
+    }
+    .settings-menu-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 6px;
+    }
+    .empty-saved {
+      text-align: center;
+      padding: 64px 24px;
+      background: var(--surface);
+      border: 1.5px dashed var(--line);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      max-width: 620px;
+      margin: 32px auto;
+    }
+
+    /* FOOTER */
+    .editorial-footer {
+      border-top: 1px solid var(--line);
+      padding: 80px 0 40px;
+      background: var(--bg-canvas);
+    }
+    .footer-huge-mark {
+      font-family: var(--f-sans);
+      font-size: clamp(48px, 11vw, 136px);
+      font-weight: 800;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      color: var(--text-ink);
+      opacity: 0.08;
+      user-select: none;
+      margin-bottom: 24px;
+    }
+    .footer-cols {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 24px;
+      font-size: 13px;
+      color: var(--text-steel);
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+      background: var(--overlay);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      place-items: center;
+      padding: 20px;
+    }
+    .modal-overlay.open { display: grid; }
+    .modal-box {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 32px;
+      box-shadow: var(--shadow-float);
+      position: relative;
+    }
+    .modal-close {
+      position: absolute;
+      top: 18px;
+      right: 18px;
+      background: none;
+      border: none;
+      font-size: 22px;
+      color: var(--text-steel);
+      cursor: pointer;
+    }
+    .player-modal-box {
+      width: 100%;
+      height: 94vh;
+      max-width: 1320px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-float);
+    }
+    .player-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 20px;
+      border-bottom: 1px solid var(--line);
+      background: var(--surface-2);
+    }
+    .player-iframe {
+      width: 100%;
+      flex: 1;
+      border: none;
+      background: var(--surface);
+    }
+    .error-card {
+      display: none;
+      margin-top: 20px;
+      padding: 18px;
+      border-radius: var(--radius-control);
+      background: var(--trap-danger-bg);
+      border: 1px solid var(--trap-danger-border);
+      color: var(--trap-danger-text);
+      font-size: 14px;
+    }
+
+  
+    /* Multi-Document Upload Badges */
+    .attached-doc-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-family: var(--f-mono);
+      color: var(--text-ink);
+    }
+    .attached-doc-chip .remove-doc {
+      cursor: pointer;
+      color: var(--text-steel);
+      font-weight: 700;
+      font-size: 14px;
+      line-height: 1;
+      transition: color 150ms ease;
+    }
+    .attached-doc-chip .remove-doc:hover {
+      color: var(--trap-danger-text);
+    }
+
+    /* Notification Toast */
+    .app-toast {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--text-ink);
+      color: var(--bg-canvas);
+      padding: 12px 20px;
+      border-radius: var(--radius-pill);
+      font-size: 13px;
+      font-family: var(--f-body);
+      font-weight: 500;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      z-index: 99999;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: transform 300ms var(--ease-out), opacity 300ms ease;
+      pointer-events: none;
+    }
+    .app-toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+
+    /* AI Thinking Indicator (No Box, Antigravity Font, 3 Moving Dots) */
+    .thinking-cluster {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0;
+      background: transparent !important;
+      border: none !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      user-select: none;
+      vertical-align: middle;
+      animation: fadeIn 150ms var(--ease-out);
+    }
+    .thinking-text {
+      font-family: -apple-system, BlinkMacSystemFont, "Google Sans", "Segoe UI", Roboto, "Inter", -system-ui, sans-serif;
+      font-size: 13.5px;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      display: inline-block;
+      background: linear-gradient(90deg, var(--text-steel) 0%, var(--text-ink) 50%, var(--text-steel) 100%);
+      background-size: 200% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: thinkingShimmer 2.2s linear infinite;
+    }
+    @keyframes thinkingShimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+    .thinking-dots {
+      display: inline-flex;
+      align-items: center;
+      gap: 3.5px;
+      height: 12px;
+      padding-top: 1px;
+    }
+    .thinking-dots span {
+      display: inline-block;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background-color: var(--text-steel);
+      animation: antigravityDotWave 1.4s ease-in-out infinite both;
+    }
+    .thinking-dots span:nth-child(1) {
+      animation-delay: 0s;
+    }
+    .thinking-dots span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    .thinking-dots span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    @keyframes antigravityDotWave {
+      0%, 80%, 100% {
+        transform: translateY(0);
+        opacity: 0.3;
+      }
+      40% {
+        transform: translateY(-4px);
+        opacity: 1;
+      }
+    }
+
+    /* ==========================================================================
+       MOBILE RESPONSIVE SYSTEM (ZERO HORIZONTAL OVERFLOW, TOUCH-OPTIMIZED BUTTONS)
+       ========================================================================== */
+    .key-label-desktop { display: inline; }
+    .key-label-mobile { display: none; }
+    .tab-label-desktop { display: inline; }
+    .tab-label-mobile { display: none; }
+    .carousel-pagination { display: none; }
+
+    @media (max-width: 960px) {
+      .carousel-track {
+        display: flex !important;
+        grid-template-columns: none !important;
+        overflow-x: auto !important;
+        scroll-snap-type: x mandatory !important;
+        -webkit-overflow-scrolling: touch !important;
+        scroll-behavior: smooth !important;
+        gap: 16px !important;
+        padding: 4px 2px 14px !important;
+        scrollbar-width: none !important;
+        -ms-overflow-style: none !important;
+      }
+      .carousel-track::-webkit-scrollbar {
+        display: none !important;
+      }
+      .exam-card {
+        flex: 0 0 100% !important;
+        min-width: 100% !important;
+        max-width: 100% !important;
+        scroll-snap-align: center !important;
+        scroll-snap-stop: always !important;
+        box-sizing: border-box !important;
+      }
+      .carousel-pagination {
+        display: flex !important;
+        justify-content: center !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin-top: 14px !important;
+      }
+      .carousel-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--line);
+        cursor: pointer;
+        transition: all 180ms ease;
+      }
+      .carousel-dot.active {
+        width: 22px;
+        border-radius: var(--radius-pill);
+        background: var(--accent-cta);
+      }
+    }
+
+    @media (max-width: 768px) {
+      #nav-try-btn { display: none !important; }
+      .player-modal-box {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        border-radius: 0 !important;
+        border: none !important;
+      }
+    }
+
+    @media (max-width: 640px) {
+      html, body {
+        overflow-x: hidden !important;
+        max-width: 100vw !important;
+      }
+      .container {
+        padding: 0 16px !important;
+      }
+      .nav-inner {
+        padding: 0 4px !important;
+        gap: 8px !important;
+      }
+      .nav-tabs-group {
+        padding: 2px !important;
+        gap: 2px !important;
+      }
+      .nav-tab {
+        padding: 5px 8px !important;
+        font-size: 11.5px !important;
+      }
+      .tab-label-desktop { display: none !important; }
+      .tab-label-mobile { display: inline !important; }
+
+      .key-label-desktop { display: none !important; }
+      .key-label-mobile { display: inline !important; }
+      .provider-pill {
+        padding: 4px 8px !important;
+        font-size: 11px !important;
+      }
+      .nav-right-actions {
+        gap: 6px !important;
+      }
+      .theme-btn {
+        width: 28px !important;
+        height: 28px !important;
+        min-width: 28px !important;
+      }
+
+      /* Buttons & Actions */
+      .hero-action-cluster {
+        flex-direction: column !important;
+        width: 100% !important;
+        gap: 12px !important;
+        margin-bottom: 32px !important;
+      }
+      .hero-action-cluster .btn-primary,
+      .hero-action-cluster .btn-ghost {
+        width: 100% !important;
+        min-height: 48px !important;
+        font-size: 15px !important;
+        padding: 12px 20px !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+      }
+
+      /* Generator Console Controls */
+      .console-header {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+      }
+      .console-header .btn-ghost {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 42px !important;
+        font-size: 13px !important;
+      }
+      .console-controls-bar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 16px !important;
+      }
+      .console-controls-bar > div {
+        width: 100% !important;
+        display: flex !important;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+      }
+      .model-select {
+        width: 100% !important;
+        max-width: 100% !important;
+        min-height: 46px !important;
+        font-size: 15px !important;
+        padding: 10px 14px !important;
+        box-sizing: border-box !important;
+      }
+      #gen-btn {
+        width: 100% !important;
+        min-height: 50px !important;
+        padding: 14px 20px !important;
+        font-size: 16px !important;
+        font-weight: 600 !important;
+        justify-content: center !important;
+        box-sizing: border-box !important;
+      }
+      .thinking-cluster {
+        justify-content: center !important;
+        margin-top: 6px !important;
+      }
+      .notes-textarea {
+        font-size: 16px !important;
+        padding: 12px 14px !important;
+        min-height: 130px !important;
+        box-sizing: border-box !important;
+      }
+      .dropzone-box {
+        padding: 24px 16px !important;
+      }
+      .arena-card {
+        padding: 20px 16px !important;
+      }
+      .arena-action-btns {
+        flex-direction: column !important;
+        gap: 8px !important;
+      }
+      .arena-action-btns .btn-primary,
+      .arena-action-btns .btn-ghost {
+        width: 100% !important;
+        justify-content: center !important;
+        min-height: 44px !important;
+        box-sizing: border-box !important;
+      }
+      .modal-box {
+        width: calc(100% - 24px) !important;
+        margin: 16px auto !important;
+        padding: 24px 18px !important;
+        max-height: 88vh !important;
+        overflow-y: auto !important;
+        box-sizing: border-box !important;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .brand-text { display: none !important; }
+      .brand-badge { display: none !important; }
+    }
+
+</style>
+</head>
+<body>
+
+  <!-- COMPACT 48PX EDITORIAL TOP NAV -->
+  <nav class="editorial-nav">
+    <div class="container nav-inner">
+      <div style="display:flex; align-items:center; gap:16px;">
+        <a href="index.html" class="brand-mark" onclick="switchMainView('landing'); return false;">
+          <div class="brand-logo-sq">SA</div>
+          <span class="brand-text">Study Arena</span>
+        </a>
+      </div>
+
+      <div class="nav-tabs-group">
+        <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
+        <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')">Generator</button>
+        <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
+          <span class="tab-label-desktop">Saved Arenas</span><span class="tab-label-mobile">Arenas</span> <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
+        </button>
+      </div>
+
+      <div class="nav-right-actions">
+        <button type="button" class="settings-cog-btn" id="settings-btn" onclick="openSettingsModal()" aria-label="Settings and Preferences">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+          </svg>
+          <span class="settings-cog-dot" id="key-ind"></span>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+
+  <main>
+    <!-- SCREEN 1: THE PRODUCT GALLERY (LANDING VIEW) -->
+    <div id="view-landing" class="main-view active">
+      <!-- HERO LAUNCH STAGE -->
+      <section class="hero-section">
+        <div class="container">
+          <div class="hero-eyebrow">
+            <span>ACADEMIC RIGOR SIMULATOR</span>
+          </div>
+          <h1 class="hero-heading">
+            Don't let exam traps catch you off guard.
+          </h1>
+          <p class="hero-sub">
+            Transform syllabi, lecture slides, and past papers into battle-tested scenario simulations with per-option distractor analysis.
+          </p>
+
+          <div class="hero-action-cluster" style="margin-bottom: 20px;">
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
+            </button>
+            <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
+              Play Live Sample &darr;
+            </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- INTERACTIVE HERO SIMULATION (THE IMMEDIATE AHA MOMENT) -->
+      <section class="interactive-hero-section" id="interactive-demo">
+        <div class="container">
+          <div class="interactive-header">
+            <div>
+              <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">Interactive Forensics Preview</div>
+              <h3 class="serif-title" style="font-size:24px; margin:0;">Sample Exam Scenario Traps</h3>
+            </div>
+            <div class="carousel-nav-btns">
+              <button type="button" class="carousel-arrow" id="carousel-prev" aria-label="Previous trap">&larr;</button>
+              <button type="button" class="carousel-arrow" id="carousel-next" aria-label="Next trap">&rarr;</button>
+            </div>
+          </div>
+
+          <div class="carousel-track" id="exam-carousel-track">
+            <!-- CARD 1 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">FINANCE &middot; WACC</span>
+                <span class="card-trap-tag">TRAP QUESTION</span>
+              </div>
+              <div class="exam-card-title">The Debt Tax Shield Trap</div>
+              <div class="exam-card-case">
+                NovaTech GmbH has a market debt-to-value ratio of 40%. The CFO argues issuing 20M EUR in new senior notes will lower WACC due to the interest tax shield.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Ignores distress costs. As debt rises beyond optimal leverage, bankruptcy risk spikes cost of equity.')">
+                  A. Agree: Higher leverage always decreases WACC monotonically.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Correct trade-off: Trade-Off Theory balances tax shields against expected bankruptcy distress costs.')">
+                  B. Disagree: Beyond target leverage, financial distress costs outweigh tax benefits.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Misapplies Pecking Order. Pecking Order explains funding sequence, not optimal debt ratio.')">
+                  C. Disagree: Pecking order forbids all senior note issuances.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+
+            <!-- CARD 2 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">ETHICS &middot; GOVERNANCE</span>
+                <span class="card-trap-tag">DILEMMA ROUND</span>
+              </div>
+              <div class="exam-card-title">The Internal Audit Escrow</div>
+              <div class="exam-card-case">
+                A plant controller notices hazardous emission logs were suppressed during an ISO audit. The VP asks for a 90-day grace period to fix it quietly.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Procedural violation. External audits cannot be concealed without personal regulatory liability.')">
+                  A. Grant 90 days: Managerial goodwill resolves plant morale.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Complies with mandatory reporting: Document finding through audit committee channels immediately.')">
+                  B. Escalate immediately to the Board Audit Committee.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Breaches duty of loyalty. Whistleblowing must follow internal audit committee exhaustion first.')">
+                  C. Post logs directly to public environmental journals.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+
+            <!-- CARD 3 -->
+            <article class="exam-card">
+              <div class="exam-card-meta">
+                <span class="card-badge">STRATEGY &middot; PESTEL</span>
+                <span class="card-trap-tag">CASE QUESTION</span>
+              </div>
+              <div class="exam-card-title">Platform Moat Erosion</div>
+              <div class="exam-card-case">
+                A ride-hailing incumbent faces a multi-homing surge where both drivers and passengers use competing apps simultaneously.
+              </div>
+              <div class="exam-card-options">
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Subsidies burn cash reserves without creating sticky structural switching barriers.')">
+                  A. Double driver bonuses: Temporary cash incentives solve multi-homing.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, true, 'Structural lock-in: Build high-frequency bundle utilities (subscriptions, payment accounts).')">
+                  B. Bundle proprietary services to raise consumer switching costs.
+                </button>
+                <button type="button" class="exam-card-opt" onclick="revealTrap(this, false, 'Fails Porter Five Forces. Exclusive contracts invite antitrust scrutiny in bilateral markets.')">
+                  C. Impose exclusivity covenants prohibiting competitor app use.
+                </button>
+              </div>
+              <div class="exam-card-debrief" style="display:none;"></div>
+            </article>
+          </div>
+
+          <div class="carousel-pagination" id="carousel-dots-bar">
+            <span class="carousel-dot active" onclick="updateCarouselState(0)" aria-label="Go to scenario 1"></span>
+            <span class="carousel-dot" onclick="updateCarouselState(1)" aria-label="Go to scenario 2"></span>
+            <span class="carousel-dot" onclick="updateCarouselState(2)" aria-label="Go to scenario 3"></span>
+            <span id="carousel-counter" class="mono" style="font-size:11px; color:var(--text-steel); margin-left:6px;">1 / 3</span>
+          </div>
+        </div>
+      </section>
+
+      <!-- PRODUCT BLUEPRINT / FEATURE BAND (STUDIO MIST FULL-WIDTH BAND) -->
+      <section class="feature-band">
+        <div class="container">
+          <div class="feature-band-head">
+            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">Academic Architecture</div>
+            <h2>Built for Cognitive Mastery, Not Shallow Rote Memorization</h2>
+            <p>Every scenario is engineered with realistic distractors to train deep decision-making under exam pressure.</p>
+          </div>
+
+          <div class="feature-grid">
+            <div class="feature-card">
+              <span class="feature-tag">DEEP ERROR ANALYSIS</span>
+              <h3 class="feature-title">Distractor Forensics</h3>
+              <p class="feature-desc">Exposes why plausible but incorrect options feel tempting. Learn the exact cognitive traps and misapplied heuristics professors design into exams.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-tag">100% LOCAL &middot; ZERO KNOWLEDGE</span>
+              <h3 class="feature-title">Zero-Knowledge Privacy</h3>
+              <p class="feature-desc">Pure client-side BYOK model. Your course slides, proprietary notes, and exam papers are parsed in browser memory and never stored on remote servers.</p>
+            </div>
+            <div class="feature-card">
+              <span class="feature-tag">PROGRESSIVE RIGOR</span>
+              <h3 class="feature-title">Multi-Zone Simulation</h3>
+              <p class="feature-desc">Advance through sequential difficulty tiers from foundational conceptual models to brutal, multi-variable scenario traps with mock exams.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- CONVERSION CALLOUT CARD -->
+      <section style="margin-bottom:96px;">
+        <div class="container">
+          <div class="cta-banner-card">
+            <h2>Ready to simulate your course?</h2>
+            <p>Generate a complete offline-ready study arena in under 60 seconds with your own API key.</p>
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+              Launch Arena Generator &rarr;
+            </button>
+          </div>
+        </div>
+      </section>
+    </div>
+
+
+    <!-- SCREEN 2: THE GENERATION CONSOLE -->
+    <div id="view-generator" class="main-view" style="display:none; padding: 48px 0 80px;">
+      <div class="container">
+        <div class="back-nav-bar">
+          <button type="button" class="back-btn" onclick="switchMainView('landing')">
+            &larr; Back to Overview
+          </button>
+        </div>
+
+        <section class="console-section" id="generator-console">
+          <div class="console-header">
+            <div class="console-title-group">
+              <h2>Arena Generator</h2>
+              <p>Compile syllabi and lecture slides into an interactive, offline exam simulator.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadPreloadedMock()">
+                Load Sample Notes
+              </button>
+            </div>
+          </div>
+
+          <!-- UNIFIED MULTI-DOCUMENT & LECTURE NOTES WORKSPACE -->
+          <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()" style="cursor:pointer;">
+            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="display:none" onchange="handleFileSelect(event)">
+            <div style="font-size:28px; margin-bottom:8px; color:var(--accent-cta);">&uarr;</div>
+            <div style="font-weight:600; font-size:16px; margin-bottom:4px; color:var(--text-ink);">Drop course PDFs, slide decks, or past exams here</div>
+            <div style="font-size:13px; color:var(--text-steel);">Upload multiple files simultaneously. Extracted directly in browser memory.</div>
+            <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
+          </div>
+
+          <!-- ATTACHED DOCUMENTS LIST -->
+          <div id="attached-docs-container" style="display:none; margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; color:var(--text-steel); font-weight:600;">ATTACHED COURSE MATERIALS</span>
+              <span class="mono" id="attached-stats-badge" style="font-size:11px; color:var(--accent-cta);">0 documents</span>
+            </div>
+            <div id="attached-docs-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+          </div>
+
+          <!-- SIMULTANEOUS LECTURE NOTES & TRANSCRIPTS TEXTBOX -->
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label for="notes-input" style="font-weight:600; font-size:13px; color:var(--text-ink);">
+                Supplementary Lecture Notes, Transcripts &amp; Focus Areas (Optional)
+              </label>
+              <span class="mono" id="notes-word-count" style="font-size:11px; color:var(--text-steel);">0 words</span>
+            </div>
+            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide transcripts, seminar notes, professor exam hints, or specific case rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
+          </div>
+
+          <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
+          <div style="margin-top:14px;">
+            <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
+              <span>+ Add Professor Emphasis &middot; Exam Weighting (Optional)</span>
+              <span id="annals-arrow">&darr;</span>
+            </button>
+            <div class="annals-content" id="annals-box">
+              <textarea class="notes-textarea" id="annals-input" style="min-height:90px;" placeholder="e.g. Professor repeatedly stressed that Miller-Modigliani Proposition II with corporate taxes ignores financial distress costs. Focus heavily on WACC calculations."></textarea>
+            </div>
+          </div>
+
+          <!-- CONTROLS ROW -->
+          <div class="console-controls-bar">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <span class="provider-badge" id="active-model-badge">
+                <span class="dot-status configured"></span>
+                <span id="active-model-badge-text">Gemini 1.5 Flash &middot; Free Tier</span>
+              </span>
+              <input type="hidden" id="model-select" value="gemini-1.5-flash">
+            </div>
+
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
+                Generate Arena &rarr;
+              </button>
+              <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
+                <span class="thinking-text" id="thinking-status-text">Thinking</span>
+                <span class="thinking-dots" id="thinking-dots" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <!-- TELEMETRY STEPPER -->
+          <div class="stepper-card" id="stepper">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">
+              <div id="prog-msg" style="font-weight:600; font-size:14px;">Reading course notes...</div>
+              <div id="prog-elapsed" class="mono tnum" style="color:var(--text-steel);">00:00</div>
+            </div>
+            <div class="prog-track">
+              <div id="prog-fill" style="width:15%; height:100%; background:var(--accent-cta); transition:width 300ms var(--ease-out);"></div>
+            </div>
+            <div style="font-size:12px; color:var(--text-steel);">Synthesizing progressive mastery zones, scenario distractors, and revision debriefs.</div>
+          </div>
+
+          <!-- ERROR CARD -->
+          <div class="error-card" id="error-card">
+            <div id="error-summary-title" style="font-weight:600; margin-bottom:4px;">Generation Error</div>
+            <div id="error-summary-body" style="margin-bottom:8px;"></div>
+            <details style="font-family:var(--f-mono); font-size:11px; white-space:pre-wrap;" id="error-details"></details>
+          </div>
+
+          <!-- RESULT CARD -->
+          <div class="result-card" id="result-card">
+            <div class="mono" style="color:var(--correct-text); margin-bottom:6px; font-weight:600;">SIMULATION COMPILED</div>
+            <h3 class="serif-title" style="font-size:24px; margin-bottom:8px;">Your Study Arena is Battle Ready</h3>
+            <p style="font-size:14px; color:var(--text-graphite); max-width:540px; margin:0 auto 20px;">
+              All zones, questions, scenario traps, and revision debriefs have been synthesized and stored locally in this browser.
+            </p>
+            <div style="display:flex; justify-content:center; gap:12px; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="btn-play-main" style="padding:10px 24px;" onclick="playGeneratedArena()">
+                Play Arena Now &rarr;
+              </button>
+              <button type="button" class="btn-ghost" style="padding:10px 20px;" onclick="downloadGeneratedArena()">
+                Download Offline (.html)
+              </button>
+            </div>
+            <div class="result-stats-row" id="result-stats"></div>
+          </div>
+        </section>
+      </div>
+    </div>
+
+
+    <!-- SCREEN 3: SAVED ARENAS VIEW -->
+    <div id="view-saved" style="display:none; padding: 48px 0 96px;">
+      <div class="container">
+        <div class="saved-header">
+          <div>
+            <h2>Saved Study Arenas</h2>
+            <p>All previously generated courses stored locally on this machine.</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
+              &uarr; Import Shared Arena
+            </button>
+            <input type="file" id="import-arena-file" accept=".json,.html" style="display:none" onchange="handleImportArenaFile(event)">
+            <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
+              + Create New Arena
+            </button>
+          </div>
+        </div>
+
+        <div id="saved-arenas-container">
+          <!-- Rendered dynamically by renderSavedArenasList() -->
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+
+  <!-- EDITORIAL FOOTER -->
+  <footer class="editorial-footer">
+    <div class="container">
+      <div class="footer-huge-mark">STUDY ARENA</div>
+      <div class="footer-cols">
+        <div>
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Study Arena</div>
+          <div>Academic Exam Simulation &amp; Distractor Diagnostics.</div>
+        </div>
+        <div>
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Privacy First</div>
+          <div>Zero-knowledge architecture. All API requests run directly from browser to LLM provider.</div>
+        </div>
+        <div>
+          <div style="font-weight:600; color:var(--text-ink); margin-bottom:6px;">Navigation</div>
+          <div>
+            <a href="#" onclick="switchMainView('landing'); return false;" style="color:inherit; text-decoration:none;">Overview</a> &middot;
+            <a href="#" onclick="switchMainView('generator'); return false;" style="color:inherit; text-decoration:none;">Generator</a> &middot;
+            <a href="#" onclick="switchMainView('saved'); return false;" style="color:inherit; text-decoration:none;">Saved Arenas</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- API KEY MODAL -->
+  <div class="modal-overlay" id="key-modal" onclick="if(event.target===this)closeKeyModal()">
+    <div class="modal-box">
+      <button type="button" class="modal-close" onclick="closeKeyModal()">&times;</button>
+      <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">PREFERENCES &middot; SETTINGS</div>
+      <h3 class="serif-title" style="font-size:22px; margin-bottom:18px;">Arena Settings</h3>
+
+      <!-- 1. APPEARANCE & BRIGHTNESS -->
+      <div style="margin-bottom:20px; padding-bottom:18px; border-bottom:1px solid var(--line);">
+        <label style="display:block; font-size:12px; font-weight:600; margin-bottom:10px; color:var(--text-ink); text-transform:uppercase; letter-spacing:0.04em;">
+          Appearance &amp; Brightness
+        </label>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px;">
+          <button type="button" id="theme-btn-light" class="theme-choice-btn" onclick="setThemeMode('light')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
+              <circle cx="12" cy="12" r="5"></circle>
+              <line x1="12" y1="1" x2="12" y2="3"></line>
+              <line x1="12" y1="21" x2="12" y2="23"></line>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+              <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+              <line x1="1" y1="12" x2="3" y2="12"></line>
+              <line x1="21" y1="12" x2="23" y2="12"></line>
+              <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+              <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+            </svg>
+            Light Mode
+          </button>
+          <button type="button" id="theme-btn-dark" class="theme-choice-btn" onclick="setThemeMode('dark')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:6px;">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+            </svg>
+            Dark Mode
+          </button>
+        </div>
+      </div>
+
+      <!-- 2. AI MODEL & API SWITCHING -->
+      <div style="margin-bottom:14px;">
+        <label for="key-provider-select" style="display:block; font-size:12px; font-weight:600; margin-bottom:8px; color:var(--text-ink); text-transform:uppercase; letter-spacing:0.04em;">
+          Active AI Provider
+        </label>
+        <select id="key-provider-select" class="model-select" style="width:100%;" onchange="switchKeyProvider(this.value)">
+          <option value="gemini" selected>Google Gemini (100% Free Tier &middot; Recommended)</option>
+          <option value="claude">Anthropic Claude (BYOK)</option>
+          <option value="openai">OpenAI (GPT-4o BYOK)</option>
+        </select>
+      </div>
+
+      <div style="margin-bottom:16px;">
+        <label id="key-input-label" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-ink);">Google Gemini API Key (AIza...):</label>
+        <input type="password" id="api-key-field" style="width:100%; padding:10px 14px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink); font-family:var(--f-mono); font-size:13px;" placeholder="AIzaSy..." autocomplete="off">
+      </div>
+
+      <div id="ai-onboarding-help" style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:20px;"></div>
+
+      <div style="display:flex; justify-content:flex-end; gap:10px;">
+        <button type="button" class="btn-ghost" onclick="clearApiKey()">Clear Key</button>
+        <button type="button" class="btn-primary" onclick="saveApiKey()">Save &amp; Activate</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN ARENA PLAYER MODAL -->
+  <div class="modal-overlay" id="arena-player-modal" style="padding:16px;">
+    <div class="player-modal-box">
+      <div class="player-header">
+        <span class="mono" id="player-title" style="font-weight:600;">Playing Study Arena</span>
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button type="button" class="btn-ghost" style="padding:4px 12px; font-size:12px;" onclick="closeArenaPlayer()">Close &times;</button>
+        </div>
+      </div>
+      <iframe id="arena-player-iframe" class="player-iframe" src="about:blank"></iframe>
+    </div>
+  </div>
+
+
+  <script>
+
+
+
+
+
+    var currentProvider = localStorage.getItem("sa_ai_provider") || "gemini";
+    var generatedHtmlBlob = null;
+    var generatedHtmlString = '';
+    var generatedCourseData = null;
+    var elapsedTimerId = null;
+    var SAVED_ARENAS_KEY = "sa_saved_arenas_v1";
+
+    /* ---------- SAMPLE QUESTION INTERACTION (REAL ETHICS QUESTION) ---------- */
+    var SAMPLE_EXPLANATIONS = [
+      {
+        right: false,
+        label: "Why A is a trap:",
+        text: "This IS one of Friedman's arguments: he holds that only individuals have moral responsibilities, not corporations. Try option D."
+      },
+      {
+        right: false,
+        label: "Why B is a trap:",
+        text: "This IS one of Friedman's core arguments: managers are agents of the shareholders, so spending company money on social causes imposes an unapproved tax. Try option D."
+      },
+      {
+        right: false,
+        label: "Why C is a trap:",
+        text: "This IS one of Friedman's arguments: executives are hired for business expertise, whereas public-policy trade-offs belong to elected governments. Try option D."
+      },
+      {
+        right: true,
+        label: "Correct (D):",
+        text: "This is a negation question. Friedman only accepts social initiatives when they serve as a means to raise shareholder wealth, so justifying them 'even if they never raise shareholder wealth' reverses his position."
+      }
+    ];
+
+    function selectSampleOpt(idx) {
+      for (var i = 0; i < 4; i++) {
+        var btn = document.getElementById("sopt-" + i);
+        if (!btn) continue;
+        btn.classList.remove("selected-trap", "selected-right");
+        if (i === idx) {
+          btn.classList.add(SAMPLE_EXPLANATIONS[i].right ? "selected-right" : "selected-trap");
+        }
+      }
+      var box = document.getElementById("sample-explain-box");
+      if (box && SAMPLE_EXPLANATIONS[idx]) {
+        box.innerHTML = "<strong>" + SAMPLE_EXPLANATIONS[idx].label + "</strong> " + SAMPLE_EXPLANATIONS[idx].text;
+      }
+    }
+
+    /* ---------- GSAP CHOREOGRAPHED MULTI-SCREEN TRANSITIONS ---------- */
+    function switchMainView(viewName) {
+      window.scrollTo(0, 0);
+      if (viewName === "create") viewName = "generator";
+
+      var viewLanding = document.getElementById("view-landing");
+      var viewGenerator = document.getElementById("view-generator");
+      var viewSaved = document.getElementById("view-saved");
+
+      var navLanding = document.getElementById("nav-landing");
+      var navGenerator = document.getElementById("nav-generator") || document.getElementById("nav-create");
+      var navSaved = document.getElementById("nav-saved");
+      var navTryBtn = document.getElementById("nav-try-btn");
+
+      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : viewSaved;
+      var otherViews = [viewLanding, viewGenerator, viewSaved].filter(function(v) { return v && v !== targetView; });
+
+      if (navLanding) navLanding.classList.toggle("active", viewName === "landing");
+      if (navGenerator) navGenerator.classList.toggle("active", viewName === "generator");
+      if (navSaved) navSaved.classList.toggle("active", viewName === "saved");
+      if (navTryBtn) navTryBtn.style.display = (viewName === "generator") ? "none" : "inline-flex";
+
+      var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (window.gsap && !prefersReduced) {
+        gsap.to(otherViews, {
+          opacity: 0,
+          y: -10,
+          duration: 0.18,
+          ease: "power2.inOut",
+          onComplete: function() {
+            otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
+            if (targetView) {
+              targetView.style.display = "block";
+              gsap.fromTo(targetView, 
+                { opacity: 0, y: 16 }, 
+                { opacity: 1, y: 0, duration: 0.32, ease: "power3.out" }
+              );
+            }
+          }
+        });
+      } else {
+        otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
+        if (targetView) targetView.style.display = "block";
+      }
+
+      if (viewName === "saved") {
+        renderSavedArenasList();
+        if (history.replaceState) history.replaceState(null, "", "#saved");
+      } else if (viewName === "generator") {
+        if (history.replaceState) history.replaceState(null, "", "#generator");
+      } else {
+        if (history.replaceState) history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    /* ---------- SAVED ARENAS STORAGE ---------- */
+    function getSavedArenas() {
+      try {
+        var raw = localStorage.getItem(SAVED_ARENAS_KEY);
+        if (!raw) return [];
+        var parsed = JSON.parse(raw);
+        return Array.isArray(parsed) ? parsed : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function updateSavedBadge() {
+      var list = getSavedArenas();
+      var badge = document.getElementById("saved-count-badge");
+      if (badge) badge.textContent = String(list.length);
+    }
+
+    function saveArenaToHistory(courseData, compiledHtml) {
+      try {
+        var list = getSavedArenas();
+        var cfg = (courseData && courseData.config) || {};
+        var entry = {
+          id: "arena_" + Date.now(),
+          key: cfg.key || "study-arena",
+          title: cfg.title || "Custom Study Arena",
+          subtitle: cfg.subtitle || cfg.course || "Generated practice exam",
+          createdAt: new Date().toISOString(),
+          zonesCount: (courseData.zones || []).length,
+          questionsCount: (courseData.questions || []).length,
+          chaptersCount: (courseData.chapters || []).length,
+          courseData: courseData,
+          compiledHtml: compiledHtml
+        };
+        list.unshift(entry);
+        // Keep up to 8 saved arenas in localStorage, trimming oldest if quota is tight
+        while (list.length > 8) list.pop();
+        while (list.length > 0) {
+          try {
+            localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
+            break;
+          } catch (quotaErr) {
+            list.pop();
+          }
+        }
+        updateSavedBadge();
+        return entry;
+      } catch (e) {
+        console.warn("Could not persist arena to localStorage:", e);
+        return null;
+      }
+    }
+
+    function formatSavedDate(iso) {
+      try {
+        var d = new Date(iso);
+        return d.toLocaleDateString(undefined, { month: "short", day: "numeric" }) + " " +
+               d.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+      } catch (e) {
+        return "Saved locally";
+      }
+    }
+
+    function escapeHtml(str) {
+      return String(str || "")
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    function renderSavedArenasList() {
+      var container = document.getElementById("saved-arenas-container");
+      if (!container) return;
+      var list = getSavedArenas();
+      var html = "";
+
+      if (list.length === 0) {
+        html += '<div class="empty-saved" style="text-align:center; padding:48px 24px;">' +
+          '<div class="mono" style="color:var(--accent-cta); margin-bottom:8px; font-size:11px; font-weight:600; letter-spacing:0.05em;">LOCAL ACADEMIC REPOSITORY</div>' +
+          '<h3 style="margin:0 0 10px; font-size:22px; font-weight:500; font-family:var(--f-serif); color:var(--text-ink);">No Custom Study Arenas Compiled Yet</h3>' +
+          '<p style="margin:0 auto 24px; font-size:14px; color:var(--text-graphite); max-width:540px; line-height:1.6;">When you synthesize lecture slides, past exams, or course syllabi in the Arena Generator, your tailored simulations are securely stored here in your offline browser environment.</p>' +
+          '<button type="button" class="btn-primary" style="padding:10px 24px;" onclick="switchMainView(\'generator\')">+ Ingest Course Materials &rarr;</button>' +
+        '</div>';
+      }
+
+      html += '<div class="arenas-grid">';
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i];
+        html += '<article class="arena-card">' +
+          '<div>' +
+            '<div class="arena-card-head">' +
+              '<h3>' + escapeHtml(item.title) + '</h3>' +
+              '<div style="display:flex; align-items:center; gap:8px;">' +
+                '<span class="arena-date">' + escapeHtml(formatSavedDate(item.createdAt)) + '</span>' +
+                '<div class="arena-settings-wrap">' +
+                  '<button type="button" class="btn-settings-cog" aria-label="Arena Settings" onclick="toggleArenaSettings(event, \'' + escapeHtml(item.id) + '\')">' +
+                    '<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                      '<circle cx="12" cy="12" r="3"></circle>' +
+                      '<path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>' +
+                    '</svg>' +
+                  '</button>' +
+                  '<div class="arena-settings-dropdown" id="arena-settings-dropdown-' + escapeHtml(item.id) + '">' +
+                    '<button type="button" class="settings-menu-item" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
+                      '<span>Download (.html)</span>' +
+                    '</button>' +
+                    '<button type="button" class="settings-menu-item" onclick="exportArenaJson(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>' +
+                      '<span>Export JSON (.json)</span>' +
+                    '</button>' +
+                    '<div class="settings-menu-divider"></div>' +
+                    '<button type="button" class="settings-menu-item danger" onclick="deleteSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
+                      '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>' +
+                      '<span>Delete Arena</span>' +
+                    '</button>' +
+                  '</div>' +
+                '</div>' +
+              '</div>' +
+            '</div>' +
+            '<p class="arena-sub">' + escapeHtml(item.subtitle) + '</p>' +
+          '</div>' +
+          '<div class="arena-metrics">' +
+            '<span>' + Number(item.zonesCount || 0) + ' chapters</span>' +
+            '<span>' + Number(item.questionsCount || 0) + ' questions</span>' +
+            '<span>' + Number(item.chaptersCount || 0) + ' study chapters</span>' +
+          '</div>' +
+          '<div class="arena-actions">' +
+            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena &rarr;</button>' +
+            '<button type="button" class="btn-share" onclick="shareArenaLink(\'' + escapeHtml(item.id) + '\')">' +
+              '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>' +
+              '<span>Share Link</span>' +
+            '</button>' +
+          '</div>' +
+        '</article>';
+      }
+
+      // Always include the built-in Reference Arena so students can play immediately
+      html += '<article class="arena-card">' +
+        '<div>' +
+          '<div class="arena-card-head">' +
+            '<h3>Business Ethics Arena</h3>' +
+            '<span class="chip">Built-in reference</span>' +
+          '</div>' +
+          '<p class="arena-sub">Complete course game with scenario traps, per-option feedback, study guides, and 2 mock exams.</p>' +
+        '</div>' +
+        '<div class="arena-metrics">' +
+          '<span>6 chapters</span>' +
+          '<span>109 questions</span>' +
+          '<span>32 study chapters</span>' +
+          '<span>2 mock exams</span>' +
+        '</div>' +
+        '<div class="arena-actions">' +
+          '<button type="button" class="btn-play" style="width:100%;" onclick="playReferenceInModal()">Play Reference Arena &rarr;</button>' +
+        '</div>' +
+      '</article>';
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    function playReferenceInModal() {
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      var title = document.getElementById("player-title");
+      if (title) title.textContent = "Business Ethics Arena";
+      var url = "dist/ethics.html?v=" + Date.now();
+      if (iframe) {
+        iframe.removeAttribute("srcdoc");
+        iframe.src = url;
+      }
+      if (modal) modal.classList.add("open");
+    }
+
+    function playSavedArenaById(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          generatedCourseData = list[i].courseData;
+          var compiled = "";
+          // ALWAYS recompile using the updated engine bundle so the latest luxury design applies!
+          if (window.StudyArenaCompiler && list[i].courseData) {
+            try {
+              compiled = window.StudyArenaCompiler.compile(list[i].courseData);
+            } catch (err) {
+              console.warn("Could not recompile courseData, falling back to compiledHtml", err);
+              compiled = list[i].compiledHtml || "";
+            }
+          } else {
+            compiled = list[i].compiledHtml || "";
+          }
+          generatedHtmlString = compiled;
+          generatedHtmlBlob = new Blob([compiled], { type: "text/html" });
+          var title = document.getElementById("player-title");
+          if (title) title.textContent = list[i].title || "Study Arena";
+          playGeneratedArena();
+          return;
+        }
+      }
+    }
+
+    function downloadSavedArenaById(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          var htmlStr = list[i].compiledHtml || (window.StudyArenaCompiler && list[i].courseData ? window.StudyArenaCompiler.compile(list[i].courseData) : "");
+          var blob = new Blob([htmlStr], { type: "text/html" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = (list[i].key || "study-arena") + ".html";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          return;
+        }
+      }
+    }
+
+    function toggleArenaSettings(event, id) {
+      if (event) event.stopPropagation();
+      var all = document.querySelectorAll(".arena-settings-dropdown");
+      var target = document.getElementById("arena-settings-dropdown-" + id);
+      var wasOpen = target && target.classList.contains("open");
+      all.forEach(function(el) { el.classList.remove("open"); });
+      if (target && !wasOpen) {
+        target.classList.add("open");
+      }
+    }
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest(".arena-settings-wrap")) {
+        document.querySelectorAll(".arena-settings-dropdown").forEach(function(el) {
+          el.classList.remove("open");
+        });
+      }
+    });
+
+    function deleteSavedArenaById(id) {
+      if (!confirm("Are you sure you want to delete this study arena from your local browser?")) return;
+      var list = getSavedArenas().filter(function (x) { return x.id !== id; });
+      try {
+        localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
+      } catch (e) {}
+      updateSavedBadge();
+      renderSavedArenasList();
+    }
+
+    function hydrateLastSavedArena() {
+      var list = getSavedArenas();
+      if (list.length > 0) {
+        var latest = list[0];
+        generatedCourseData = latest.courseData;
+        generatedHtmlString = latest.compiledHtml || "";
+        if (generatedHtmlString) {
+          generatedHtmlBlob = new Blob([generatedHtmlString], { type: "text/html" });
+        }
+        var resCard = document.getElementById("result-card");
+        var statsEl = document.getElementById("result-stats");
+        if (resCard && statsEl && generatedHtmlString) {
+          resCard.classList.add("active");
+          statsEl.innerHTML =
+            "<span>Course: <b>" + escapeHtml(latest.title) + "</b></span>" +
+            "<span>Zones: <b>" + Number(latest.zonesCount || 0) + "</b></span>" +
+            "<span>Questions: <b>" + Number(latest.questionsCount || 0) + "</b></span>" +
+            "<span>Chapters: <b>" + Number(latest.chaptersCount || 0) + "</b></span>";
+        }
+      }
+    }
+
+    /* ---------- INPUT MODE TABS (UPLOAD vs PASTE) ---------- */
+        function setInputMode(mode) {
+      var notes = document.getElementById("notes-input");
+      if (notes) notes.focus();
+    }
+
+    /* ---------- THEME & PREFERENCES ---------- */
+    function updateThemeUI() {
+      var t = document.documentElement.getAttribute('data-theme') || 'light';
+      var bLight = document.getElementById("theme-btn-light");
+      var bDark = document.getElementById("theme-btn-dark");
+      if (bLight) bLight.classList.toggle("active", t === "light");
+      if (bDark) bDark.classList.toggle("active", t === "dark");
+    }
+
+    function setThemeMode(mode) {
+      localStorage.setItem('study_arena_theme', mode);
+      applyTheme(mode);
+      updateThemeUI();
+    }
+
+    function openSettingsModal() {
+      updateThemeUI();
+      openKeyModal();
+    }
+
+    function closeSettingsModal() {
+      closeKeyModal();
+    }
+
+    /* ---------- AI KEY & PROVIDER SETTINGS ---------- */
+    function updateKeyUI() {
+      var key = localStorage.getItem("sa_api_key_" + currentProvider) || localStorage.getItem("study_arena_key_" + currentProvider);
+      var ind = document.getElementById("key-ind");
+      var badgeText = document.getElementById("active-model-badge-text");
+
+      if (currentProvider === "gemini") {
+        if (ind) {
+          ind.classList.remove("unconfigured");
+          ind.classList.add("configured");
+        }
+        if (badgeText) badgeText.textContent = "Gemini 1.5 Flash \u00b7 Free Tier";
+      } else if (key && key.trim().length > 5) {
+        if (ind) {
+          ind.classList.remove("unconfigured");
+          ind.classList.add("configured");
+        }
+        if (badgeText) {
+          badgeText.textContent = currentProvider === "claude" ? "Claude 3.5 Sonnet \u00b7 BYOK" : "GPT-4o \u00b7 BYOK";
+        }
+      } else {
+        if (ind) {
+          ind.classList.remove("configured");
+          ind.classList.add("unconfigured");
+        }
+        if (badgeText) {
+          badgeText.textContent = currentProvider.toUpperCase() + " (Key Required)";
+        }
+      }
+    }
+
+    function openKeyModal() {
+      selectProvider(currentProvider);
+      updateThemeUI();
+      document.getElementById("key-modal").classList.add("open");
+      setTimeout(function () {
+        var f = document.getElementById("api-key-field");
+        if (f) f.focus();
+      }, 50);
+    }
+
+    function closeKeyModal() {
+      document.getElementById("key-modal").classList.remove("open");
+    }
+
+    function selectProvider(p) {
+      currentProvider = p;
+      var provSelect = document.getElementById("key-provider-select");
+      if (provSelect) provSelect.value = p;
+      var labels = {
+        claude: "Anthropic API key (sk-ant-...):",
+        openai: "OpenAI API key (sk-...):",
+        gemini: "Google Gemini API key (AIza...):"
+      };
+      var placeholders = {
+        claude: "sk-ant-api03-...",
+        openai: "sk-proj-...",
+        gemini: "AIzaSy... (or leave blank for Free Tier)"
+      };
+      var lbl = document.getElementById("key-input-label");
+      if (lbl) lbl.textContent = labels[p] || "API Key:";
+      var fld = document.getElementById("api-key-field");
+      var apiKey = localStorage.getItem("sa_api_key_" + p) || localStorage.getItem("study_arena_key_" + p) || "";
+      if (fld) {
+        fld.placeholder = placeholders[p] || "Paste API key...";
+        fld.value = apiKey;
+      }
+
+      var helpBox = document.getElementById("ai-onboarding-help");
+      if (helpBox) {
+        helpBox.style.display = "block";
+        if (p === "gemini") {
+          helpBox.innerHTML = '<div style="background:var(--accent-pill-bg); border:1px solid var(--border-focus); border-radius:var(--radius-control); padding:12px 14px; margin-top:8px;">' +
+            '<div style="font-weight:600; color:var(--accent-cta); font-size:12.5px; margin-bottom:2px;">Google Gemini 100% Free Tier</div>' +
+            '<div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">1,500 free generations per day with zero credit card required. Grab your personal key in 5 seconds:</div>' +
+            '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:4px; color:var(--accent-cta); font-size:12px; font-weight:600; text-decoration:none; margin-top:6px;">Get Free Gemini API Key (Google AI Studio) &rarr;</a>' +
+            '</div>';
+        } else if (p === "claude") {
+          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your Anthropic key at <a href="https://console.anthropic.com/" target="_blank" rel="noopener" style="color:var(--accent-cta);">console.anthropic.com</a>. Billed directly by Anthropic.</div>';
+        } else if (p === "openai") {
+          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your OpenAI key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:var(--accent-cta);">platform.openai.com</a>. Billed directly by OpenAI.</div>';
+        }
+      }
+
+      var sel = document.getElementById("model-select");
+      if (sel) {
+        if (p === "gemini") sel.value = "gemini-1.5-flash";
+        else if (p === "claude") sel.value = "claude-3-5-sonnet-latest";
+        else if (p === "openai") sel.value = "gpt-4o";
+      }
+      updateKeyUI();
+    }
+
+    function saveKeySettings() {
+      var val = document.getElementById("api-key-field").value.trim();
+      var selModel = document.getElementById("model-select") ? document.getElementById("model-select").value : "gemini-1.5-flash";
+      localStorage.setItem("sa_ai_provider", currentProvider);
+      if (val) {
+        localStorage.setItem("sa_api_key_" + currentProvider, val);
+        localStorage.setItem("study_arena_key_" + currentProvider, val);
+      } else {
+        localStorage.removeItem("sa_api_key_" + currentProvider);
+        localStorage.removeItem("study_arena_key_" + currentProvider);
+      }
+      if (selModel) localStorage.setItem("sa_model_" + currentProvider, selModel);
+      closeKeyModal();
+      updateKeyUI();
+    }
+
+    function clearKeySettings() {
+      localStorage.removeItem("sa_api_key_" + currentProvider);
+      localStorage.removeItem("study_arena_key_" + currentProvider);
+      var fld = document.getElementById("api-key-field");
+      if (fld) fld.value = "";
+      updateKeyUI();
+      closeKeyModal();
+    }
+
+    function toggleAnnals() {
+      var box = document.getElementById("annals-box");
+      var btn = document.getElementById("annals-toggle-btn");
+      var arr = document.getElementById("annals-arrow");
+      var open = box.classList.toggle("open");
+      if (btn) btn.setAttribute("aria-expanded", open ? "true" : "false");
+      arr.textContent = open ? "Hide" : "Show";
+    }
+
+    /* ---------- FILE DROP & PDF EXTRACTION ---------- */
+    var dz = document.getElementById("dropzone");
+    ["dragenter", "dragover"].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add("drag"); });
+    });
+    ["dragleave", "drop"].forEach(function (ev) {
+      dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.remove("drag"); });
+    });
+    dz.addEventListener("drop", function (e) {
+      var f = e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) handleFileSelect({ target: { files: [f] } });
+    });
+
+    var uploadedFiles = [];
+
+    function renderAttachedDocsList() {
+      var container = document.getElementById("attached-docs-container");
+      var listEl = document.getElementById("attached-docs-list");
+      var statsBadge = document.getElementById("attached-stats-badge");
+      var dzEl = document.getElementById("dropzone");
+      if (!container || !listEl) return;
+
+      if (uploadedFiles.length === 0) {
+        container.style.display = "none";
+        listEl.innerHTML = "";
+        if (dzEl) dzEl.classList.remove("loaded");
+        return;
+      }
+
+      container.style.display = "block";
+      if (dzEl) dzEl.classList.add("loaded");
+      var totalWords = 0;
+      var html = "";
+      for (var i = 0; i < uploadedFiles.length; i++) {
+        var f = uploadedFiles[i];
+        totalWords += (f.words || 0);
+        html += '<div class="attached-doc-chip">' +
+          '<span>' + escapeHtml(f.name) + ' (' + (f.pages ? f.pages + ' pages &middot; ' : '') + f.words + ' words)</span>' +
+          '<span class="remove-doc" onclick="removeAttachedDoc(' + i + ')" title="Remove document">&times;</span>' +
+        '</div>';
+      }
+      listEl.innerHTML = html;
+      if (statsBadge) {
+        statsBadge.textContent = uploadedFiles.length + " doc" + (uploadedFiles.length > 1 ? "s" : "") + " &middot; " + totalWords.toLocaleString() + " words extracted";
+      }
+    }
+
+    function removeAttachedDoc(index) {
+      if (index >= 0 && index < uploadedFiles.length) {
+        uploadedFiles.splice(index, 1);
+        renderAttachedDocsList();
+      }
+    }
+
+    async function processIncomingFile(file) {
+      if (!file) return;
+      var name = file.name || "Untitled";
+      var fullText = "";
+      var pages = 1;
+
+      if (name.toLowerCase().endsWith(".pdf")) {
+        try {
+          var arrayBuffer = await file.arrayBuffer();
+          var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          pages = pdf.numPages;
+          for (var i = 1; i <= pdf.numPages; i++) {
+            var page = await pdf.getPage(i);
+            var content = await page.getTextContent();
+            var strings = content.items.map(function(item) { return item.str; });
+            fullText += "\n--- " + name + " (Page " + i + ") ---\n" + strings.join(" ");
+          }
+        } catch (err) {
+          console.warn("Could not parse PDF " + name, err);
+          showToast("Could not parse " + name + ": " + err.message);
+          return;
+        }
+      } else {
+        fullText = await file.text();
+      }
+
+      var wordCount = (fullText.trim().match(/\S+/g) || []).length;
+      uploadedFiles.push({
+        name: name,
+        pages: pages,
+        text: fullText,
+        words: wordCount
+      });
+      renderAttachedDocsList();
+    }
+
+    async function handleFileSelect(event) {
+      var files = event.target.files;
+      if (!files || files.length === 0) return;
+      for (var i = 0; i < files.length; i++) {
+        await processIncomingFile(files[i]);
+      }
+      event.target.value = "";
+    }
+
+    // Drag and drop multi-file support
+    document.addEventListener("DOMContentLoaded", function() {
+      var dz = document.getElementById("dropzone");
+      if (dz) {
+        dz.addEventListener("dragover", function(e) { e.preventDefault(); dz.style.borderColor = "var(--accent-cta)"; });
+        dz.addEventListener("dragleave", function(e) { e.preventDefault(); dz.style.borderColor = ""; });
+        dz.addEventListener("drop", async function(e) {
+          e.preventDefault();
+          dz.style.borderColor = "";
+          if (e.dataTransfer && e.dataTransfer.files) {
+            for (var i = 0; i < e.dataTransfer.files.length; i++) {
+              await processIncomingFile(e.dataTransfer.files[i]);
+            }
+          }
+        });
+      }
+      var notesTa = document.getElementById("notes-input");
+      var wordCountEl = document.getElementById("notes-word-count");
+      if (notesTa && wordCountEl) {
+        notesTa.addEventListener("input", function() {
+          var wc = (this.value.trim().match(/\S+/g) || []).length;
+          wordCountEl.textContent = wc.toLocaleString() + " words";
+        });
+      }
+      checkSharedArenaHash();
+    });
+
+    // Zero-Knowledge Peer Sharing
+    function showToast(msg) {
+      var t = document.getElementById("app-toast-el");
+      if (!t) {
+        t = document.createElement("div");
+        t.id = "app-toast-el";
+        t.className = "app-toast";
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.classList.add("show");
+      setTimeout(function() { t.classList.remove("show"); }, 3800);
+    }
+
+    async function shareArenaLink(id) {
+      var list = getSavedArenas();
+      var target = null;
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) { target = list[i]; break; }
+      }
+      if (!target || !target.courseData) {
+        alert("Course data not available for sharing.");
+        return;
+      }
+      try {
+        var jsonStr = JSON.stringify(target.courseData);
+        var stream = new Blob([jsonStr]).stream().pipeThrough(new CompressionStream("gzip"));
+        var buffer = await new Response(stream).arrayBuffer();
+        var bytes = new Uint8Array(buffer);
+        var binary = "";
+        for (var b = 0; b < bytes.byteLength; b++) binary += String.fromCharCode(bytes[b]);
+        var b64url = btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+        var shareUrl = window.location.origin + window.location.pathname + "#arena=" + b64url;
+        if (shareUrl.length > 25000) {
+          exportArenaJson(id);
+          showToast("Course is large: exported as file to share directly.");
+          return;
+        }
+        await navigator.clipboard.writeText(shareUrl);
+        showToast("Shareable peer link copied to clipboard!");
+      } catch (err) {
+        console.warn("Share link error:", err);
+        exportArenaJson(id);
+      }
+    }
+
+    function exportArenaJson(id) {
+      var list = getSavedArenas();
+      for (var i = 0; i < list.length; i++) {
+        if (list[i].id === id) {
+          var data = list[i].courseData || { config: { title: list[i].title } };
+          var str = JSON.stringify(data, null, 2);
+          var blob = new Blob([str], { type: "application/json" });
+          var a = document.createElement("a");
+          a.href = URL.createObjectURL(blob);
+          a.download = (list[i].title || "study_arena").toLowerCase().replace(/[^a-z0-9]+/g, "_") + ".arena.json";
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          showToast("Exported arena JSON file.");
+          return;
+        }
+      }
+    }
+
+    async function handleImportArenaFile(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      try {
+        var text = await file.text();
+        var courseData = null;
+        if (file.name.endsWith(".json")) {
+          courseData = JSON.parse(text);
+        } else if (file.name.endsWith(".html")) {
+          var m = text.match(/var\s+CONFIG\s*=\s*(\{[\s\S]*?\});/);
+          if (m) {
+            courseData = { config: JSON.parse(m[1]), zones: [], chapters: [], questions: [], exams: [] };
+          }
+        }
+        if (courseData && courseData.config) {
+          var compiled = window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(courseData) : "";
+          saveArenaToHistory(courseData, compiled);
+          renderSavedArenasList();
+          updateSavedBadge();
+          showToast("Imported: " + (courseData.config.title || "Shared Course"));
+          switchMainView("saved");
+        } else {
+          showToast("Could not recognize arena format in file.");
+        }
+      } catch (err) {
+        showToast("Import failed: " + err.message);
+      }
+      event.target.value = "";
+    }
+
+    async function checkSharedArenaHash() {
+      if (!window.location.hash || !window.location.hash.startsWith("#arena=")) return;
+      var hashData = window.location.hash.slice(7);
+      if (!hashData) return;
+      try {
+        var b64 = hashData.replace(/-/g, "+").replace(/_/g, "/");
+        while (b64.length % 4) b64 += "=";
+        var binary = atob(b64);
+        var bytes = new Uint8Array(binary.length);
+        for (var i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+        var stream = new Blob([bytes]).stream().pipeThrough(new DecompressionStream("gzip"));
+        var jsonStr = await new Response(stream).text();
+        var courseData = JSON.parse(jsonStr);
+        if (courseData && courseData.config) {
+          var compiled = window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(courseData) : "";
+          saveArenaToHistory(courseData, compiled);
+          renderSavedArenasList();
+          updateSavedBadge();
+          showToast("Imported shared arena: " + (courseData.config.title || "Custom Course"));
+          switchMainView("saved");
+          history.replaceState(null, "", window.location.pathname);
+        }
+      } catch (err) {
+        console.warn("Could not import from URL hash:", err);
+      }
+    }
+
+    /* ---------- GENERATION WITH HONEST TIMER & PLAIN-LANGUAGE ERRORS ---------- */
+    function formatFriendlyError(rawMessage) {
+      var msg = String(rawMessage || "");
+      if (msg.indexOf("cancelled") > -1 || msg.indexOf("AbortError") > -1) {
+        return { title: "Generation cancelled", body: "You stopped the generation. Your notes are still in Step 1 whenever you want to try again." };
+      }
+      if (msg.indexOf("401") > -1 || msg.toLowerCase().indexOf("authentication") > -1 || msg.toLowerCase().indexOf("invalid") > -1) {
+        return { title: "Your API key was rejected", body: "The provider returned an authentication error (HTTP 401). Open Step 2 and check that you pasted a valid key for " + currentProvider.toUpperCase() + "." };
+      }
+      if (msg.indexOf("429") > -1 || msg.toLowerCase().indexOf("rate") > -1 || msg.toLowerCase().indexOf("quota") > -1) {
+        return { title: "Provider rate limit or credit limit reached", body: "Your AI account hit a rate or billing limit (HTTP 429). Wait a moment or check your provider billing dashboard." };
+      }
+      if (msg.toLowerCase().indexOf("json") > -1 || msg.toLowerCase().indexOf("unterminated") > -1) {
+        return { title: "The response was cut off before finishing", body: "The model ran out of space while writing questions. Click Try again or upload a shorter section of slides." };
+      }
+      return { title: "Could not complete generation", body: "Something interrupted the request. You can retry immediately or expand Technical details below." };
+    }
+
+    function startElapsedTimer() {
+      stopElapsedTimer();
+      var start = Date.now();
+      var el = document.getElementById("prog-elapsed");
+      if (el) el.textContent = "0:00";
+      elapsedTimerId = setInterval(function () {
+        var sec = Math.floor((Date.now() - start) / 1000);
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        if (el) el.textContent = m + ":" + (s < 10 ? "0" + s : s);
+      }, 1000);
+    }
+
+    function stopElapsedTimer() {
+      if (elapsedTimerId) {
+        clearInterval(elapsedTimerId);
+        elapsedTimerId = null;
+      }
+    }
+
+    function cancelGeneration() {
+      if (window.StudyArenaAPI && window.StudyArenaAPI.abort) {
+        window.StudyArenaAPI.abort();
+      }
+      stopElapsedTimer();
+      document.getElementById("stepper").classList.remove("active");
+      document.getElementById("gen-btn").disabled = false;
+    }
+
+    async function startGeneration() {
+      var combinedSyllabus = "";
+      if (typeof uploadedFiles !== "undefined" && uploadedFiles && uploadedFiles.length > 0) {
+        for (var f = 0; f < uploadedFiles.length; f++) {
+          combinedSyllabus += "\n\n=== SOURCE DOCUMENT " + (f + 1) + ": " + uploadedFiles[f].name + " ===\n" + uploadedFiles[f].text;
+        }
+      }
+      var notesEl = document.getElementById("notes-input");
+      var extraNotes = notesEl ? notesEl.value.trim() : "";
+      if (extraNotes) {
+        combinedSyllabus += "\n\n=== SUPPLEMENTARY LECTURE NOTES & EXAM RUBRICS ===\n" + extraNotes;
+      }
+      var notes = combinedSyllabus.trim();
+      var teacherAnnals = document.getElementById("annals-input").value.trim();
+      var isMock = inMemoryMock || (new URLSearchParams(window.location.search).get("mock") === "ok");
+
+      if (!notes && !isMock) {
+        showToast("Please attach a course PDF or paste notes first.");
+        if (notesEl) notesEl.focus();
+        return;
+      }
+
+      var key = localStorage.getItem("sa_api_key_" + currentProvider) ||
+                localStorage.getItem("sa_api_key_claude") ||
+                localStorage.getItem("sa_api_key_openai") ||
+                localStorage.getItem("sa_api_key_gemini") ||
+                localStorage.getItem("study_arena_key_claude") ||
+                localStorage.getItem("study_arena_key_openai") ||
+                localStorage.getItem("study_arena_key_gemini") || "";
+
+      if (!key && !isMock) {
+        showToast("Please enter your AI provider API key, or click 'Load Sample Notes' to test immediately.");
+        openKeyModal();
+        return;
+      }
+
+      var genBtn = document.getElementById("gen-btn");
+      var thinkingCluster = document.getElementById("gen-thinking-cluster");
+      var thinkingText = document.getElementById("thinking-status-text");
+      var thinkingDots = document.getElementById("thinking-dots");
+      var stepper = document.getElementById("stepper");
+      var progMsg = document.getElementById("prog-msg");
+      var progFill = document.getElementById("prog-fill");
+      var resCard = document.getElementById("result-card");
+      var prevErr = document.getElementById("error-card");
+
+      if (genBtn) genBtn.disabled = true;
+      if (thinkingCluster) {
+        thinkingCluster.style.display = "inline-flex";
+        if (thinkingDots) thinkingDots.style.display = "inline-flex";
+        if (thinkingText) thinkingText.textContent = "Thinking";
+      }
+      if (resCard) {
+        resCard.classList.remove("active");
+        resCard.style.display = "none";
+      }
+      if (prevErr) prevErr.style.display = "none";
+      if (stepper) {
+        stepper.classList.add("active");
+        stepper.style.display = "block";
+      }
+      if (progFill) progFill.style.transform = "scaleX(0.1)";
+      startElapsedTimer();
+
+      try {
+        var result = await window.StudyArenaAPI.generate(notes || "Sample notes", teacherAnnals, function (msg, pct) {
+          if (progMsg) progMsg.textContent = msg;
+          if (thinkingText) {
+            var cleanMsg = msg ? msg.replace(/\.+$/, "") : "Thinking";
+            thinkingText.textContent = cleanMsg;
+          }
+          var ratio = Math.max(0.08, Math.min(1, (pct || 15) / 100));
+          if (progFill) progFill.style.transform = "scaleX(" + ratio + ")";
+        });
+
+        stopElapsedTimer();
+        generatedCourseData = result.courseData;
+        generatedHtmlString = result.compiledHtml;
+        generatedHtmlBlob = new Blob([result.compiledHtml], { type: "text/html" });
+
+        saveArenaToHistory(result.courseData, result.compiledHtml);
+        renderSavedArenasList();
+        updateSavedBadge();
+
+        if (stepper) {
+          stepper.classList.remove("active");
+          stepper.style.display = "none";
+        }
+        if (thinkingCluster) {
+          thinkingCluster.style.display = "inline-flex";
+          if (thinkingDots) thinkingDots.style.display = "none";
+          if (thinkingText) thinkingText.textContent = "Arena Compiled";
+          setTimeout(function() {
+            if (thinkingCluster) thinkingCluster.style.display = "none";
+            if (thinkingDots) thinkingDots.style.display = "inline-flex";
+          }, 3500);
+        }
+        if (genBtn) genBtn.disabled = false;
+        if (resCard) {
+          resCard.classList.add("active");
+          resCard.style.display = "block";
+        }
+
+        var qCount = (result.courseData.questions || []).length;
+        var zCount = (result.courseData.zones || []).length;
+        var cCount = (result.courseData.chapters || []).length;
+        var statsEl = document.getElementById("result-stats");
+        if (statsEl) {
+          statsEl.innerHTML =
+            "<span>Course: <b>" + escapeHtml(result.courseData.config.title || "Custom Arena") + "</b></span>" +
+            "<span>Zones: <b>" + zCount + "</b></span>" +
+            "<span>Questions: <b>" + qCount + "</b></span>" +
+            "<span>Chapters: <b>" + cCount + "</b></span>";
+        }
+
+        var playBtn = document.getElementById("btn-play-main");
+        if (playBtn) playBtn.focus();
+      } catch (err) {
+        stopElapsedTimer();
+        if (stepper) {
+          stepper.classList.remove("active");
+          stepper.style.display = "none";
+        }
+        if (thinkingCluster) thinkingCluster.style.display = "none";
+        if (genBtn) genBtn.disabled = false;
+        var errorCard = document.getElementById("error-card");
+        var errorDetails = document.getElementById("error-details");
+        var friendly = formatFriendlyError(err && err.message);
+        var tEl = document.getElementById("error-summary-title");
+        var bEl = document.getElementById("error-summary-body");
+        if (tEl) tEl.innerHTML = '<svg class="ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg><span>' + escapeHtml(friendly.title) + '</span>';
+        if (bEl) bEl.textContent = friendly.body;
+        if (errorCard && errorDetails) {
+          errorDetails.textContent = (err && err.message) || String(err);
+          errorCard.style.display = "flex";
+        }
+      }
+    }
+
+    function playGeneratedArena() {
+      if (!generatedHtmlString && !generatedHtmlBlob) return;
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      var title = document.getElementById("player-title");
+      if (title && generatedCourseData && generatedCourseData.config) {
+        title.textContent = "Playing: " + (generatedCourseData.config.title || "Custom Arena");
+      }
+      var blobUrl = generatedHtmlBlob ? URL.createObjectURL(generatedHtmlBlob) : "";
+      if (iframe) {
+        if (generatedHtmlString) {
+          iframe.srcdoc = generatedHtmlString;
+        } else if (blobUrl) {
+          iframe.removeAttribute("srcdoc");
+          iframe.src = blobUrl;
+        }
+      }
+      if (modal) {
+        modal.classList.add("open");
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    function closeArenaPlayer() {
+      var modal = document.getElementById("arena-player-modal");
+      var iframe = document.getElementById("arena-player-iframe");
+      if (modal) modal.classList.remove("open");
+      if (iframe) {
+        iframe.removeAttribute("srcdoc");
+        iframe.src = "about:blank";
+      }
+      document.body.style.overflow = "auto";
+    }
+
+    function downloadGeneratedArena() {
+      if (!generatedHtmlBlob) return;
+      var title = (generatedCourseData && generatedCourseData.config && generatedCourseData.config.key) || "study-arena";
+      var a = document.createElement("a");
+      a.href = URL.createObjectURL(generatedHtmlBlob);
+      a.download = title + ".html";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    }
+
+    function applyTheme(t) {
+      document.documentElement.setAttribute('data-theme', t);
+    }
+
+    function toggleTheme() {
+      var cur = document.documentElement.getAttribute('data-theme') || 'light';
+      var next = cur === 'dark' ? 'light' : 'dark';
+      localStorage.setItem('study_arena_theme', next);
+      applyTheme(next);
+    }
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        closeKeyModal();
+        closeArenaPlayer();
+      }
+    });
+
+    (function init() {
+      applyTheme(localStorage.getItem('study_arena_theme') || 'light');
+      updateThemeUI();
+      updateKeyUI();
+      updateSavedBadge();
+      hydrateLastSavedArena();
+      if (window.location.hash === "#saved" || new URLSearchParams(window.location.search).get("view") === "saved") {
+        switchMainView("saved");
+      } else if (window.location.hash === "#generator" || window.location.hash === "#create" || new URLSearchParams(window.location.search).get("view") === "generator" || new URLSearchParams(window.location.search).get("mock") === "ok") {
+        switchMainView("generator");
+      } else {
+        switchMainView("landing");
+      }
+    })();
+  
+  
+  
+  
+  
+  </script>
+
+  <script>
+
+
+
+
+
+// Trap reveal helper for carousel
+function revealTrap(btn, isCorrect, debriefText) {
+  var card = btn.closest('.exam-card');
+  if (!card) return;
+  var debrief = card.querySelector('.exam-card-debrief');
+  var allOpts = card.querySelectorAll('.exam-card-opt');
+  allOpts.forEach(function(o) {
+    o.classList.remove('correct', 'trap');
+  });
+  if (isCorrect) {
+    btn.classList.add('correct');
+    if (debrief) {
+      debrief.style.display = 'block';
+      debrief.innerHTML = '<strong>Optimal Strategy:</strong> ' + debriefText;
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(debrief, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+      }
+    }
+  } else {
+    btn.classList.add('trap');
+    if (debrief) {
+      debrief.style.display = 'block';
+      debrief.innerHTML = '<strong>Professor Trap Analysis:</strong> ' + debriefText;
+      if (window.gsap && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        gsap.fromTo(debrief, { opacity: 0, y: -6 }, { opacity: 1, y: 0, duration: 0.22, ease: 'power2.out' });
+      }
+    }
+  }
+}
+
+    // Aliases and bridge handlers for editorial UI
+    function generateArena() {
+      startGeneration();
+    }
+
+    function switchTab(mode) {
+      setInputMode(mode);
+    }
+
+    function switchKeyProvider(prov) {
+      selectProvider(prov);
+    }
+
+    function saveApiKey() {
+      saveKeySettings();
+    }
+
+    function clearApiKey() {
+      clearKeySettings();
+    }
+
+    function clearKeySettings() {
+      localStorage.removeItem("sa_api_key_" + currentProvider);
+      localStorage.removeItem("study_arena_key_" + currentProvider);
+      updateKeyUI();
+      closeKeyModal();
+    }
+
+    var inMemoryMock = false;
+
+    function loadPreloadedMock() {
+      switchMainView("generator");
+      inMemoryMock = true;
+      var notes = document.getElementById("notes-input");
+      if (notes) {
+        notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
+        var wordCountEl = document.getElementById("notes-word-count");
+        if (wordCountEl) {
+          var wc = (notes.value.trim().match(/\S+/g) || []).length;
+          wordCountEl.textContent = wc.toLocaleString() + " words";
+        }
+      }
+      var url = new URL(window.location.href);
+      url.searchParams.set("mock", "ok");
+      window.history.replaceState({}, "", url.toString());
+      startGeneration();
+    }
+
+    // Carousel navigation with touch snap & dots
+    var curCardIdx = 0;
+    var track = document.getElementById("exam-carousel-track");
+    var cPrev = document.getElementById("carousel-prev");
+    var cNext = document.getElementById("carousel-next");
+    var cDotsBar = document.getElementById("carousel-dots-bar");
+
+    function updateCarouselState(idx) {
+      if (!track) return;
+      var cards = track.querySelectorAll(".exam-card");
+      if (!cards.length) return;
+      curCardIdx = Math.max(0, Math.min(cards.length - 1, idx));
+      var card = cards[curCardIdx];
+      if (card) {
+        if (window.innerWidth <= 960) {
+          track.scrollTo({
+            left: card.offsetLeft - track.offsetLeft,
+            behavior: "smooth"
+          });
+        } else {
+          card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+        }
+      }
+      if (cPrev) cPrev.style.opacity = curCardIdx === 0 ? "0.4" : "1";
+      if (cNext) cNext.style.opacity = curCardIdx === cards.length - 1 ? "0.4" : "1";
+
+      if (cDotsBar) {
+        var dots = cDotsBar.querySelectorAll(".carousel-dot");
+        dots.forEach(function(dot, i) {
+          dot.classList.toggle("active", i === curCardIdx);
+        });
+      }
+      var counter = document.getElementById("carousel-counter");
+      if (counter) counter.textContent = (curCardIdx + 1) + " / " + cards.length;
+    }
+
+    if (cPrev && cNext && track) {
+      cPrev.onclick = function() {
+        updateCarouselState(curCardIdx - 1);
+      };
+      cNext.onclick = function() {
+        updateCarouselState(curCardIdx + 1);
+      };
+
+      var scrollTimer = null;
+      track.addEventListener("scroll", function() {
+        clearTimeout(scrollTimer);
+        scrollTimer = setTimeout(function() {
+          var cards = track.querySelectorAll(".exam-card");
+          if (!cards.length) return;
+          var scrollLeft = track.scrollLeft;
+          var closest = 0;
+          var minDiff = Infinity;
+          cards.forEach(function(c, i) {
+            var diff = Math.abs((c.offsetLeft - track.offsetLeft) - scrollLeft);
+            if (diff < minDiff) {
+              minDiff = diff;
+              closest = i;
+            }
+          });
+          curCardIdx = closest;
+          if (cPrev) cPrev.style.opacity = curCardIdx === 0 ? "0.4" : "1";
+          if (cNext) cNext.style.opacity = curCardIdx === cards.length - 1 ? "0.4" : "1";
+          if (cDotsBar) {
+            var dots = cDotsBar.querySelectorAll(".carousel-dot");
+            dots.forEach(function(dot, i) {
+              dot.classList.toggle("active", i === curCardIdx);
+            });
+          }
+          var counter = document.getElementById("carousel-counter");
+          if (counter) counter.textContent = (curCardIdx + 1) + " / " + cards.length;
+        }, 50);
+      }, { passive: true });
+    }
+
+
+    // GSAP Organic Motion & Micro-interactions
+    function initMotionDesign() {
+      if (!window.gsap || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+      // 1. Zenarate-style ambient floating for subject pills
+      gsap.utils.toArray('.school-pill').forEach(function(pill, i) {
+        gsap.to(pill, {
+          y: (i % 2 === 0 ? -4 : 4),
+          duration: 2.2 + (i * 0.3),
+          repeat: -1,
+          yoyo: true,
+          ease: 'sine.inOut',
+          delay: i * 0.15
+        });
+      });
+
+      // 2. 3D Parallax tilt on Exam Cards (Latente & Good Times tactility)
+      gsap.utils.toArray('.exam-card').forEach(function(card) {
+        card.addEventListener('mousemove', function(e) {
+          var rect = card.getBoundingClientRect();
+          var x = e.clientX - rect.left - (rect.width / 2);
+          var y = e.clientY - rect.top - (rect.height / 2);
+          gsap.to(card, {
+            rotationY: x * 0.04,
+            rotationX: -y * 0.04,
+            transformPerspective: 900,
+            duration: 0.3,
+            ease: 'power2.out'
+          });
+        });
+        card.addEventListener('mouseleave', function() {
+          gsap.to(card, {
+            rotationY: 0,
+            rotationX: 0,
+            duration: 0.5,
+            ease: 'power3.out'
+          });
+        });
+      });
+    }
+
+    // Call after DOM is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initMotionDesign);
+    } else {
+      initMotionDesign();
+    }
+
+
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  
+
+        (function() {
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok" || window.location.hash === "#generator" || window.location.hash === "#create") {
+            switchMainView("generator");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+        
+  </script>
+</body>
+</html>
