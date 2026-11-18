@@ -99,6 +99,8 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
 };
 
 window.StudyArenaAPI = {
+  DEFAULT_GEMINI_KEY: "AQ.Ab8RN6JCOQNgo0Rf8CphejiVWEhrLJDY0FTdph9IUCdhzyPboQ",
+  DEFAULT_GEMINI_MODEL: "gemini-3.5-flash-lite",
   MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials for business and economics students.
 
 Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, interactive study arena.
@@ -587,13 +589,18 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     }
 
     var provider = localStorage.getItem("sa_ai_provider") || "gemini";
-    var apiKey = localStorage.getItem("sa_api_key_" + provider) ||
-                 localStorage.getItem("sa_api_key_gemini") ||
-                 localStorage.getItem("sa_api_key_claude") ||
-                 localStorage.getItem("sa_api_key_openai") || "";
+    var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
+    if (!apiKey && provider === "gemini") {
+      apiKey = this.DEFAULT_GEMINI_KEY;
+    }
 
     if (!apiKey) {
-      throw new Error("Missing API Key for " + provider.toUpperCase() + ". Click 'Settings' (top-right gear icon) to connect your free Google Gemini key (1,500 free generations/day, zero credit card) or supply a Claude/OpenAI key.");
+      apiKey = localStorage.getItem("sa_api_key_gemini") || this.DEFAULT_GEMINI_KEY;
+      if (apiKey) provider = "gemini";
+    }
+
+    if (!apiKey) {
+      throw new Error("API key required. Click Settings to enter a key.");
     }
 
     onProgress("Reading syllabus & lecture notes...", 15);
@@ -735,7 +742,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     } else if (provider === "gemini") {
       onProgress("Creating tools & distractor traps...", 45);
-      var modelName = localStorage.getItem("sa_model_gemini") || "gemini-1.5-flash";
+      var modelName = this.DEFAULT_GEMINI_MODEL;
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
         signal: signal,
@@ -800,13 +807,13 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     var provider = localStorage.getItem("sa_ai_provider") || "gemini";
     var apiKey = localStorage.getItem("sa_api_key_" + provider);
+    if (!apiKey && provider === "gemini") {
+      apiKey = this.DEFAULT_GEMINI_KEY;
+    }
 
     if (!apiKey) {
-      if (provider === "gemini") {
-        throw new Error("Google Gemini API key required. Click the Settings Cog (\u2699) to paste your free Google AI Studio key (1,500 requests/day, zero credit card required at aistudio.google.com/app/apikey), or add ?mock=essay to try simulation mode.");
-      } else {
-        throw new Error("Missing " + provider.toUpperCase() + " API key. Click the Settings Cog (\u2699) in the top-right header to configure your " + provider.toUpperCase() + " key.");
-      }
+      apiKey = this.DEFAULT_GEMINI_KEY;
+      provider = "gemini";
     }
 
     var userPrompt = "Please evaluate the following draft according to your academic professor review guidelines.\n\n";
@@ -912,7 +919,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     } else if (provider === "gemini") {
       onProgress("Evaluating thesis & argumentative warrants with Gemini...", 45);
-      var modelName = localStorage.getItem("sa_model_gemini") || "gemini-1.5-flash";
+      var modelName = this.DEFAULT_GEMINI_MODEL;
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
         signal: signal,

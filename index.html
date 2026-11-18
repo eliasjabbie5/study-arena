@@ -2048,18 +2048,8 @@
           </div>
 
           <!-- CONTROLS ROW -->
-          <div class="console-controls-bar">
-            <div style="display:flex; align-items:center; gap:10px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button type="button" class="provider-badge" id="active-model-badge" onclick="openSettingsModal()" style="cursor:pointer;" title="Click to change AI Provider">
-                  <span class="dot-status configured"></span>
-                  <span id="active-model-badge-text">Gemini 1.5 Flash &middot; Free Tier</span>
-                </button>
-                <button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11px;" onclick="openSettingsModal()">Change Provider</button>
-              </div>
-              <input type="hidden" id="model-select" value="gemini-1.5-flash">
-            </div>
-
+          <div class="console-controls-bar" style="display:flex; justify-content:flex-end; align-items:center;">
+            <input type="hidden" id="model-select" value="gemini-3.5-flash-lite">
             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
               <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
                 Generate Arena &rarr;
@@ -2180,17 +2170,11 @@
               <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Master's in Law &amp; Economics, evaluating antitrust doctrine under Section 2...">
             </div>
 
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-              <div style="display:flex; align-items:center; gap:8px;">
-                <button type="button" class="provider-badge" id="essay-model-badge" onclick="openSettingsModal()" style="cursor:pointer;" title="Click to change AI Provider">Gemini 1.5 Flash &middot; Free Tier</button>
-                <button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11px;" onclick="openSettingsModal()">Change Provider</button>
-              </div>
-              <div style="display:flex; align-items:center; gap:10px;">
-                <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
-                <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
-                  Grade &amp; Review Essay &rarr;
-                </button>
-              </div>
+            <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+              <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
+              <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
+                Grade &amp; Review Essay &rarr;
+              </button>
             </div>
           </div>
 
@@ -3371,19 +3355,8 @@
         return;
       }
 
-      var key = localStorage.getItem("sa_api_key_" + currentProvider) ||
-                localStorage.getItem("sa_api_key_claude") ||
-                localStorage.getItem("sa_api_key_openai") ||
-                localStorage.getItem("sa_api_key_gemini") ||
-                localStorage.getItem("study_arena_key_claude") ||
-                localStorage.getItem("study_arena_key_openai") ||
-                localStorage.getItem("study_arena_key_gemini") || "";
-
-      if (!key && !isMock) {
-        showToast("Please enter your AI provider API key, or click 'Load Sample Notes' to test immediately.");
-        openKeyModal();
-        return;
-      }
+      // Built-in free Gemini key active for all users
+      var key = localStorage.getItem("sa_api_key_" + currentProvider) || "builtin";
 
       var genBtn = document.getElementById("gen-btn");
       var thinkingCluster = document.getElementById("gen-thinking-cluster");
