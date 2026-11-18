@@ -2201,17 +2201,14 @@
       var ind = document.getElementById("key-ind");
       var label = document.getElementById("key-label");
       var provHint = document.getElementById("active-prov-name");
-      var helpBox = document.getElementById("ai-onboarding-help");
 
       if (provHint) provHint.textContent = currentProvider.toUpperCase();
       if (key && key.trim().length > 5) {
         ind.classList.add("configured");
         label.textContent = currentProvider.toUpperCase() + " key connected";
-        if (helpBox) helpBox.style.display = "none";
       } else {
         ind.classList.remove("configured");
         label.textContent = "No API key saved yet (" + currentProvider.toUpperCase() + ")";
-        if (helpBox) helpBox.style.display = "flex";
       }
     }
 
@@ -2274,6 +2271,7 @@
 
       var helpBox = document.getElementById("ai-onboarding-help");
       if (helpBox) {
+        helpBox.style.display = "block";
         if (p === "gemini") {
           helpBox.innerHTML = '<div style="background:var(--accent-pill-bg); border:1px solid var(--border-focus); border-radius:var(--radius-control); padding:12px 14px; margin-top:8px;">' +
             '<div style="font-weight:600; color:var(--accent-cta); font-size:12.5px; margin-bottom:2px;">Google Gemini 100% Free Tier</div>' +
