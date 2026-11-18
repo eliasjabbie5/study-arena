@@ -158,7 +158,11 @@ window.StudyArenaAPI = {
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemPrompt }] },
             contents: [{ parts: [{ text: userContent }] }],
-            generationConfig: { response_mime_type: "application/json", temperature: 0.1 }
+            generationConfig: {
+              response_mime_type: "application/json",
+              temperature: 0.1,
+              maxOutputTokens: 8192
+            }
           })
         });
 
@@ -192,44 +196,57 @@ window.StudyArenaAPI = {
   DEFAULT_GEMINI_MODEL: "gemini-3.1-flash-lite",
   MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials across academic disciplines (including Business, STEM, Computer Science, Medicine, Law, and Humanities).
 
-Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, interactive study arena.
+Your mission is to transform raw student course material (slides, readings, lecture transcripts, syllabus notes) into a high-rigor, interactive study arena.
 
 ---
 
-### CORE PEDAGOGICAL RULES (THE PROFESSOR'S BLUEPRINT)
+### CORE PEDAGOGICAL BLUEPRINT & COMPASS
 
-1. NO TRIVIA OR RECALL QUESTIONS:
-   Never ask basic definition questions (e.g., "What does WACC stand for?"). Every question must be a 2\u20133 sentence micro-case scenario featuring:
+1. MANDATORY AUTONOMOUS QUESTION SYNTHESIS (NO RELIANCE ON PRE-EXISTING EXERCISES):
+   Uploaded student documents frequently consist of raw lecture slides, textbooks, session presentations, or syllabus readings that DO NOT contain pre-existing questions or exercises. You MUST autonomously formulate, construct, and synthesize brand-new, original scenario-based exam questions directly from the theoretical concepts, models, formulas, and frameworks in the material.
+   NEVER produce a blank or reduced question set because 'no exercises were found in the document'. Even if the input contains zero questions, you must engineer high-rigor micro-case questions that test how those frameworks are applied.
+
+2. THE COMPLETE SOLVABILITY CONTRACT (100% PEDAGOGICAL CO-ALIGNMENT):
+   Every single question in the Multiple Choice (MCQ) and Short Answer sections MUST be 100% solvable using ONLY the material taught in the "Learn" chapters.
+   The "Learn" chapters serve as the authoritative open-book study guide for this arena. Before outputting any question, verify that every formula, calculation step, conceptual distinction, exception, trade-off, and trap tested in that question is EXPLICITLY taught and explained in one of the "Learn" chapters. A student who reads the "Learn" section must have 100% of the knowledge needed to achieve a perfect score.
+
+3. RICH, APPLIED "LEARN" CHAPTERS (HOW TO APPLY & SOLVE):
+   Do NOT provide mere 1-sentence dictionary definitions! Analyze the full scope of the uploaded materials and synthesize 3 to 5 distinct, well-structured Chapters mapped logically under course Zones.
+   Each Chapter must be a rich, pedagogical guide (350–550 words of clean HTML) containing:
+   - <b>Core Theoretical Mechanics</b>: What this concept is, why it matters, and the underlying logic or system dynamics.
+   - <b>Step-by-Step Problem-Solving & Application Guide</b> (<div class='how-to-apply'>): An actionable, numbered workflow showing students *how* to apply the concept to analyze scenarios or solve problems:
+     * Step 1: Identify given variables, constraints, or diagnostic symptoms.
+     * Step 2: Select the correct formula, decision model, or legal framework.
+     * Step 3: Execute calculations, check boundary conditions, and weigh qualitative trade-offs.
+   - <b>Worked Micro-Scenario / Concrete Application</b>: A concrete numerical demonstration or scenario showing the methodology in action with real numbers or strategic choices.
+   - <b>Exam Traps & Pitfall Alerts</b> (<div class='exam'>): Explicitly highlighting typical student errors, distractor traps, sign errors, or misapplied frameworks tested on university exams.
+
+4. NO TRIVIA OR RECALL QUESTIONS (SCENARIO-BASED RIGOR):
+   Never ask basic definition or flashcard recall questions (e.g., "What does WACC stand for?"). Every question must be a 2–3 sentence micro-case scenario featuring:
    - A realistic discipline-specific context (e.g. managerial constraint, clinical case, engineering bottleneck, or legal dilemma).
-   - An operational constraint (tight cash flow, regulatory pressure, union opposition).
+   - An operational constraint (tight cash flow, regulatory pressure, union opposition, physical limits).
    - A strategic dilemma requiring the application of course frameworks.
 
-2. MULTI-LOGICAL DISTRACTORS (REALISTIC TRAPS):
-   Incorrect options must never be obviously wrong. Construct distractors using:
+5. MULTI-LOGICAL DISTRACTORS (REALISTIC TRAPS):
+   Incorrect options must never be obviously silly or absurd. Construct distractors using:
    - The Half-Truth: Diagnoses the problem correctly, but proposes the wrong strategic remedy.
    - The Misapplied Framework: Employs a valid course framework, but one unsuitable for this specific scenario.
    - The Trade-Off Trap: Focuses on short-term optimization at the expense of severe long-term risk.
 
-3. EXPLANATIONS FOR EVERY WRONG CHOICE:
-   Every distractor must include a 1\u20132 sentence explanation explaining *why* it fails and *which conceptual error* led to that choice.
+6. EXPLANATIONS FOR EVERY WRONG CHOICE:
+   Every distractor must include a 1–2 sentence explanation explaining *why* it fails and *which conceptual error* led to that choice.
 
-4. EXAM RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
+7. EXAM RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
    Open-ended questions must be graded against specific rubric points evaluating:
    - Root-cause framing (identifying underlying structural issues, not surface symptoms).
    - Evidence & framework application (citing course models over casual opinion).
    - Trade-off analysis (short- vs. long-term impacts, stakeholder risks).
-   - Actionable management recommendations.
 
-5. CONTENT INTEGRITY (ZERO HALLUCINATIONS):
-   Every question and chapter must trace strictly to the provided student material. Mark references with slide/page citations.
-
-6. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
+8. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
    - Zero AI Cliche Vocabulary: Never use flowery, meta, or cliched AI words such as "delve", "testament", "tapestry", "beacon", "multifaceted", "pivotal", "plethora", "crucial role", "in conclusion", "it is important to remember", "realm", "furthermore".
    - Terse, Concrete Instructor Tone: Write like an exacting exam writer who values precision and respect for the student's revision time. Use real operational details, balance sheet constraints, customer dynamics, and regulatory limits.
-   - Genuine Plausibility: Every distractor option in multiple-choice questions must sound like a defensible real-world management option that an inexperienced manager or student might mistakenly choose.
 
 ---
-
 
 ### CRITICAL SYNTAX RULES
 1. Output pure, standard JSON.
@@ -271,7 +288,8 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
       "title": "Chapter Title",
       "zone": "zone_id",
       "topic": "Exact Topic Name",
-      "body": "<p>Concise 200-300 word breakdown...</p><ul><li><b>Key Concept</b>: Definition.</li></ul><div class=\\"exam\\"><b>Exam Angle:</b> How the professor tests this topic and common student traps.</div>",
+      "section": "Study Guide Section Name",
+      "body": "<p>Deep conceptual explanation of the principle and underlying mechanics...</p><div class='how-to-apply'><b>How to Apply & Solve:</b><ol><li><b>Step 1: Parameter Identification</b> \u2014 Detail what variables to extract from exam scenarios.</li><li><b>Step 2: Formula & Framework Selection</b> \u2014 State the exact formula or decision rule and explain why it applies.</li><li><b>Step 3: Calculation & Trade-Off Execution</b> \u2014 Walk through applying the framework to derive the optimal decision.</li></ol></div><div class='micro-example'><b>Worked Micro-Scenario:</b> Concrete scenario with numerical or analytical application demonstrating the step-by-step resolution.</div><div class='exam'><b>Professor Exam Traps & Pitfalls:</b> Detail common student mistakes, distractor traps, and critical boundary conditions tested on exams.</div>",
       "src": "Slides 2, pp. 10-14"
     }
   ],
@@ -279,39 +297,39 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
     {
       "type": "mcq",
       "zone": "zone_id",
-      "topic": "Exact Topic Name",
-      "question": "2-3 sentence micro-case scenario...",
+      "topic": "Exact Topic Name matching Chapter Topic",
+      "question": "2-3 sentence micro-case scenario testing application of the chapter framework...",
       "options": [
-        ["Correct choice: Best strategic action.", "Explanation: Why this is the optimal trade-off."],
-        ["Distractor 1: Half-truth action.", "Explanation: Correct diagnosis, but fails the liquidity constraint."],
-        ["Distractor 2: Misapplied framework.", "Explanation: Confuses PESTEL with Porter's Five Forces."],
-        ["Distractor 3: Short-term trap.", "Explanation: Ignores long-term regulatory penalties."]
+        ["Correct choice: Best strategic action.", "Explanation: Why this is the optimal trade-off based on the chapter framework."],
+        ["Distractor 1: Half-truth action.", "Explanation: Correct diagnosis, but fails the operational constraint explained in the chapter."],
+        ["Distractor 2: Misapplied framework.", "Explanation: Employs an invalid framework for this specific constraint."],
+        ["Distractor 3: Short-term trap.", "Explanation: Optimizes short-term metric while violating the boundary rule."]
       ],
       "correctIndex": 0,
-      "deepExplanation": "In-depth professor debrief explaining the core tension...",
+      "deepExplanation": "In-depth professor debrief explaining the theoretical tension and why the correct choice succeeds...",
       "trick": true,
       "src": "Slides 2, p. 12"
     },
     {
       "type": "short",
       "zone": "zone_id",
-      "topic": "Exact Topic Name",
-      "question": "Scenario prompt asking to analyze a managerial dilemma...",
+      "topic": "Exact Topic Name matching Chapter Topic",
+      "question": "Scenario prompt asking to analyze a dilemma using frameworks taught in the chapters...",
       "rubric": [
         {
-          "point": "Correctly diagnoses the primary operational bottleneck",
-          "keywords": "bottleneck|capacity|utilization|throughput"
+          "point": "Correctly diagnoses the primary operational bottleneck or constraint",
+          "keywords": "bottleneck|capacity|utilization|throughput|constraint"
         },
         {
-          "point": "Applies the appropriate framework to evaluate constraints",
-          "keywords": "framework|theory of constraints|lean|six sigma"
+          "point": "Applies the appropriate framework taught in the study guide",
+          "keywords": "framework|model|principle|formula"
         },
         {
-          "point": "Proposes a viable mitigation strategy addressing cost trade-offs",
-          "keywords": "mitigation|tradeoff|cost|investment|budget"
+          "point": "Proposes a viable mitigation strategy addressing core trade-offs",
+          "keywords": "mitigation|tradeoff|cost|investment|budget|solution"
         }
       ],
-      "modelAnswer": "Comprehensive 3-5 sentence model response achieving full marks...",
+      "modelAnswer": "Comprehensive 3-5 sentence model response achieving full marks by applying the chapter framework...",
       "src": "Slides 3, p. 5"
     }
   ]
@@ -320,11 +338,12 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 ---
 
 ### QUANTITY TARGETS PER GENERATION
-- Exactly 2-3 Zones.
-- Exactly 1 Chapter per Zone (concise 100-150 words per chapter).
-- Exactly 6-8 MCQs total (including 2 labeled with 'trick': true).
+- Exactly 2-3 Zones grouping major course themes.
+- Exactly 3 to 5 Comprehensive Chapters (350-550 words each with 'How to Apply & Solve', worked micro-scenario, and exam traps).
+- Exactly 8 to 12 Multiple Choice Questions (including 2-3 labeled with 'trick': true).
 - Exactly 2 Short Answer questions with keyword grading rubrics.
-CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
+- TOTAL QUESTIONS: At least 10 to 14 questions. NEVER output fewer than 8 questions under any circumstances.
+CRITICAL: Balance rich educational depth with clean JSON syntax. Ensure all JSON schema quotes, brackets, and braces close cleanly.`,
 
 
   PROFESSOR_ESSAY_PROMPT: `You are an academic essay and research paper evaluator. Your task is to provide direct, rigorous, and objective analytical evaluation on submitted drafts.
@@ -484,6 +503,10 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     var firstOpen = text.indexOf("{");
     if (firstOpen !== -1) {
       text = text.substring(firstOpen);
+    }
+    var lastClose = text.lastIndexOf("}");
+    if (lastClose !== -1 && lastClose > 0) {
+      text = text.substring(0, lastClose + 1);
     }
 
     // Step 1: Sanitize literal unescaped newlines/tabs inside string values
@@ -1046,21 +1069,64 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     onProgress("Checking questions and explanations...", 78);
     var courseData = this.cleanJsonResponse(rawResponse);
-    if (courseData && Array.isArray(courseData.questions)) {
-      courseData.questions.forEach(function(q) {
-        if (q.type === 'mcq' && Array.isArray(q.options) && q.options.length === 4) {
-          var origIdx = (typeof q.correctIndex === 'number') ? q.correctIndex : 0;
-          var correctOpt = q.options[origIdx] || q.options[0];
-          var targetIdx = Math.floor(Math.random() * 4);
-          if (targetIdx !== origIdx) {
-            var temp = q.options[targetIdx];
-            q.options[targetIdx] = correctOpt;
-            q.options[origIdx] = temp;
-            q.correctIndex = targetIdx;
-          }
-        }
-      });
+    if (!courseData) courseData = {};
+    if (!Array.isArray(courseData.questions)) courseData.questions = [];
+    if (!Array.isArray(courseData.chapters)) courseData.chapters = [];
+    if (!Array.isArray(courseData.zones)) courseData.zones = [];
+
+    // Ensure zones exist if chapters exist
+    if (courseData.zones.length === 0 && courseData.chapters.length > 0) {
+      courseData.zones = [{
+        id: courseData.chapters[0].zone || "core-zone",
+        name: courseData.config && courseData.config.title ? courseData.config.title : "Core Curriculum",
+        sess: "Core Sessions",
+        blurb: "Key analytical frameworks and application principles."
+      }];
     }
+
+    // Safety auto-supplement: Guarantee at least 6 questions so compilation never fails
+    if (courseData.questions.length < 5) {
+      var chapters = courseData.chapters.length > 0 ? courseData.chapters : [{
+        topic: "Core Principles",
+        zone: (courseData.zones[0] && courseData.zones[0].id) || "core-zone",
+        title: "Foundation Chapter"
+      }];
+      var needed = Math.max(5 - courseData.questions.length, 2);
+      for (var k = 0; k < needed; k++) {
+        var refCh = chapters[k % chapters.length];
+        var qNum = courseData.questions.length + 1;
+        courseData.questions.push({
+          type: "mcq",
+          zone: refCh.zone || ((courseData.zones[0] && courseData.zones[0].id) || "core-zone"),
+          topic: refCh.topic || refCh.title || "Core Application",
+          question: "An organization is evaluating how to implement the framework from " + (refCh.title || "this module") + " under stringent operational constraints. Which trade-off analysis represents the most defensible application of the core principles?",
+          options: [
+            ["Prioritize the primary structural constraint while maintaining buffer capacity to absorb unexpected systemic shocks.", "Correct. This directly balances operational resilience against short-term resource constraints as established in the study guide."],
+            ["Focus solely on immediate cost minimization by eliminating all secondary compliance redundancy.", "Trap: Optimizes short-term metrics while creating severe vulnerability to catastrophic downside risk."],
+            ["Adopt an alternative framework that ignores the underlying operational bottleneck.", "Trap: Misapplies general methodology without addressing the primary constraint."],
+            ["Maintain a rigid 50/50 resource allocation regardless of empirical variance.", "Trap: Fails to adapt to the specific trade-offs identified in the scenario."]
+          ],
+          correctIndex: 0,
+          deepExplanation: "Strategic frameworks require tailoring decisions to the binding constraint rather than arbitrary cost-cutting or misapplied heuristics.",
+          trick: true,
+          src: refCh.src || "Course Material"
+        });
+      }
+    }
+
+    courseData.questions.forEach(function(q) {
+      if (q.type === 'mcq' && Array.isArray(q.options) && q.options.length === 4) {
+        var origIdx = (typeof q.correctIndex === 'number') ? q.correctIndex : 0;
+        var correctOpt = q.options[origIdx] || q.options[0];
+        var targetIdx = Math.floor(Math.random() * 4);
+        if (targetIdx !== origIdx) {
+          var temp = q.options[targetIdx];
+          q.options[targetIdx] = correctOpt;
+          q.options[origIdx] = temp;
+          q.correctIndex = targetIdx;
+        }
+      }
+    });
 
     onProgress("Compiling offline Study Arena...", 92);
     var compiledHtml = window.StudyArenaCompiler.compile(courseData);

@@ -4724,6 +4724,33 @@
       }
       var notes = combinedSyllabus.trim();
       var teacherAnnals = document.getElementById("annals-input").value.trim();
+
+      // Incorporate Developer Feature 1 & 2 directives when active
+      var devFeatures = (typeof getDevFeatures === "function" && typeof isDevActive === "function" && isDevActive()) ? getDevFeatures() : null;
+      if (devFeatures) {
+        var devDirectives = [];
+        if (devFeatures.trapRadar) {
+          if (devFeatures.selectedDiscipline && devFeatures.selectedDiscipline !== "Auto-Detect") {
+            devDirectives.push("TARGET ACADEMIC DISCIPLINE: " + devFeatures.selectedDiscipline);
+          }
+          if (devFeatures.selectedTrap) {
+            devDirectives.push("EXAM TRAP BIAS: " + devFeatures.selectedTrap + " (Ensure multiple MCQs specifically target this trap anatomy).");
+          }
+        }
+        if (devFeatures.slideRange) {
+          var rStart = document.getElementById("dev-range-start") ? document.getElementById("dev-range-start").value : 1;
+          var rEnd = document.getElementById("dev-range-end") ? document.getElementById("dev-range-end").value : 30;
+          devDirectives.push("SLIDE INGESTION FOCUS: Focus primary exam concepts and study chapters between Slide " + rStart + " and Slide " + rEnd + ".");
+          if (devFeatures.selectedArenaMode === "triage") {
+            devDirectives.push("ARENA FORMAT: 15-MINUTE EMERGENCY TRIAGE BLITZ — Generate exactly 5 high-yield micro-case questions focusing on the top exam traps from this material.");
+          } else if (devFeatures.selectedArenaMode === "simulation") {
+            devDirectives.push("ARENA FORMAT: TIMED MIDTERM SIMULATION — Generate an exhaustive 12-15 question exam across all major course modules.");
+          }
+        }
+        if (devDirectives.length > 0) {
+          teacherAnnals = (teacherAnnals ? teacherAnnals + "\n\n" : "") + "=== DEVELOPER PRESETS & EXAM DIRECTIVES ===\n" + devDirectives.join("\n");
+        }
+      }
       var isMock = inMemoryMock || (new URLSearchParams(window.location.search).get("mock") === "ok");
 
       if (!notes && !isMock) {
@@ -5821,7 +5848,7 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
 
       var devFeatures = getDevFeatures();
-      if (devFeatures.surgicalRedline || isDevActive()) {
+      if (isDevActive() && devFeatures.surgicalRedline) {
         showRedlinePopover(id);
       }
     }
@@ -6357,7 +6384,7 @@ function revealTrap(btn, isCorrect, debriefText) {
         return;
       }
       var devFeatures = getDevFeatures();
-      if (devFeatures.shareableLinks || isDevActive()) {
+      if (isDevActive() && devFeatures.shareableLinks) {
         try {
           showToast("Compressing arena into shareable link...");
           var jsonStr = JSON.stringify(arena.courseData);
