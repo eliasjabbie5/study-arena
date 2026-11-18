@@ -343,7 +343,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 - Exactly 6 to 8 Multiple Choice Questions (including 2 labeled with 'trick': true).
 - Exactly 1 to 2 Short Answer questions with keyword grading rubrics.
 - TOTAL QUESTIONS: At least 7 to 10 questions.
-CRITICAL: Balance rich educational depth with compact, clean JSON syntax so the output completes well within token limits and closes all JSON brackets cleanly.`,Target:
+CRITICAL: Balance rich educational depth with compact, clean JSON syntax so the output completes well within token limits and closes all JSON brackets cleanly.`,
 
 
   PROFESSOR_ESSAY_PROMPT: `You are an academic essay and research paper evaluator. Your task is to provide direct, rigorous, and objective analytical evaluation on submitted drafts.
