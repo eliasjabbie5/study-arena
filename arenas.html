@@ -2154,11 +2154,16 @@
       body.is-authenticated #app-sidebar {
         width: 280px !important;
         min-width: 280px !important;
-        transform: translateX(-100%);
-        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+        transform: translateX(-110%) !important;
+        box-shadow: none !important;
+        pointer-events: none !important;
+        visibility: hidden !important;
       }
       body.is-authenticated #app-sidebar.mobile-open {
-        transform: translateX(0);
+        transform: translateX(0) !important;
+        box-shadow: 0 8px 32px rgba(0,0,0,0.35) !important;
+        pointer-events: auto !important;
+        visibility: visible !important;
       }
       body.is-authenticated #app-main {
         margin-left: 0 !important;
@@ -2342,7 +2347,7 @@
 
       <button type="button" class="sidebar-new-btn" onclick="workspaceNavigate('generator')">
         <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-        <span>+ New Study Arena</span>
+        <span>New Study Arena</span>
       </button>
     </div>
 
@@ -3158,28 +3163,25 @@
       if (navSaved) navSaved.classList.toggle("active", viewName === "saved");
       if (navTryBtn) navTryBtn.style.display = (viewName === "generator" || viewName === "essay") ? "none" : "inline-flex";
 
-      var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      // Hide other views immediately
+      otherViews.forEach(function(v) {
+        if (v) {
+          v.style.display = "none";
+          v.classList.remove("active");
+          if (window.gsap) gsap.killTweensOf(v);
+        }
+      });
 
-      if (window.gsap && !prefersReduced) {
-        gsap.to(otherViews, {
-          opacity: 0,
-          y: -10,
-          duration: 0.18,
-          ease: "power2.inOut",
-          onComplete: function() {
-            otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
-            if (targetView) {
-              targetView.style.display = "block";
-              gsap.fromTo(targetView, 
-                { opacity: 0, y: 16 }, 
-                { opacity: 1, y: 0, duration: 0.32, ease: "power3.out" }
-              );
-            }
-          }
-        });
-      } else {
-        otherViews.forEach(function(v) { if (v) v.style.display = "none"; });
-        if (targetView) targetView.style.display = "block";
+      // Show target view immediately with full opacity and clean transforms
+      if (targetView) {
+        targetView.style.display = "block";
+        targetView.style.opacity = "1";
+        targetView.style.transform = "none";
+        targetView.classList.add("active");
+        if (window.gsap) {
+          gsap.killTweensOf(targetView);
+          gsap.set(targetView, { opacity: 1, y: 0, clearProps: "opacity,transform" });
+        }
       }
 
       if (viewName === "saved") {
@@ -4359,21 +4361,10 @@ function revealTrap(btn, isCorrect, debriefText) {
     function workspaceNavigate(viewName) {
       if (viewName === "create") viewName = "generator";
 
-      var viewLanding = document.getElementById("view-landing");
-      var viewSaved = document.getElementById("view-saved");
-      var viewGenerator = document.getElementById("view-generator");
-      var viewEssay = document.getElementById("view-essay");
-
       var slinkSaved = document.getElementById("slink-saved");
       var slinkGenerator = document.getElementById("slink-generator");
       var slinkEssay = document.getElementById("slink-essay");
-
       var heading = document.getElementById("workspace-view-heading");
-
-      if (viewLanding) viewLanding.style.display = "none";
-      if (viewSaved) viewSaved.style.display = (viewName === "saved") ? "block" : "none";
-      if (viewGenerator) viewGenerator.style.display = (viewName === "generator") ? "block" : "none";
-      if (viewEssay) viewEssay.style.display = (viewName === "essay") ? "block" : "none";
 
       if (slinkSaved) slinkSaved.classList.toggle("active", viewName === "saved");
       if (slinkGenerator) slinkGenerator.classList.toggle("active", viewName === "generator");
@@ -4388,17 +4379,8 @@ function revealTrap(btn, isCorrect, debriefText) {
       closeMobileSidebar();
       closeUserDropdown();
 
-      if (viewName === "saved") {
-        renderSavedArenasList();
-        renderSidebarCourses();
-        if (history.replaceState) history.replaceState(null, "", "#saved");
-      } else if (viewName === "generator") {
-        if (history.replaceState) history.replaceState(null, "", "#generator");
-      } else if (viewName === "essay") {
-        if (history.replaceState) history.replaceState(null, "", "#essay");
-      }
-
-      window.scrollTo(0, 0);
+      switchMainView(viewName);
+      renderSidebarCourses();
     }
 
     function toggleSidebarCollapse() {
