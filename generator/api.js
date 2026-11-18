@@ -39,7 +39,7 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
     }
   },
   "professor_critique": {
-    "executive_summary": "Great work on this draft! You tackle a timely, important question and your main points are well organized. You show a solid understanding of both the tech side and the market dynamics. With a few wording tweaks and by answering opposing viewpoints, this paper will be ready for top marks.",
+    "executive_summary": "This draft presents a clear thesis and logically structured arguments addressing the intersection of technology infrastructure and market dynamics. The primary areas for improvement are tightening colloquial language to maintain an academic register and directly engaging with key counterarguments before reaching policy conclusions.",
     "core_strengths": [
       "Clear, focused thesis that takes a definitive stand right from the start.",
       "Good distinction between the cost to train an AI model versus running it day-to-day.",
@@ -53,12 +53,12 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
       {
         "opposing_viewpoint": "Open-source AI models are free for anyone to download, meaning big tech cannot easily lock customers in.",
         "where_to_integrate": "In paragraph 3, right after explaining API subscription costs.",
-        "how_it_strengthens_paper": "Addressing this shows your professor that you understand the common counterargument and can explain why big cloud platforms still maintain market power."
+        "how_it_strengthens_paper": "Addressing this demonstrates that you anticipate the common counterargument and can explain why big cloud platforms still maintain market power."
       },
       {
         "opposing_viewpoint": "Rapid innovation might naturally break tech monopolies as smaller startups invent faster, cheaper algorithms.",
         "where_to_integrate": "Near the end of paragraph 4, right before your conclusion.",
-        "how_it_strengthens_paper": "Discussing fast-paced innovation proves you have thought through both sides of the issue before recommending government regulation."
+        "how_it_strengthens_paper": "Evaluating algorithmic efficiency gains demonstrates that technological alternatives were weighed before proposing regulatory intervention."
       }
     ]
   },
@@ -238,13 +238,14 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
 
 
-  PROFESSOR_ESSAY_PROMPT: `You are a supportive, high-standards University Writing Professor and Faculty Academic Advisor. Your mission is to help students (including high school seniors, first-year college students, and undergraduates) improve their essays and research papers.
+  PROFESSOR_ESSAY_PROMPT: `You are an academic essay and research paper evaluator. Your task is to provide direct, rigorous, and objective analytical evaluation on submitted drafts.
 
-You evaluate drafts with the intellectual depth and high standards of an exacting academic professor, but you explain all feedback, advice, diagnoses, and rewrite suggestions in clear, encouraging, and easy-to-understand language.
-
-Avoid dense, intimidating academic jargon when explaining things to the student. If you introduce a scholarly concept (such as a counterargument, a logical warrant, or passive voice), explain what it means simply so the student can immediately learn from it and apply it.
-
-You do not write the essay for the student. Instead, you guide them on how to strengthen their thesis, spot grammar and style issues, bring in counterarguments, and elevate their writing to earn top marks.
+### CRITICAL TONE & REGISTER MANDATE:
+- DO NOT use roleplay greetings or persona phrases (NEVER say "Hello", "Welcome", "I am your professor", "As your instructor", or "Good job!").
+- DO NOT attempt to be personable, chatty, or conversational. Speak directly and objectively about the paper.
+- Adopt a professional, matter-of-fact evaluation style that directly diagnoses strengths, logical gaps, academic register, and structural issues.
+- Keep feedback straightforward, precise, and actionable so the author knows exactly what requires revision without unnecessary pleasantries.
+- You do not rewrite the essay for the author; you provide surgical diagnosis, specific counterarguments to consider, and clear sentence-level annotations.
 
 ---
 
@@ -304,7 +305,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     }
   },
   "professor_critique": {
-    "executive_summary": "string (Overall evaluation in a constructive, professorial voice)",
+    "executive_summary": "string (Direct, objective overall evaluation of the draft. Strictly avoid greetings, pleasantries, or persona roleplay such as 'Hello' or 'I am your professor'. Speak directly about the paper's thesis, structure, and areas for improvement)",
     "core_strengths": ["string", "string"],
     "critical_shortcomings": ["string", "string"],
     "counterarguments_to_add": [
@@ -820,7 +821,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       provider = "gemini";
     }
 
-    var userPrompt = "Please evaluate the following draft according to your academic professor review guidelines.\n\n";
+    var userPrompt = "Please evaluate the following draft. Provide a direct, objective critique without greetings, pleasantries, or persona roleplay:\n\n";
     if (rubricHint && rubricHint.trim()) {
       userPrompt += "[STUDENT GOAL / RUBRIC / TOPIC NOTES]\n" + rubricHint.trim() + "\n\n";
     }

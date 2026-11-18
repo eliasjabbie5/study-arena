@@ -3126,9 +3126,9 @@
 
           <!-- PROFESSOR EXECUTIVE CRITIQUE & COUNTERARGUMENTS -->
           <div class="console-section" style="margin-bottom:24px;">
-            <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">PROFESSOR'S FEEDBACK</div>
-            <h3 class="serif-title" style="font-size:22px; margin:0 0 14px;">Faculty Feedback &amp; Suggestions</h3>
-            <p id="res-prof-summary" style="font-size:14.5px; line-height:1.6; color:var(--text-ink); margin-bottom:20px; font-style:italic;"></p>
+            <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">EVALUATOR'S CRITIQUE</div>
+            <h3 class="serif-title" style="font-size:22px; margin:0 0 14px;">Evaluator Critique &amp; Analysis</h3>
+            <p id="res-prof-summary" style="font-size:14.5px; line-height:1.6; color:var(--text-ink); margin-bottom:20px;"></p>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; margin-bottom:24px;">
               <!-- CORE STRENGTHS -->
@@ -5252,7 +5252,7 @@ function revealTrap(btn, isCorrect, debriefText) {
       var counterargsContainer = document.getElementById("res-counterarguments-container");
 
       if (profSummary && data.professor_critique) {
-        profSummary.textContent = '"' + (data.professor_critique.executive_summary || "") + '"';
+        profSummary.textContent = (data.professor_critique.executive_summary || "");
       }
 
       if (strengthsList && data.professor_critique && data.professor_critique.core_strengths) {
@@ -5356,7 +5356,7 @@ function revealTrap(btn, isCorrect, debriefText) {
 
           (ann.professor_tip ? (
             '<div style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:10px; font-style:italic;">' +
-              '&middot; Professor\'s Tip: ' + ann.professor_tip +
+              '&middot; Revision Note: ' + ann.professor_tip +
             '</div>'
           ) : '') +
 
@@ -5414,7 +5414,7 @@ function revealTrap(btn, isCorrect, debriefText) {
         "**Discipline:** " + (d.document_analysis ? d.document_analysis.discipline : "") + "\n\n" +
         "## Grade Summary &amp; Explanation\n" +
         (d.grades ? d.grades.grade_summary : "") + "\n\n" +
-        "## Professor Executive Critique\n" +
+        "## Evaluator Executive Critique\n" +
         (d.professor_critique ? d.professor_critique.executive_summary : "") + "\n\n" +
         "### Key Strengths\n" +
         ((d.professor_critique && d.professor_critique.core_strengths) ? d.professor_critique.core_strengths.map(function(s) { return "- " + s; }).join("\n") : "") + "\n\n" +
