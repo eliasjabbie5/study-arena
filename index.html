@@ -1795,12 +1795,12 @@
 
       <div class="nav-tabs-group">
         <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
-        <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')">Generator</button>
+        <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')"><span class="tab-label-desktop">Practice Exams</span><span class="tab-label-mobile">Exams</span></button>
         <button type="button" class="nav-tab" id="nav-essay" onclick="switchMainView('essay')">
           <span class="tab-label-desktop">Essay Reviewer</span><span class="tab-label-mobile">Review</span>
         </button>
         <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
-          <span class="tab-label-desktop">Saved Arenas</span><span class="tab-label-mobile">Arenas</span> <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
+          <span class="tab-label-desktop">Saved Exams</span><span class="tab-label-mobile">Saved</span> <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
         </button>
       </div>
 
@@ -1824,21 +1824,21 @@
       <section class="hero-section">
         <div class="container">
           <div class="hero-eyebrow">
-            <span>ACADEMIC RIGOR SIMULATOR</span>
+            <span>COLLEGE EXAM PREP &middot; ESSAY CHECKER</span>
           </div>
           <h1 class="hero-heading">
-            Don't let exam traps catch you off guard.
+            Master your courses without getting caught off guard.
           </h1>
           <p class="hero-sub">
-            Transform syllabi, lecture slides, and past papers into battle-tested scenario simulations with per-option distractor analysis.
+            Turn your lecture slides and notes into realistic practice questions with clear explanations, and get friendly professor feedback on your essays.
           </p>
 
           <div class="hero-action-cluster" style="margin-bottom: 20px;">
             <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
-              Launch Arena Generator &rarr;
+              Create Practice Exam &rarr;
             </button>
             <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
-              Play Live Sample &darr;
+              Try Sample Question &darr;
             </a>
           </div>
         </div>
@@ -1849,8 +1849,8 @@
         <div class="container">
           <div class="interactive-header">
             <div>
-              <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">Interactive Forensics Preview</div>
-              <h3 class="serif-title" style="font-size:24px; margin:0;">Sample Exam Scenario Traps</h3>
+              <div class="mono" style="color:var(--accent-cta); margin-bottom:4px; font-weight:600;">Interactive Preview</div>
+              <h3 class="serif-title" style="font-size:24px; margin:0;">Sample Exam Questions &amp; Common Traps</h3>
             </div>
             <div class="carousel-nav-btns">
               <button type="button" class="carousel-arrow" id="carousel-prev" aria-label="Previous trap">&larr;</button>
@@ -1863,7 +1863,7 @@
             <article class="exam-card">
               <div class="exam-card-meta">
                 <span class="card-badge">FINANCE &middot; WACC</span>
-                <span class="card-trap-tag">TRAP QUESTION</span>
+                <span class="card-trap-tag">COMMON EXAM TRAP</span>
               </div>
               <div class="exam-card-title">The Debt Tax Shield Trap</div>
               <div class="exam-card-case">
@@ -1945,26 +1945,26 @@
       <section class="feature-band">
         <div class="container">
           <div class="feature-band-head">
-            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">Academic Architecture</div>
-            <h2>Built for Cognitive Mastery, Not Shallow Rote Memorization</h2>
-            <p>Every scenario is engineered with realistic distractors to train deep decision-making under exam pressure.</p>
+            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">How It Works</div>
+            <h2>Built for Real Understanding, Not Memorization</h2>
+            <p>Every question and essay review is designed to help you understand core concepts and earn higher grades.</p>
           </div>
 
           <div class="feature-grid">
             <div class="feature-card">
-              <span class="feature-tag">DEEP ERROR ANALYSIS</span>
-              <h3 class="feature-title">Distractor Forensics</h3>
-              <p class="feature-desc">Exposes why plausible but incorrect options feel tempting. Learn the exact cognitive traps and misapplied heuristics professors design into exams.</p>
+              <span class="feature-tag">CLEAR EXPLANATIONS</span>
+              <h3 class="feature-title">Learn from Tricky Choices</h3>
+              <p class="feature-desc">See why wrong answers look tempting so you don't fall for them on test day. Learn the common mistakes professors look out for.</p>
             </div>
             <div class="feature-card">
-              <span class="feature-tag">100% LOCAL &middot; ZERO KNOWLEDGE</span>
-              <h3 class="feature-title">Zero-Knowledge Privacy</h3>
-              <p class="feature-desc">Pure client-side BYOK model. Your course slides, proprietary notes, and exam papers are parsed in browser memory and never stored on remote servers.</p>
+              <span class="feature-tag">100% PRIVATE &middot; IN-BROWSER</span>
+              <h3 class="feature-title">Your Work Stays On Your Device</h3>
+              <p class="feature-desc">Your course slides, notes, and essays are analyzed directly in your browser. Nothing is shared or stored on public servers.</p>
             </div>
             <div class="feature-card">
-              <span class="feature-tag">PROGRESSIVE RIGOR</span>
-              <h3 class="feature-title">Multi-Zone Simulation</h3>
-              <p class="feature-desc">Advance through sequential difficulty tiers from foundational conceptual models to brutal, multi-variable scenario traps with mock exams.</p>
+              <span class="feature-tag">STEP-BY-STEP PRACTICE</span>
+              <h3 class="feature-title">Study Topic by Topic</h3>
+              <p class="feature-desc">Work through your syllabus section by section, starting with core concepts and moving up to realistic exam scenarios.</p>
             </div>
           </div>
         </div>
@@ -1977,7 +1977,7 @@
             <h2>Ready to simulate your course?</h2>
             <p>Generate a complete offline-ready study arena in under 60 seconds with your own API key.</p>
             <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
-              Launch Arena Generator &rarr;
+              Create Practice Exam &rarr;
             </button>
           </div>
         </div>
@@ -2029,17 +2029,17 @@
           <div style="margin-top:20px;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
               <label for="notes-input" style="font-weight:600; font-size:13px; color:var(--text-ink);">
-                Supplementary Lecture Notes, Transcripts &amp; Focus Areas (Optional)
+                Paste Lecture Notes, Transcripts, or Focus Areas (Optional)
               </label>
               <span class="mono" id="notes-word-count" style="font-size:11px; color:var(--text-steel);">0 words</span>
             </div>
-            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide transcripts, seminar notes, professor exam hints, or specific case rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
+            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide notes, professor exam hints, study guides, or topic rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
           </div>
 
           <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
           <div style="margin-top:14px;">
             <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
-              <span>+ Add Professor Emphasis &middot; Exam Weighting (Optional)</span>
+              <span>+ Add Professor Hints &middot; Exam Weighting (Optional)</span>
               <span id="annals-arrow">&darr;</span>
             </button>
             <div class="annals-content" id="annals-box">
@@ -2052,7 +2052,7 @@
             <input type="hidden" id="model-select" value="gemini-3.5-flash-lite">
             <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
               <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
-                Generate Arena &rarr;
+                Generate Practice Exam &rarr;
               </button>
               <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
                 <span class="thinking-text" id="thinking-status-text">Thinking</span>
@@ -2111,8 +2111,8 @@
       <div class="container">
         <div class="saved-header">
           <div>
-            <h2>Saved Study Arenas</h2>
-            <p>All previously generated courses stored locally on this machine.</p>
+            <h2>Saved Practice Exams</h2>
+            <p>All previously generated exams stored locally on this device.</p>
           </div>
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
@@ -2140,9 +2140,9 @@
         <div class="console-section" style="margin-bottom:28px;">
           <div class="console-header">
             <div class="console-title-group">
-              <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-cta); margin-bottom:4px; font-weight:600;">ACADEMIC ESSAY &amp; RESEARCH AUDITOR</div>
-              <h2>University Faculty Paper Reviewer</h2>
-              <p style="font-size:13px; color:var(--text-graphite); margin:4px 0 0; line-height:1.45;">Doctoral-level academic critique, thesis forensics, counterargument mapping, and dual university grading (A-F &amp; /20 scale).</p>
+              <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-cta); margin-bottom:4px; font-weight:600;">ACADEMIC ESSAY &amp; PAPER CHECKER</div>
+              <h2>Professor Essay &amp; Paper Reviewer</h2>
+              <p style="font-size:13px; color:var(--text-graphite); margin:4px 0 0; line-height:1.45;">Get friendly, expert feedback on your writing. Check your grammar, improve your tone, strengthen your arguments, and see your estimated college grade.</p>
             </div>
             <div style="display:flex; align-items:center; gap:8px;">
               <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadSampleEssay()">
@@ -2156,24 +2156,24 @@
             <div style="margin-bottom:16px;">
               <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
                 <label for="essay-text-input" style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink);">
-                  Draft Content (Essay, Research Paper, or Study)
+                  Your Essay or Paper Draft
                 </label>
                 <span id="essay-word-count" class="mono" style="font-size:11px; color:var(--text-steel);">0 words &middot; 0 chars</span>
               </div>
-              <textarea id="essay-text-input" class="textarea-field" style="width:100%; min-height:220px; font-family:var(--f-serif); font-size:15px; line-height:1.6; padding:16px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="Paste your essay, academic research draft, or literature review here... (Or click 'Load Sample Essay' above for a quick demonstration)" oninput="updateEssayStats()"></textarea>
+              <textarea id="essay-text-input" class="textarea-field" style="width:100%; min-height:220px; font-family:var(--f-serif); font-size:15px; line-height:1.6; padding:16px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="Paste your essay or research paper here... (Or click 'Load Sample Essay' above to see how it works!)" oninput="updateEssayStats()"></textarea>
             </div>
 
             <div style="margin-bottom:20px;">
               <label for="essay-rubric-input" style="display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; color:var(--text-graphite);">
-                Assignment Prompt, Course Rubric, or Specific Evaluation Goals (Optional)
+                Assignment Prompt, Topic, or Teacher Instructions (Optional)
               </label>
-              <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Master's in Law &amp; Economics, evaluating antitrust doctrine under Section 2...">
+              <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Argumentative essay on clean energy policy, history term paper, sociology study...">
             </div>
 
             <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
               <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
               <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
-                Grade &amp; Review Essay &rarr;
+                Grade &amp; Review My Essay &rarr;
               </button>
             </div>
           </div>
@@ -2205,7 +2205,7 @@
                     <span class="mono" style="font-size:16px; color:var(--text-steel);">/ 20.0</span>
                   </div>
                   <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-top:2px;">
-                    European &middot; International Faculty Scale
+                    Standard 20-Point Scale
                   </div>
                 </div>
               </div>
@@ -2224,7 +2224,7 @@
 
             <!-- GRADE SUMMARY -->
             <div style="margin-top:18px;">
-              <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Faculty Rubric Assessment</div>
+              <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Grade Summary &amp; Explanation</div>
               <p id="res-grade-summary" style="font-size:14px; line-height:1.55; color:var(--text-ink); margin:0;"></p>
             </div>
 
@@ -2236,8 +2236,8 @@
 
           <!-- PROFESSOR EXECUTIVE CRITIQUE & COUNTERARGUMENTS -->
           <div class="console-section" style="margin-bottom:24px;">
-            <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Faculty Written Feedback</div>
-            <h3 class="serif-title" style="font-size:22px; margin:0 0 14px;">Professor's Critique</h3>
+            <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">PROFESSOR'S FEEDBACK</div>
+            <h3 class="serif-title" style="font-size:22px; margin:0 0 14px;">Faculty Feedback &amp; Suggestions</h3>
             <p id="res-prof-summary" style="font-size:14.5px; line-height:1.6; color:var(--text-ink); margin-bottom:20px; font-style:italic;"></p>
 
             <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; margin-bottom:24px;">
@@ -2245,7 +2245,7 @@
               <div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-card); padding:18px;">
                 <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#059669; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Distinction Strengths
+                  What You Did Well
                 </div>
                 <ul id="res-strengths-list" style="margin:0; padding-left:18px; font-size:13px; line-height:1.55; color:var(--text-ink);"></ul>
               </div>
@@ -2254,7 +2254,7 @@
               <div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-card); padding:18px;">
                 <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#d97706; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                  Opportunities for Revision
+                  Key Things to Improve
                 </div>
                 <ul id="res-shortcomings-list" style="margin:0; padding-left:18px; font-size:13px; line-height:1.55; color:var(--text-ink);"></ul>
               </div>
@@ -2264,7 +2264,7 @@
             <div>
               <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-                Dialectical Depth &amp; Counterarguments to Integrate
+                Counterarguments to Strengthen Your Paper
               </div>
               <div id="res-counterarguments-container"></div>
             </div>
@@ -2274,17 +2274,17 @@
           <div class="console-section" style="margin-bottom:28px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
               <div>
-                <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:4px;">LINE-BY-LINE FORENSICS</div>
-                <h3 class="serif-title" style="font-size:22px; margin:0;">Annotated Draft &amp; Polished Rewrites</h3>
+                <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:4px;">HELPFUL SUGGESTIONS</div>
+                <h3 class="serif-title" style="font-size:22px; margin:0;">Sentence Feedback &amp; Better Ways to Word It</h3>
               </div>
 
               <!-- FILTER PILLS -->
               <div style="display:flex; gap:6px; flex-wrap:wrap;">
-                <button type="button" class="ann-filter-pill active" onclick="filterAnnotations('ALL', this)">All</button>
+                <button type="button" class="ann-filter-pill active" onclick="filterAnnotations('ALL', this)">All Suggestions</button>
                 <button type="button" class="ann-filter-pill" onclick="filterAnnotations('GRAMMAR_SYNTAX', this)">Grammar</button>
-                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ACADEMIC_REGISTER', this)">Tone</button>
-                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('RHETORICAL_STRENGTH', this)">Rhetoric</button>
-                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ARGUMENT_EXPANSION', this)">Warrants</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ACADEMIC_REGISTER', this)">Style &amp; Tone</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('RHETORICAL_STRENGTH', this)">Clarity</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ARGUMENT_EXPANSION', this)">Evidence</button>
               </div>
             </div>
 
@@ -2292,14 +2292,14 @@
             <div style="display:grid; grid-template-columns:1fr; gap:20px;">
               <div>
                 <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-bottom:8px;">
-                  Interactive Text (Click any highlighted passage to focus its rewrite card)
+                  Your Essay (Click any highlighted sentence to view the suggested rewrite)
                 </div>
                 <div id="res-annotated-text" class="essay-doc-viewer"></div>
               </div>
 
               <div>
                 <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-bottom:8px;">
-                  Detailed Feedback &amp; Rewrites (<span id="res-annotations-count">0</span> items)
+                  Helpful Suggestions &amp; Rewrites (<span id="res-annotations-count">0</span> items)
                 </div>
                 <div id="res-annotations-cards-container"></div>
               </div>
@@ -2308,7 +2308,7 @@
             <!-- ACTION BAR -->
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:24px; padding-top:18px; border-top:1px solid var(--line);">
               <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="copyFullReport(this)">
-                Copy Full Report (Markdown)
+                Copy Full Feedback (Markdown)
               </button>
               <button type="button" class="btn-primary" style="padding:8px 20px; font-size:13px;" onclick="reviewAnotherEssay()">
                 Review Another Essay &rarr;
@@ -2442,17 +2442,17 @@
     var SAMPLE_EXPLANATIONS = [
       {
         right: false,
-        label: "Why A is a trap:",
+        label: "Why choice A is tricky:",
         text: "This IS one of Friedman's arguments: he holds that only individuals have moral responsibilities, not corporations. Try option D."
       },
       {
         right: false,
-        label: "Why B is a trap:",
+        label: "Why choice B is tricky:",
         text: "This IS one of Friedman's core arguments: managers are agents of the shareholders, so spending company money on social causes imposes an unapproved tax. Try option D."
       },
       {
         right: false,
-        label: "Why C is a trap:",
+        label: "Why choice C is tricky:",
         text: "This IS one of Friedman's arguments: executives are hired for business expertise, whereas public-policy trade-offs belong to elected governments. Try option D."
       },
       {
@@ -2619,7 +2619,7 @@
       if (list.length === 0) {
         html += '<div class="empty-saved" style="text-align:center; padding:48px 24px;">' +
           '<div class="mono" style="color:var(--accent-cta); margin-bottom:8px; font-size:11px; font-weight:600; letter-spacing:0.05em;">LOCAL ACADEMIC REPOSITORY</div>' +
-          '<h3 style="margin:0 0 10px; font-size:22px; font-weight:500; font-family:var(--f-serif); color:var(--text-ink);">No Custom Study Arenas Compiled Yet</h3>' +
+          '<h3 style="margin:0 0 10px; font-size:22px; font-weight:500; font-family:var(--f-serif); color:var(--text-ink);">No Saved Practice Exams Yet</h3>' +
           '<p style="margin:0 auto 24px; font-size:14px; color:var(--text-graphite); max-width:540px; line-height:1.6;">When you synthesize lecture slides, past exams, or course syllabi in the Arena Generator, your tailored simulations are securely stored here in your offline browser environment.</p>' +
           '<button type="button" class="btn-primary" style="padding:10px 24px;" onclick="switchMainView(\'generator\')">+ Ingest Course Materials &rarr;</button>' +
         '</div>';
@@ -3958,10 +3958,10 @@ function revealTrap(btn, isCorrect, debriefText) {
       if (rubricGrid && data.grades && data.grades.rubric_breakdown) {
         var rb = data.grades.rubric_breakdown;
         var dims = [
-          { key: "thesis_and_argumentation", label: "Thesis & Argumentation" },
-          { key: "evidence_and_counterarguments", label: "Evidence & Counterarguments" },
-          { key: "structure_and_cohesion", label: "Structure & Cohesion" },
-          { key: "academic_style_and_mechanics", label: "Academic Style & Mechanics" }
+          { key: "thesis_and_argumentation", label: "Thesis & Main Argument" },
+          { key: "evidence_and_counterarguments", label: "Evidence & Supporting Reasons" },
+          { key: "structure_and_cohesion", label: "Structure & Organization" },
+          { key: "academic_style_and_mechanics", label: "Writing Style & Grammar" }
         ];
 
         var gridHtml = "";
@@ -4010,13 +4010,13 @@ function revealTrap(btn, isCorrect, debriefText) {
         counterargsContainer.innerHTML = data.professor_critique.counterarguments_to_add.map(function(c) {
           return '<div class="counterarg-card">' +
             '<div style="font-size:13px; font-weight:600; color:var(--text-ink); margin-bottom:4px;">' +
-              '&middot; Opposing Stance: ' + c.opposing_viewpoint +
+              '&middot; Opposing Point of View: ' + c.opposing_viewpoint +
             '</div>' +
             '<div style="font-size:12px; color:var(--text-graphite); line-height:1.45; margin-bottom:4px;">' +
-              '<strong>Where to Integrate:</strong> ' + c.where_to_integrate +
+              '<strong>Where to Put This:</strong> ' + c.where_to_integrate +
             '</div>' +
             '<div style="font-size:12px; color:#059669; line-height:1.45;">' +
-              '<strong>Scholarly Value:</strong> ' + c.how_it_strengthens_paper +
+              '<strong>Why This Helps Your Grade:</strong> ' + c.how_it_strengthens_paper +
             '</div>' +
           '</div>';
         }).join("");
@@ -4071,11 +4071,11 @@ function revealTrap(btn, isCorrect, debriefText) {
       var html = "";
       filtered.forEach(function(ann, idx) {
         var cardId = ann.id || ('ann-' + idx);
-        var catLabel = "Grammar & Syntax";
+        var catLabel = "Grammar & Punctuation";
         var catColor = "#dc2626";
-        if (ann.category === "ACADEMIC_REGISTER") { catLabel = "Academic Register & Tone"; catColor = "#9333ea"; }
-        else if (ann.category === "RHETORICAL_STRENGTH") { catLabel = "Rhetorical Strength"; catColor = "#d97706"; }
-        else if (ann.category === "ARGUMENT_EXPANSION") { catLabel = "Scholarly Warrant & Expansion"; catColor = "#059669"; }
+        if (ann.category === "ACADEMIC_REGISTER") { catLabel = "Academic Tone & Word Choice"; catColor = "#9333ea"; }
+        else if (ann.category === "RHETORICAL_STRENGTH") { catLabel = "Clarity & Phrasing"; catColor = "#d97706"; }
+        else if (ann.category === "ARGUMENT_EXPANSION") { catLabel = "Adding Supporting Evidence"; catColor = "#059669"; }
 
         html += '<div class="annotation-card" id="card-' + cardId + '">' +
           '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
@@ -4090,18 +4090,18 @@ function revealTrap(btn, isCorrect, debriefText) {
           '</div>' +
 
           '<div style="font-size:12.5px; color:var(--text-graphite); line-height:1.45; margin-bottom:8px;">' +
-            '<strong>Diagnosis:</strong> ' + ann.issue_diagnosis +
+            '<strong>Why this needs work:</strong> ' + ann.issue_diagnosis +
           '</div>' +
 
           (ann.professor_tip ? (
             '<div style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:10px; font-style:italic;">' +
-              '&middot; Faculty Tip: ' + ann.professor_tip +
+              '&middot; Professor\'s Tip: ' + ann.professor_tip +
             '</div>'
           ) : '') +
 
           '<div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:var(--radius-control); padding:10px 12px; margin-top:8px;">' +
             '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
-              '<span style="font-size:11px; font-weight:600; text-transform:uppercase; color:#059669; letter-spacing:0.04em;">Polished Academic Rewrite:</span>' +
+              '<span style="font-size:11px; font-weight:600; text-transform:uppercase; color:#059669; letter-spacing:0.04em;">Better Way to Word It:</span>' +
               '<button type="button" class="btn-ghost" style="padding:2px 8px; font-size:11px;" data-card-id="' + cardId + '" onclick="copyRewriteText(this, this.dataset.cardId)">Copy</button>' +
             '</div>' +
             '<div id="rewrite-text-' + cardId + '" style="font-size:13.5px; font-family:var(--f-serif); color:var(--text-ink); line-height:1.5;">' +
@@ -4151,7 +4151,7 @@ function revealTrap(btn, isCorrect, debriefText) {
         "**Overall Grade:** " + (d.grades ? d.grades.letter_grade : "") + " (" + (d.grades ? d.grades.score_out_of_20 : "") + "/20.0)\n" +
         "**Document Genre:** " + (d.document_analysis ? d.document_analysis.detected_type : "") + "\n" +
         "**Discipline:** " + (d.document_analysis ? d.document_analysis.discipline : "") + "\n\n" +
-        "## Faculty Rubric Assessment\n" +
+        "## Grade Summary &amp; Explanation\n" +
         (d.grades ? d.grades.grade_summary : "") + "\n\n" +
         "## Professor Executive Critique\n" +
         (d.professor_critique ? d.professor_critique.executive_summary : "") + "\n\n" +

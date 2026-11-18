@@ -6,59 +6,59 @@
 
 var SAMPLE_MOCK_ESSAY_REVIEW = {
   "document_analysis": {
-    "detected_type": "Argumentative Policy Paper",
-    "discipline": "Law & Economics / Industrial Organization",
-    "primary_objective": "Evaluating whether vertical integration in LLM foundation model APIs constitutes anti-competitive foreclosure under Section 2 of the Sherman Act.",
-    "academic_tone_rating": "Advanced Undergraduate / Early Postgraduate"
+    "detected_type": "Argumentative Research Essay",
+    "discipline": "Economics & Tech Policy",
+    "primary_objective": "Examining whether big tech companies' control over AI computing power unfairly limits competition from smaller startups.",
+    "academic_tone_rating": "College Undergraduate"
   },
   "grades": {
     "letter_grade": "A-",
     "score_out_of_20": 16.5,
-    "grade_summary": "An intellectually ambitious, well-researched critique that successfully applies multi-sided market frameworks to AI infrastructure. The paper demonstrates sophisticated synthesis of antitrust doctrine but would reach publishable distinction with deeper empirical calibration of switching costs.",
+    "grade_summary": "This is a thoughtful, well-researched paper that clearly explains how big tech companies control key AI infrastructure. Your thesis is strong and your arguments are logical. To earn a top A grade, add a bit more real-world pricing data and address counterarguments from competitors.",
     "rubric_breakdown": {
       "thesis_and_argumentation": {
         "score": 4.2,
         "max": 5.0,
-        "feedback": "The thesis is provocative and falsifiable, avoiding the trap of generic tech skepticism."
+        "feedback": "Your main argument is clear, specific, and takes a bold stance rather than just summarizing the news."
       },
       "evidence_and_counterarguments": {
         "score": 3.8,
         "max": 5.0,
-        "feedback": "Strong doctrinal citations; however, open-weight models (e.g. LLaMA ecosystem) as a competitive discipline are insufficiently countered."
+        "feedback": "You support your points well, but you should mention free open-source models (like Meta's LLaMA) and explain why big companies still hold an advantage."
       },
       "structure_and_cohesion": {
         "score": 4.3,
         "max": 5.0,
-        "feedback": "Clear progression from technological bottlenecks (compute clusters) to economic market failures."
+        "feedback": "The flow between paragraphs is smooth and easy to follow from beginning to end."
       },
       "academic_style_and_mechanics": {
         "score": 4.2,
         "max": 5.0,
-        "feedback": "Precise legal-economic diction with minimal conversational drift."
+        "feedback": "Professional tone throughout, with just a couple of informal phrases and minor grammar points to polish."
       }
     }
   },
   "professor_critique": {
-    "executive_summary": "This is an impressive, high-caliber essay that engages deeply with cutting-edge scholarship. You demonstrate command over both technological nuances (e.g. GPU cluster scaling) and legal standards (e.g. essential facilities doctrine). To elevate this to a top first-class grade (A+ / 18+), you must address the deflationary pressure of commoditized open-weight models.",
+    "executive_summary": "Great work on this draft! You tackle a timely, important question and your main points are well organized. You show a solid understanding of both the tech side and the market dynamics. With a few wording tweaks and by answering opposing viewpoints, this paper will be ready for top marks.",
     "core_strengths": [
-      "Rigorous application of the essential facilities doctrine to hyperscaler compute infrastructure.",
-      "Clear differentiation between model training capital costs and inference marginal costs.",
-      "Nuanced analysis of multi-homing versus single-homing API consumer behavior."
+      "Clear, focused thesis that takes a definitive stand right from the start.",
+      "Good distinction between the cost to train an AI model versus running it day-to-day.",
+      "Strong organization that walks the reader logically through each main point."
     ],
     "critical_shortcomings": [
-      "Overstatement of developer lock-in given standardized abstraction frameworks (e.g., LiteLLM, LangChain).",
-      "Occasional reliance on assertion rather than empirical pricing differentials between proprietary and open models."
+      "A few sentences slip into casual, conversational language that lowers the professional tone.",
+      "You make a few claims about high customer costs without citing specific price comparisons or data."
     ],
     "counterarguments_to_add": [
       {
-        "opposing_viewpoint": "Open-weight models commoditize the intelligence layer, preventing proprietary vendors from extracting monopoly rents.",
-        "where_to_integrate": "Section III, following the discussion of API pricing power.",
-        "how_it_strengthens_paper": "By refuting the 'open-source commoditization' thesis using compute-as-a-chokepoint arguments, you preempt the primary defense tech monopolists raise in court."
+        "opposing_viewpoint": "Open-source AI models are free for anyone to download, meaning big tech cannot easily lock customers in.",
+        "where_to_integrate": "In paragraph 3, right after explaining API subscription costs.",
+        "how_it_strengthens_paper": "Addressing this shows your professor that you understand the common counterargument and can explain why big cloud platforms still maintain market power."
       },
       {
-        "opposing_viewpoint": "Dynamic efficiency: rapid innovation cycles render current market dominance temporary and vulnerable to algorithmic breakthroughs.",
-        "where_to_integrate": "Section IV before the conclusion.",
-        "how_it_strengthens_paper": "Demonstrates awareness of Schumpeterian creative destruction and explains why capital intensity insulates today's incumbents."
+        "opposing_viewpoint": "Rapid innovation might naturally break tech monopolies as smaller startups invent faster, cheaper algorithms.",
+        "where_to_integrate": "Near the end of paragraph 4, right before your conclusion.",
+        "how_it_strengthens_paper": "Discussing fast-paced innovation proves you have thought through both sides of the issue before recommending government regulation."
       }
     ]
   },
@@ -67,33 +67,33 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
       "id": "ann-1",
       "category": "ACADEMIC_REGISTER",
       "original_text": "Tech giants are basically locking down all the best GPUs so smaller startups don't stand a chance.",
-      "issue_diagnosis": "Informal tone ('basically locking down', 'don\'t stand a chance') undermines an otherwise rigorous economic argument.",
-      "professor_tip": "Frame infrastructural advantage in terms of vertical foreclosure and capital barriers to entry.",
-      "suggested_rewrite": "Incumbent technology conglomerates exercise upstream foreclosure over high-bandwidth memory semiconductor clusters, substantially elevating structural barriers to entry for uncapitalized entrants."
+      "issue_diagnosis": "Phrases like 'basically locking down' and 'don\'t stand a chance' are too conversational for a college paper.",
+      "professor_tip": "Use more precise, academic wording to describe market barriers.",
+      "suggested_rewrite": "Major technology firms currently control the majority of high-end specialized AI computer chips, creating substantial barriers for newer competitors."
     },
     {
       "id": "ann-2",
       "category": "ARGUMENT_EXPANSION",
       "original_text": "Because switching models is hard, customers have to accept whatever prices the big platforms charge.",
-      "issue_diagnosis": "Assumes switching costs are prohibitive without specifying whether lock-in arises from proprietary embeddings, fine-tuning data pipelines, or API protocol incompatibility.",
-      "professor_tip": "Cite technical switching frictions specifically to justify your claim of price inelasticity.",
-      "suggested_rewrite": "High architectural switching costs\u2014rooted in proprietary vector embeddings and custom prompt orchestration\u2014render enterprise demand comparatively inelastic, granting dominant model providers significant pricing discretion."
+      "issue_diagnosis": "This makes a bold claim without explaining *why* switching is difficult for customers.",
+      "professor_tip": "Briefly mention specific reasons, such as software redesigns or team retraining costs.",
+      "suggested_rewrite": "Because migrating software pipelines and retraining staff between AI platforms is costly and time-consuming, businesses face high switching friction and limited pricing flexibility."
     },
     {
       "id": "ann-3",
       "category": "GRAMMAR_SYNTAX",
       "original_text": "Examining the market definition, several empirical indicators suggests anticompetitive tying.",
-      "issue_diagnosis": "Subject-verb disagreement: plural noun phrase 'several empirical indicators' requires the plural verb 'suggest'.",
-      "professor_tip": "Ensure verb agreement when modifying clauses separate subject and predicate.",
+      "issue_diagnosis": "Subject-verb agreement error: 'several empirical indicators' is plural, so it needs the plural verb 'suggest' instead of 'suggests'.",
+      "professor_tip": "Double-check that plural subjects match plural verbs across long sentences.",
       "suggested_rewrite": "Examining the market definition, several empirical indicators suggest anticompetitive tying."
     },
     {
       "id": "ann-4",
       "category": "RHETORICAL_STRENGTH",
       "original_text": "It seems that maybe antitrust regulators might perhaps want to look into these cloud partnerships.",
-      "issue_diagnosis": "Excessive hedging ('seems that maybe', 'might perhaps') weakens your policy recommendation into timid speculation.",
-      "professor_tip": "Adopt an authoritative policy voice. State recommendations assertively with normative clarity.",
-      "suggested_rewrite": "Consequently, antitrust authorities should initiate formal Hart-Scott-Rodino structural reviews of cloud-model joint ventures."
+      "issue_diagnosis": "Too many hesitation words ('seems that maybe', 'might perhaps') make your recommendation sound uncertain.",
+      "professor_tip": "State your conclusion with confidence and clear reasoning.",
+      "suggested_rewrite": "Consequently, antitrust authorities should closely examine these cloud-computing partnerships to protect competitive markets."
     }
   ]
 };
@@ -238,9 +238,13 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
 
 
-  PROFESSOR_ESSAY_PROMPT: `You are an elite University Professor, Academic Peer Reviewer, and Faculty Writing Director. Your objective is to perform a rigorous, constructive, and comprehensive critique of student essays, academic research papers, literature reviews, and empirical studies.
+  PROFESSOR_ESSAY_PROMPT: `You are a supportive, high-standards University Writing Professor and Faculty Academic Advisor. Your mission is to help students (including high school seniors, first-year college students, and undergraduates) improve their essays and research papers.
 
-You do not write the essay for the student. Instead, you provide doctoral-level academic feedback, identifying structural strengths, rhetorical weaknesses, grammatical errors, and missed scholarship opportunities, culminating in a standardized university grade.
+You evaluate drafts with the intellectual depth and high standards of an exacting academic professor, but you explain all feedback, advice, diagnoses, and rewrite suggestions in clear, encouraging, and easy-to-understand language.
+
+Avoid dense, intimidating academic jargon when explaining things to the student. If you introduce a scholarly concept (such as a counterargument, a logical warrant, or passive voice), explain what it means simply so the student can immediately learn from it and apply it.
+
+You do not write the essay for the student. Instead, you guide them on how to strengthen their thesis, spot grammar and style issues, bring in counterarguments, and elevate their writing to earn top marks.
 
 ---
 
