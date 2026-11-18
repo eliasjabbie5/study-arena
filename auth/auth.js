@@ -9,6 +9,7 @@
 
   var STORAGE_KEY = 'sa_auth_user_v1';
   var CLIENT_ID_KEY = 'sa_google_client_id';
+  var DEFAULT_CLIENT_ID = '473457918792-rs6lb669qkstj4ed717vro61mp930ita.apps.googleusercontent.com';
   var USERS_DB_KEY = 'sa_registered_users_v1';
   var listeners = [];
 
@@ -57,9 +58,10 @@
 
     getGoogleClientId: function() {
       try {
-        return (localStorage.getItem(CLIENT_ID_KEY) || '').trim();
+        var custom = (localStorage.getItem(CLIENT_ID_KEY) || '').trim();
+        return custom || DEFAULT_CLIENT_ID;
       } catch (e) {
-        return '';
+        return DEFAULT_CLIENT_ID;
       }
     },
 

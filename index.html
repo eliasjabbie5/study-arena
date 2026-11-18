@@ -4672,30 +4672,22 @@ function revealTrap(btn, isCorrect, debriefText) {
 
     function handleGoogleSignIn() {
       if (!window.StudyArenaAuth) return;
-      var clientId = window.StudyArenaAuth.getGoogleClientId();
-
-      if (!clientId) {
-        var inputId = prompt(
-          "To launch Google's account chooser, enter your Google OAuth Web Client ID (from Google Cloud Console):
-
-" +
-          "Example: xxxxxxxx.apps.googleusercontent.com
-
-" +
-          "(You can also paste this in Settings anytime)"
-        );
-        if (!inputId || !inputId.trim()) return;
-        window.StudyArenaAuth.setGoogleClientId(inputId.trim());
-        clientId = inputId.trim();
-      }
-
       window.StudyArenaAuth.signInWithGoogle().then(function(user) {
         closeAuthModal();
       }).catch(function(err) {
         if (err && err.code === 'NO_CLIENT_ID') {
-          window.StudyArenaAuth.setGoogleClientId('');
-        } else {
-          alert("Google Sign-In: " + (err ? err.message : "Authentication failed"));
+          var inputId = prompt(
+            "Please enter your Google OAuth Web Client ID (from Google Cloud Console):
+
+" +
+            "Example: xxxxxxxx.apps.googleusercontent.com"
+          );
+          if (inputId && inputId.trim()) {
+            window.StudyArenaAuth.setGoogleClientId(inputId.trim());
+            handleGoogleSignIn();
+          }
+        } else if (err && err.message && !err.message.includes('popup_closed') && !err.message.includes('user_cancel')) {
+          alert("Google Sign-In: " + err.message);
         }
       });
     }
