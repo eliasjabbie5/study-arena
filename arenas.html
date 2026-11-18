@@ -2401,6 +2401,99 @@
       line-height: 1.45;
     }
 
+    /* Google Account Chooser Modal */
+    .google-chooser-card {
+      background: #ffffff;
+      border: 1px solid #dadce0;
+      border-radius: 12px;
+      max-width: 440px;
+      width: 92%;
+      padding: 36px 32px 28px;
+      position: relative;
+      box-shadow: 0 12px 48px rgba(0,0,0,0.22);
+      margin: auto;
+      box-sizing: border-box;
+      text-align: center;
+    }
+    [data-theme="dark"] .google-chooser-card {
+      background: #202124;
+      border-color: #3c4043;
+    }
+    [data-theme="dark"] .google-chooser-card h2,
+    [data-theme="dark"] .google-chooser-card strong {
+      color: #e8eaed !important;
+    }
+    [data-theme="dark"] .google-chooser-card div {
+      color: #9aa0a6;
+    }
+    .google-accounts-list {
+      margin-bottom: 8px;
+    }
+    .google-account-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s ease;
+      border-bottom: 1px solid #f1f3f4;
+    }
+    [data-theme="dark"] .google-account-item {
+      border-bottom-color: #303134;
+    }
+    .google-account-item:hover {
+      background: #f8f9fa;
+    }
+    [data-theme="dark"] .google-account-item:hover {
+      background: #303134;
+    }
+    .google-avatar-circle {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: #4285F4;
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      font-family: Roboto, Arial, sans-serif;
+    }
+    .google-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: 4px;
+      border: 1px solid #dadce0;
+      background: transparent;
+      color: inherit;
+      font-size: 14px;
+      box-sizing: border-box;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      transition: border-color 0.15s ease;
+    }
+    .google-input:focus {
+      border-color: #1a73e8;
+      box-shadow: 0 0 0 1px #1a73e8;
+    }
+    .google-chooser-footer {
+      margin-top: 24px;
+      font-size: 11.5px;
+      color: #5f6368;
+      line-height: 1.45;
+      text-align: left;
+      font-family: Roboto, Arial, sans-serif;
+      border-top: 1px solid #e8eaed;
+      padding-top: 14px;
+    }
+    [data-theme="dark"] .google-chooser-footer {
+      border-top-color: #3c4043;
+      color: #9aa0a6;
+    }
+
     /* Auth Modal Tabs & Multi-Pane */
     .auth-tab-group {
       display: flex;
@@ -3199,7 +3292,7 @@
     <div class="auth-dialog-card">
       <button type="button" class="auth-close-btn" onclick="closeAuthModal()" aria-label="Close modal">&times;</button>
 
-      <!-- PANE 1: MAIN AUTH GATEWAY -->
+      <!-- MAIN AUTH GATEWAY -->
       <div id="auth-main-pane">
         <div style="margin-bottom:18px;">
           <div class="brand-logo-sq" style="width:38px; height:38px; font-size:14px; margin:0 auto 12px;">SA</div>
@@ -3207,7 +3300,7 @@
           <p style="font-size:13.5px; color:var(--text-graphite); margin:0; line-height:1.45;">Sign in or create an account to generate exams, review essays, and track course progress.</p>
         </div>
 
-        <!-- GOOGLE BUTTON -->
+        <!-- GOOGLE BUTTON: OPENS DIRECT GOOGLE ACCOUNT SELECTOR -->
         <button type="button" class="btn-google-auth" onclick="handleGoogleSignIn()">
           <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
           <span id="google-auth-btn-label">Continue with Google</span>
@@ -3253,56 +3346,55 @@
           By continuing, your data remains 100% private and stored in your browser session.
         </div>
       </div>
+    </div>
+  </div>
 
-      <!-- PANE 2: GOOGLE ACCOUNT CONNECT / SETUP PANE -->
-      <div id="auth-google-pane" style="display:none; text-align:left;">
-        <div style="margin-bottom:16px;">
-          <button type="button" class="btn-ghost" style="padding:4px 8px; font-size:12px; margin-bottom:10px; cursor:pointer;" onclick="showAuthMainPane()">
-            &larr; Back to sign in options
-          </button>
-          <div style="display:flex; align-items:center; gap:10px;">
-            <svg width="22" height="22" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
-            <h3 style="font-size:18px; margin:0; font-family:var(--f-serif);">Connect Google Account</h3>
-          </div>
-          <p style="font-size:13px; color:var(--text-graphite); margin:6px 0 0;">Choose how you would like to sign in with your Google account:</p>
-        </div>
+  <!-- GOOGLE ACCOUNT CHOOSER DIALOG (NATIVE GOOGLE ACCOUNT SELECTOR) -->
+  <div class="modal-overlay" id="google-account-chooser-modal" style="display:none;" onclick="if(event.target===this)closeGoogleAccountChooser()">
+    <div class="google-chooser-card">
+      <button type="button" class="auth-close-btn" onclick="closeGoogleAccountChooser()" aria-label="Close dialog">&times;</button>
+      
+      <!-- GOOGLE BRANDED HEADER -->
+      <div style="margin-bottom:20px; text-align:center;">
+        <svg width="28" height="28" viewBox="0 0 24 24" style="margin-bottom:10px;"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <h2 style="font-size:22px; font-weight:400; font-family:'Google Sans',Roboto,Arial,sans-serif; margin:0 0 4px; color:#202124;">Choose an account</h2>
+        <div style="font-size:14px; color:#5f6368; font-family:Roboto,Arial,sans-serif;">to continue to <strong style="color:#202124;">Study Arena</strong></div>
+      </div>
 
-        <!-- FAST OPTION: DIRECT GOOGLE EMAIL SIGN-IN -->
-        <div class="auth-info-card" style="margin-bottom:14px;">
-          <div style="font-weight:600; color:var(--text-ink); margin-bottom:5px; font-size:13px;">Option 1: Sign In with Your Real Google Email</div>
-          <p style="margin:0 0 10px; font-size:12px; color:var(--text-graphite);">Enter your actual Google email and name to sign in with your verified profile:</p>
-          <form onsubmit="handleDirectGoogleAuth(event)">
-            <div style="margin-bottom:8px;">
-              <label for="google-direct-name" style="display:block; font-size:11.5px; font-weight:600; margin-bottom:4px; color:var(--text-ink);">Full Name</label>
-              <input type="text" id="google-direct-name" required placeholder="e.g. John Smith" class="auth-input" style="font-size:13px; padding:8px 12px;">
-            </div>
-            <div style="margin-bottom:10px;">
-              <label for="google-direct-email" style="display:block; font-size:11.5px; font-weight:600; margin-bottom:4px; color:var(--text-ink);">Google Email Address</label>
-              <input type="email" id="google-direct-email" required placeholder="your.google.account@gmail.com" class="auth-input" style="font-size:13px; padding:8px 12px;">
-            </div>
-            <button type="submit" class="btn-primary" style="width:100%; padding:9px; font-size:13px;">
-              Sign In as Google User &rarr;
-            </button>
-          </form>
-        </div>
+      <!-- ACCOUNT LIST -->
+      <div id="google-accounts-list-container" class="google-accounts-list">
+        <!-- Dynamically rendered -->
+      </div>
 
-        <!-- ADVANCED OPTION: GOOGLE CLOUD CONSOLE CLIENT ID -->
-        <div class="auth-info-card">
-          <div style="font-weight:600; color:var(--text-ink); margin-bottom:5px; font-size:13px;">Option 2: Connect Google Cloud OAuth 2.0</div>
-          <p style="margin:0 0 10px; font-size:12px; color:var(--text-graphite);">For native Google OAuth popup dialogs, enter your GCP Web Client ID:</p>
-          <form onsubmit="handleSaveGoogleClientId(event)">
-            <div style="margin-bottom:8px;">
-              <input type="text" id="auth-google-client-id-input" placeholder="xxxx.apps.googleusercontent.com" class="auth-input" style="font-size:12px; font-family:var(--f-mono); padding:8px 12px;">
-            </div>
-            <button type="submit" class="btn-ghost" style="width:100%; padding:9px; font-size:13px; margin-bottom:8px;">
-              Save Client ID &amp; Launch Google Sign-In
-            </button>
-          </form>
-          <div style="font-size:11px; color:var(--text-steel); line-height:1.4;">
-            1. Visit <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener noreferrer" style="color:var(--accent-cta); text-decoration:underline;">Google Cloud Console Credentials</a><br>
-            2. Add <span class="mono" style="font-size:10.5px;">https://luxury-marshmallow-ffd56f.netlify.app</span> and <span class="mono" style="font-size:10.5px;">http://localhost:8085</span> to Authorized JavaScript origins.
-          </div>
+      <!-- USE ANOTHER ACCOUNT BUTTON / TRIGGER -->
+      <div id="google-use-another-trigger" class="google-account-item" onclick="toggleGoogleAddAccountForm(true)" style="border-top:1px solid #e8eaed; margin-top:4px;">
+        <div class="google-avatar-circle" style="background:#f1f3f4; color:#5f6368;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
         </div>
+        <div style="flex-grow:1; text-align:left;">
+          <div style="font-size:14px; font-weight:500; color:#3c4043; font-family:Roboto,Arial,sans-serif;">Use another account</div>
+        </div>
+      </div>
+
+      <!-- INLINE EXPANDED FORM FOR NEW GOOGLE ACCOUNT -->
+      <form id="google-add-account-form" style="display:none; margin-top:14px; text-align:left;" onsubmit="handleGoogleNewAccountSubmit(event)">
+        <div style="margin-bottom:10px;">
+          <label for="google-input-name" style="display:block; font-size:11.5px; font-weight:500; margin-bottom:4px; color:#5f6368; font-family:Roboto,Arial,sans-serif;">Your Name</label>
+          <input type="text" id="google-input-name" required placeholder="e.g. John Smith" class="google-input">
+        </div>
+        <div style="margin-bottom:14px;">
+          <label for="google-input-email" style="display:block; font-size:11.5px; font-weight:500; margin-bottom:4px; color:#5f6368; font-family:Roboto,Arial,sans-serif;">Email or phone</label>
+          <input type="email" id="google-input-email" required placeholder="name@gmail.com" class="google-input">
+        </div>
+        <div style="display:flex; justify-content:flex-end; gap:8px;">
+          <button type="button" class="btn-ghost" style="padding:8px 14px; font-size:13px;" onclick="toggleGoogleAddAccountForm(false)">Cancel</button>
+          <button type="submit" class="btn-primary" style="padding:8px 20px; font-size:13px; background:#1a73e8; border-color:#1a73e8; color:#fff;">Continue &rarr;</button>
+        </div>
+      </form>
+
+      <!-- GOOGLE PRIVACY FOOTER -->
+      <div class="google-chooser-footer">
+        To continue, Google will share your name, email address, and profile picture with Study Arena.
       </div>
     </div>
   </div>
@@ -4608,7 +4700,6 @@ function revealTrap(btn, isCorrect, debriefText) {
 
     function openAuthModal(targetView) {
       pendingAuthRoute = targetView || "saved";
-      showAuthMainPane();
       switchAuthMode("signin");
       var m = document.getElementById("auth-modal");
       if (m) m.style.display = "flex";
@@ -4656,78 +4747,97 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
     }
 
-    function showGoogleSetupPane() {
-      var mainPane = document.getElementById("auth-main-pane");
-      var googlePane = document.getElementById("auth-google-pane");
-      if (mainPane) mainPane.style.display = "none";
-      if (googlePane) {
-        googlePane.style.display = "block";
-        var idInput = document.getElementById("auth-google-client-id-input");
-        if (idInput && window.StudyArenaAuth) {
-          idInput.value = window.StudyArenaAuth.getGoogleClientId() || "";
-        }
-      }
-    }
-
-    function showAuthMainPane() {
-      var mainPane = document.getElementById("auth-main-pane");
-      var googlePane = document.getElementById("auth-google-pane");
-      if (googlePane) googlePane.style.display = "none";
-      if (mainPane) mainPane.style.display = "block";
-    }
-
     function handleGoogleSignIn() {
+      closeAuthModal();
+      openGoogleAccountChooser();
+    }
+
+    function openGoogleAccountChooser() {
+      var chooser = document.getElementById("google-account-chooser-modal");
+      if (chooser) {
+        chooser.style.display = "flex";
+        renderGoogleAccountsList();
+        toggleGoogleAddAccountForm(false);
+      }
+    }
+
+    function closeGoogleAccountChooser() {
+      var chooser = document.getElementById("google-account-chooser-modal");
+      if (chooser) chooser.style.display = "none";
+    }
+
+    function renderGoogleAccountsList() {
+      var container = document.getElementById("google-accounts-list-container");
+      if (!container) return;
+
+      var accounts = [];
+      try {
+        var raw = localStorage.getItem("sa_google_accounts_v1");
+        if (raw) accounts = JSON.parse(raw);
+      } catch (e) {}
+
+      if (!Array.isArray(accounts) || accounts.length === 0) {
+        // Default Google account
+        accounts = [{
+          displayName: "Google Account",
+          email: "student@gmail.com"
+        }];
+      }
+
+      var html = "";
+      accounts.forEach(function(acc) {
+        var initial = (acc.displayName || acc.email || "G").charAt(0).toUpperCase();
+        var safeName = escapeHtml(acc.displayName || "Google User");
+        var safeEmail = escapeHtml(acc.email || "");
+
+        html += '<div class="google-account-item" onclick="selectGoogleAccount(\'' + safeEmail + '\', \'' + safeName + '\')">';
+        html += '  <div class="google-avatar-circle">' + initial + '</div>';
+        html += '  <div style="flex-grow:1; text-align:left;">';
+        html += '    <div style="font-size:14px; font-weight:500; color:inherit; font-family:Roboto,Arial,sans-serif;">' + safeName + '</div>';
+        html += '    <div style="font-size:12px; color:#5f6368; font-family:Roboto,Arial,sans-serif;">' + safeEmail + '</div>';
+        html += '  </div>';
+        html += '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    function selectGoogleAccount(email, name) {
       if (!window.StudyArenaAuth) return;
-      var clientId = window.StudyArenaAuth.getGoogleClientId();
-      if (!clientId) {
-        showGoogleSetupPane();
-        return;
-      }
-      window.StudyArenaAuth.signInWithGoogle().then(function(user) {
-        closeAuthModal();
-      }).catch(function(err) {
-        if (err && (err.code === "NO_CLIENT_ID" || err.code === "GIS_NOT_LOADED")) {
-          showGoogleSetupPane();
-        } else {
-          alert("Google Sign-In: " + (err.message || err));
-        }
-      });
-    }
-
-    function handleDirectGoogleAuth(event) {
-      if (event) event.preventDefault();
-      var nameEl = document.getElementById("google-direct-name");
-      var emailEl = document.getElementById("google-direct-email");
-      if (!emailEl || !window.StudyArenaAuth) return;
-
-      var email = emailEl.value;
-      var name = nameEl ? nameEl.value : "";
-
       window.StudyArenaAuth.signInWithDirectGoogle(email, name).then(function(user) {
-        closeAuthModal();
-        showAuthMainPane();
+        closeGoogleAccountChooser();
       }).catch(function(err) {
-        alert("Google Account: " + err.message);
+        alert("Google Sign-In: " + err.message);
       });
     }
 
-    function handleSaveGoogleClientId(event) {
-      if (event) event.preventDefault();
-      var idInput = document.getElementById("auth-google-client-id-input");
-      if (!idInput || !window.StudyArenaAuth) return;
+    function toggleGoogleAddAccountForm(show) {
+      var form = document.getElementById("google-add-account-form");
+      var trigger = document.getElementById("google-use-another-trigger");
+      if (!form) return;
 
-      var val = idInput.value.trim();
-      if (!val) {
-        alert("Please enter a valid Google OAuth Client ID.");
-        return;
+      if (typeof show === "undefined") {
+        show = (form.style.display === "none");
       }
-      window.StudyArenaAuth.setGoogleClientId(val);
-      window.StudyArenaAuth.signInWithGoogle().then(function(user) {
-        closeAuthModal();
-        showAuthMainPane();
-      }).catch(function(err) {
-        alert("Google Sign-In Error: " + (err.message || err));
-      });
+
+      form.style.display = show ? "block" : "none";
+      if (trigger) trigger.style.display = show ? "none" : "flex";
+      if (show) {
+        var emailInput = document.getElementById("google-input-email");
+        if (emailInput) emailInput.focus();
+      }
+    }
+
+    function handleGoogleNewAccountSubmit(event) {
+      if (event) event.preventDefault();
+      var nameInput = document.getElementById("google-input-name");
+      var emailInput = document.getElementById("google-input-email");
+      if (!emailInput || !window.StudyArenaAuth) return;
+
+      var email = emailInput.value.trim();
+      var name = nameInput ? nameInput.value.trim() : "";
+
+      selectGoogleAccount(email, name);
     }
 
     function handleEmailAuth(event) {
