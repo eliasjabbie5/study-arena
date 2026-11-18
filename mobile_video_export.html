@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Study Arena - Mobile Launch Ad (1080x1920)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,300;0,400;0,500;1,300;1,400&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root {
+      --canvas: #FFFFFF;
+      --surface: #F8F9F8;
+      --surface-card: #FFFFFF;
+      --line: #E2E8E4;
+      --line-subtle: #EDF1EE;
+      --ink: #111815;
+      --ink-graphite: #3E4A44;
+      --ink-steel: #718077;
+      --emerald: #0B7A4F;
+      --emerald-hover: #08603E;
+      --emerald-soft: #E7F5EE;
+      --emerald-glow: rgba(11, 122, 79, 0.28);
+      --danger: #CF1322;
+      --danger-soft: #FFF1F0;
+      --ease-fluid: cubic-bezier(0.16, 1, 0.3, 1);
+      --f-serif: 'Lora', Georgia, serif;
+      --f-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      --f-mono: 'JetBrains Mono', monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: var(--f-sans);
+      background: #FFFFFF;
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+      user-select: none;
+      overflow: hidden;
+      width: 1080px;
+      height: 1920px;
+      position: relative;
+    }
+    .grid-lines {
+      position: absolute;
+      inset: 0;
+      background-image: 
+        linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
+      background-size: 54px 54px;
+      pointer-events: none;
+    }
+
+    /* Minimal Mobile Top Bar */
+    .top-hud {
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 96px;
+      padding: 0 48px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--line);
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(16px);
+      z-index: 30;
+    }
+    .hud-left { display: flex; align-items: center; gap: 16px; }
+    .hud-sq {
+      width: 44px; height: 44px;
+      background: var(--ink);
+      color: #FFF;
+      display: grid;
+      place-items: center;
+      font-family: var(--f-mono);
+      font-size: 20px;
+      font-weight: 700;
+      border-radius: 12px;
+    }
+    .hud-txt { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; }
+    .hud-timer {
+      font-family: var(--f-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink-steel);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Mobile Touch / Pointer */
+    .virtual-pointer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 40px; height: 40px;
+      z-index: 100;
+      pointer-events: none;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.35));
+      opacity: 0;
+      transition: opacity 0.2s ease;
+      will-change: transform, opacity;
+      transform-origin: 6px 4px;
+    }
+    .virtual-pointer.visible { opacity: 1; }
+    .virtual-pointer svg {
+      width: 100%; height: 100%;
+      fill: #111815;
+      stroke: #FFFFFF;
+      stroke-width: 1.8;
+      transition: transform 0.08s ease;
+      transform-origin: 6px 4px;
+    }
+    .virtual-pointer.clicking svg { transform: scale(0.80); }
+
+    /* Floating drag ghost (mobile) */
+    .floating-drag-ghost {
+      position: absolute;
+      top: 10px; left: 10px;
+      width: 480px;
+      background: #FFFFFF;
+      border: 2px solid var(--emerald);
+      border-radius: 24px;
+      padding: 20px 28px;
+      box-shadow: 0 28px 65px -10px rgba(11, 122, 79, 0.45);
+      display: none;
+      align-items: center;
+      gap: 18px;
+      pointer-events: none;
+      z-index: 95;
+      transform: rotate(-3deg);
+    }
+    .floating-drag-ghost.active { display: flex; }
+
+    /* Filmstrip reel (vertical slide canvas) */
+    .filmstrip-reel {
+      display: flex;
+      width: 400%;
+      height: calc(1920px - 96px);
+      position: absolute;
+      top: 96px; left: 0;
+      will-change: transform;
+      z-index: 10;
+    }
+    .stage-slide {
+      width: 1080px;
+      height: 100%;
+      position: relative;
+      flex-shrink: 0;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 48px;
+    }
+
+    /* ========================================================
+       STAGE 0: THE PROBLEM (MOBILE 9:16)
+       ======================================================== */
+    .alarm-center-card {
+      position: absolute;
+      top: 26%; left: 50%;
+      transform: translate(-50%, -50%) scale(1.15);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: 16px;
+      padding: 36px 54px;
+      border-radius: 32px;
+      background: rgba(255, 241, 240, 0.98);
+      border: 2px solid rgba(207, 19, 34, 0.35);
+      box-shadow: 0 20px 60px rgba(207, 19, 34, 0.3);
+      transition: all 0.65s var(--ease-fluid);
+      z-index: 8;
+      animation: alarmBreathing 1.4s infinite alternate ease-in-out;
+    }
+    @keyframes alarmBreathing {
+      0% { box-shadow: 0 16px 40px rgba(207, 19, 34, 0.2); transform: translate(-50%, -50%) scale(1.12); }
+      100% { box-shadow: 0 28px 75px rgba(207, 19, 34, 0.45); transform: translate(-50%, -50%) scale(1.18); }
+    }
+    .alarm-center-card.settled {
+      top: 4%;
+      transform: translate(-50%, 0) scale(0.92);
+      padding: 12px 32px;
+      border-radius: 9999px;
+      flex-direction: row;
+      gap: 12px;
+      animation: none;
+      box-shadow: 0 6px 18px rgba(207, 19, 34, 0.15);
+      z-index: 5;
+    }
+    .alarm-big-title {
+      font-family: var(--f-mono);
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--danger);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+    .alarm-big-sub {
+      font-family: var(--f-serif);
+      font-size: 46px;
+      font-weight: 400;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+    .alarm-center-card.settled .alarm-big-sub { display: none; }
+    .alarm-center-card.settled .alarm-big-title { font-size: 18px; }
+
+    /* Hook Headline */
+    .hero-headline-wrap {
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(1.1);
+      width: 90%;
+      max-width: 940px;
+      text-align: center;
+      opacity: 0;
+      transition: transform 0.65s var(--ease-fluid), top 0.65s var(--ease-fluid), opacity 0.5s ease;
+      will-change: transform, top, opacity;
+      z-index: 6;
+      pointer-events: none;
+    }
+    .hero-headline-wrap.visible { opacity: 1; }
+    .hero-headline-wrap.settled {
+      top: 13%;
+      transform: translate(-50%, 0) scale(1);
+    }
+    .skinny-h1 {
+      font-family: var(--f-serif);
+      font-weight: 300;
+      font-size: 54px;
+      line-height: 1.28;
+      letter-spacing: -0.02em;
+      color: var(--ink);
+    }
+    .skinny-h1 em { font-style: italic; font-weight: 400; color: var(--emerald); }
+    .strike-container {
+      position: relative;
+      display: inline-block;
+      white-space: nowrap;
+      font-weight: 400;
+      color: var(--ink-graphite);
+    }
+    .animated-strike-line {
+      position: absolute;
+      top: 54%; left: -6px;
+      width: 0%;
+      height: 4.5px;
+      background: var(--danger);
+      border-radius: 2px;
+      transition: width 0.38s cubic-bezier(0.16, 1, 0.3, 1);
+      pointer-events: none;
+    }
+    .animated-strike-line.struck { width: calc(100% + 12px); }
+
+    /* Sub-elements in Stage 0: iOS Message & Files card */
+    .stage0-sub-elements {
+      position: absolute;
+      top: 42%; left: 50%;
+      transform: translate(-50%, 0);
+      width: 92%;
+      max-width: 980px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+      z-index: 4;
+    }
+    .stage0-sub-elements.revealed { opacity: 1; pointer-events: auto; }
+
+    /* iOS Notification (Mobile) */
+    .ios-notification {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(28px);
+      border: 1.5px solid rgba(0, 0, 0, 0.08);
+      border-radius: 28px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+      box-shadow: 0 18px 40px -10px rgba(0, 0, 0, 0.1);
+      text-align: left;
+      transition: opacity 0.35s var(--ease-fluid), transform 0.35s var(--ease-fluid);
+      position: relative;
+    }
+    .ios-notification.dismissed {
+      opacity: 0;
+      transform: translateY(-40px) scale(0.94);
+      pointer-events: none;
+    }
+    .ios-icon {
+      width: 52px; height: 52px;
+      border-radius: 14px;
+      background: #34C759;
+      display: grid;
+      place-items: center;
+      flex-shrink: 0;
+    }
+    .ios-body { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+    .ios-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-steel);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .ios-close-btn {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: rgba(0, 0, 0, 0.08);
+      color: var(--ink-graphite);
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.12s ease;
+    }
+    .ios-close-btn.clicked {
+      background: rgba(0, 0, 0, 0.3);
+      color: #FFFFFF;
+      transform: scale(0.85);
+    }
+    .ios-title { font-size: 21px; font-weight: 700; color: var(--ink); }
+    .ios-msg { font-size: 19px; color: var(--ink-graphite); line-height: 1.38; }
+
+    /* Mobile Files Card */
+    .finder-pdf-card {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--line);
+      border-radius: 24px;
+      padding: 24px 30px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 10px 28px rgba(0, 0, 0, 0.05);
+      cursor: grab;
+      transition: box-shadow 0.2s ease, border-color 0.2s ease;
+      will-change: transform;
+    }
+    .finder-pdf-card.drag-grab {
+      border-color: var(--emerald);
+      box-shadow: 0 24px 60px -10px rgba(11, 122, 79, 0.38);
+    }
+    .pdf-meta-group { display: flex; align-items: center; gap: 18px; }
+    .pdf-red-sq {
+      width: 54px; height: 54px;
+      border-radius: 14px;
+      background: #FFF1F0;
+      border: 1.5px solid rgba(207, 19, 34, 0.25);
+      color: var(--danger);
+      display: grid;
+      place-items: center;
+      font-family: var(--f-mono);
+      font-size: 16px;
+      font-weight: 700;
+    }
+    .pdf-title-sub { display: flex; flex-direction: column; text-align: left; gap: 4px; }
+    .pdf-name { font-size: 22px; font-weight: 600; color: var(--ink); }
+    .pdf-desc { font-size: 17px; color: var(--ink-steel); }
+
+    /* ========================================================
+       STAGE 1: GENERATOR & MCQ BATTLE (MOBILE 9:16)
+       ======================================================== */
+    .stage1-container {
+      width: 100%;
+      height: 100%;
+      position: relative;
+    }
+    .view-card {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.65s var(--ease-fluid), opacity 0.5s ease;
+    }
+    #gen-view.slide-out {
+      transform: translateX(-100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    #mcq-view {
+      transform: translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+    #mcq-view.slide-in {
+      transform: translateX(0);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* Generator Mobile Layout */
+    .gen-scrollable {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 28px;
+      transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+      will-change: transform;
+    }
+    .mobile-headline {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .mobile-headline h2 {
+      font-family: var(--f-serif);
+      font-size: 44px;
+      font-weight: 400;
+      line-height: 1.25;
+      color: var(--ink);
+    }
+    .mobile-headline p {
+      font-size: 20px;
+      color: var(--ink-steel);
+    }
+
+    .dropzone-mobile {
+      width: 100%;
+      height: 380px;
+      border: 2.5px dashed var(--line);
+      border-radius: 28px;
+      background: #FAFCFA;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 20px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+    .dropzone-mobile.drag-over {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+      box-shadow: 0 16px 45px rgba(11, 122, 79, 0.2);
+    }
+    .laser-scan-line {
+      position: absolute;
+      top: -10px; left: 0; right: 0;
+      height: 6px;
+      background: linear-gradient(90deg, transparent, #0B7A4F, transparent);
+      box-shadow: 0 0 24px #0B7A4F;
+      display: none;
+      z-index: 10;
+    }
+    .laser-scan-line.active {
+      display: block;
+      animation: laserSweep 1.1s infinite alternate ease-in-out;
+    }
+    @keyframes laserSweep {
+      0% { top: 4%; }
+      100% { top: 94%; }
+    }
+    .attached-file-pill {
+      display: none;
+      align-items: center;
+      gap: 16px;
+      background: #FFFFFF;
+      border: 1.5px solid var(--emerald);
+      border-radius: 18px;
+      padding: 14px 26px;
+      box-shadow: 0 8px 24px rgba(11, 122, 79, 0.15);
+      z-index: 12;
+    }
+    .attached-file-pill.locked { display: flex; }
+
+    .btn-emerald-primary {
+      width: 100%;
+      height: 76px;
+      background: var(--emerald);
+      color: #FFFFFF;
+      border-radius: 20px;
+      font-size: 24px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 14px;
+      box-shadow: 0 12px 32px rgba(11, 122, 79, 0.3);
+      cursor: pointer;
+      transition: transform 0.1s ease, background 0.2s ease;
+    }
+    .btn-emerald-primary.clicked {
+      transform: scale(0.97);
+      background: var(--emerald-hover);
+    }
+
+    /* Live Analysis Drawer (Mobile) */
+    .analysis-mobile-drawer {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--line);
+      border-radius: 28px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.06);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.4s var(--ease-fluid);
+    }
+    .analysis-mobile-drawer.revealed {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .step-progress-track {
+      width: 100%;
+      height: 10px;
+      background: #EEF2F0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .step-progress-fill {
+      height: 100%;
+      width: 10%;
+      background: var(--emerald);
+      border-radius: 9999px;
+      transition: width 0.3s ease;
+    }
+    .step-status-text {
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    /* MCQ Battle Arena (Mobile 9:16) */
+    .mcq-mobile-card {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--line);
+      border-radius: 32px;
+      padding: 38px 36px;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+      box-shadow: 0 20px 55px rgba(0, 0, 0, 0.08);
+      position: relative;
+    }
+    .mcq-top-hud {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 20px;
+      border-bottom: 1.5px solid var(--line-subtle);
+    }
+    .hp-badge {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--f-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+    .hp-bar-track {
+      width: 140px; height: 12px;
+      background: #EEF2F0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+    .hp-bar-fill {
+      width: 85%; height: 100%;
+      background: #34C759;
+      border-radius: 9999px;
+    }
+    .streak-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--f-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: #E65100;
+      background: #FFF3E0;
+      padding: 6px 16px;
+      border-radius: 9999px;
+    }
+
+    .mcq-question-tag {
+      font-family: var(--f-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--emerald);
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+    .mcq-question-prompt {
+      font-family: var(--f-serif);
+      font-size: 32px;
+      line-height: 1.35;
+      font-weight: 400;
+      color: var(--ink);
+    }
+
+    .mcq-options-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    .mcq-option-btn {
+      width: 100%;
+      background: #FFFFFF;
+      border: 2px solid var(--line);
+      border-radius: 22px;
+      padding: 24px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 18px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .opt-letter {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: #F1F4F2;
+      display: grid;
+      place-items: center;
+      font-family: var(--f-mono);
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink-graphite);
+      flex-shrink: 0;
+    }
+    .opt-text {
+      font-size: 21px;
+      font-weight: 500;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+    .mcq-option-btn.no {
+      border-color: var(--danger);
+      background: #FFF1F0;
+    }
+    .mcq-option-btn.no .opt-letter {
+      background: var(--danger);
+      color: #FFFFFF;
+    }
+    .mcq-option-btn.ok {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+      box-shadow: 0 10px 30px rgba(11, 122, 79, 0.22);
+    }
+    .mcq-option-btn.ok .opt-letter {
+      background: var(--emerald);
+      color: #FFFFFF;
+    }
+
+    .xp-float-pop {
+      position: absolute;
+      top: 30%; right: 40px;
+      background: var(--emerald);
+      color: #FFFFFF;
+      font-family: var(--f-mono);
+      font-size: 24px;
+      font-weight: 800;
+      padding: 12px 28px;
+      border-radius: 9999px;
+      box-shadow: 0 12px 35px rgba(11, 122, 79, 0.4);
+      display: none;
+      animation: popJump 0.5s ease-out forwards;
+      z-index: 30;
+    }
+    .xp-float-pop.show { display: block; }
+    @keyframes popJump {
+      0% { transform: scale(0.6) translateY(20px); opacity: 0; }
+      50% { transform: scale(1.15) translateY(-10px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .feedback-callout {
+      display: none;
+      background: #FAFCFA;
+      border-left: 4px solid var(--emerald);
+      padding: 20px 24px;
+      border-radius: 0 16px 16px 0;
+      font-size: 18px;
+      color: var(--ink-graphite);
+      line-height: 1.45;
+    }
+
+    /* ========================================================
+       STAGE 2: BENEFITS (MOBILE 9:16)
+       ======================================================== */
+    .benefits-mobile-wrap {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 26px;
+    }
+    .ben-card {
+      background: #FFFFFF;
+      border: 1.5px solid var(--line);
+      border-radius: 28px;
+      padding: 32px 36px;
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+      box-shadow: 0 14px 38px rgba(0, 0, 0, 0.05);
+      opacity: 0;
+      transform: translateY(30px);
+      transition: all 0.5s var(--ease-fluid);
+    }
+    .ben-card.active {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .ben-icon {
+      width: 64px; height: 64px;
+      border-radius: 18px;
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      display: grid;
+      place-items: center;
+      font-size: 32px;
+      flex-shrink: 0;
+    }
+    .ben-content { display: flex; flex-direction: column; gap: 6px; }
+    .ben-title { font-size: 26px; font-weight: 700; color: var(--ink); }
+    .ben-desc { font-size: 19px; color: var(--ink-steel); line-height: 1.38; }
+
+    /* ========================================================
+       STAGE 3: OUTRO CTA (MOBILE 9:16)
+       ======================================================== */
+    .outro-mobile-card {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      gap: 32px;
+      padding: 0 24px;
+    }
+    .outro-hero-title {
+      font-family: var(--f-serif);
+      font-size: 58px;
+      line-height: 1.2;
+      font-weight: 300;
+      color: var(--ink);
+    }
+    .outro-hero-title em {
+      font-style: italic;
+      color: var(--emerald);
+    }
+    .outro-sub-title {
+      font-size: 23px;
+      color: var(--ink-steel);
+      line-height: 1.45;
+      max-width: 820px;
+    }
+    .outro-btn {
+      width: 100%;
+      max-width: 640px;
+      height: 84px;
+      background: var(--emerald);
+      color: #FFFFFF;
+      border-radius: 24px;
+      font-size: 26px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      box-shadow: 0 16px 45px rgba(11, 122, 79, 0.35);
+      cursor: pointer;
+      transition: transform 0.12s ease;
+    }
+    .outro-btn.clicked {
+      transform: scale(0.96);
+    }
+    .domain-badge {
+      font-family: var(--f-mono);
+      font-size: 20px;
+      font-weight: 600;
+      color: var(--ink-steel);
+      background: #F1F4F2;
+      padding: 10px 24px;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-lines"></div>
+
+  <!-- Minimal Top Bar -->
+  <div class="top-hud">
+    <div class="hud-left">
+      <div class="hud-sq">S</div>
+      <div class="hud-txt">STUDY ARENA</div>
+    </div>
+    <div class="hud-timer" id="hud-timer">00:00</div>
+  </div>
+
+  <!-- Mobile Pointer / Touch Cursor -->
+  <div class="virtual-pointer" id="v-pointer">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 2l16 12-7 1.5 4.5 7.5-3 1.5-4.5-7.5L4 21V2z"/>
+    </svg>
+  </div>
+
+  <!-- Mobile Floating Drag Ghost -->
+  <div class="floating-drag-ghost" id="ghost-pdf">
+    <div class="pdf-red-sq">PDF</div>
+    <div style="display:flex; flex-direction:column; text-align:left;">
+      <span style="font-size:20px; font-weight:700; color:var(--ink);">Corporate_Strategy_Finals.pdf</span>
+      <span style="font-size:16px; color:var(--ink-steel);">187 lecture slides</span>
+    </div>
+  </div>
+
+  <!-- Vertical 4-Stage Reel -->
+  <div class="filmstrip-reel" id="film-reel">
+    <!-- STAGE 0 -->
+    <div class="stage-slide" id="slide-0">
+      <div class="alarm-center-card" id="alarm-card">
+        <div style="font-size:42px;">⚠️</div>
+        <div>
+          <div class="alarm-big-title">Finals in 48 Hours</div>
+          <div class="alarm-big-sub">187 Slides Unread</div>
+        </div>
+      </div>
+
+      <div class="hero-headline-wrap" id="hero-headline">
+        <h1 class="skinny-h1">
+          Stuck memorizing 
+          <span class="strike-container">
+            200 lecture slides
+            <span class="animated-strike-line" id="strike-line"></span>
+          </span>
+          that all look <em id="identical-em">identical</em>?
+        </h1>
+      </div>
+
+      <div class="stage0-sub-elements" id="stage0-sub">
+        <!-- iOS Notification Banner -->
+        <div class="ios-notification" id="ios-notif">
+          <div class="ios-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="#FFFFFF"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+          </div>
+          <div class="ios-body">
+            <div class="ios-head">
+              <span>Finance & Strategy Group (5)</span>
+              <span>now</span>
+              <div class="ios-close-btn" id="ios-close-x">✕</div>
+            </div>
+            <div class="ios-title">Group Chat (5)</div>
+            <div class="ios-msg">"Did anyone understand slide 44?! The final is literally tomorrow morning 😭"</div>
+          </div>
+        </div>
+
+        <!-- Mobile Files PDF Card -->
+        <div class="finder-pdf-card" id="pdf-card-0">
+          <div class="pdf-meta-group">
+            <div class="pdf-red-sq">PDF</div>
+            <div class="pdf-title-sub">
+              <span class="pdf-name">Corporate_Strategy_Finals.pdf</span>
+              <span class="pdf-desc">187 lecture slides • 42 MB</span>
+            </div>
+          </div>
+          <div style="font-size:22px; color:var(--ink-steel);">⋮</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 1: USE CASE (GENERATOR + MCQ BATTLE) -->
+    <div class="stage-slide" id="slide-1">
+      <div class="stage1-container">
+        <!-- View 1: Generator -->
+        <div class="view-card" id="gen-view">
+          <div class="gen-scrollable" id="gen-scroll">
+            <div class="mobile-headline">
+              <h2>AI Exam Generator</h2>
+              <p>Drop lecture slides or syllabus. Get full battle simulation.</p>
+            </div>
+
+            <div class="dropzone-mobile" id="dz-exact">
+              <div class="laser-scan-line" id="scan-laser"></div>
+              <div class="attached-file-pill" id="att-doc">
+                <div class="pdf-red-sq" style="width:40px; height:40px; font-size:14px;">PDF</div>
+                <div style="display:flex; flex-direction:column; text-align:left;">
+                  <span style="font-size:18px; font-weight:700;">Corporate_Strategy_Finals.pdf</span>
+                  <span style="font-size:14px; color:var(--ink-steel);">187 Slides Attached</span>
+                </div>
+              </div>
+              <div id="dz-placeholder" style="display:flex; flex-direction:column; align-items:center; gap:12px;">
+                <div style="width:64px; height:64px; border-radius:18px; background:#EEF6F2; color:var(--emerald); display:grid; place-items:center; font-size:32px;">📥</div>
+                <div style="font-size:22px; font-weight:600; color:var(--ink);">Drop PDF Slides Here</div>
+                <div style="font-size:16px; color:var(--ink-steel);">Supports PowerPoint, PDF & Notes</div>
+              </div>
+            </div>
+
+            <div class="btn-emerald-primary" id="btn-gen-real">
+              <span>⚡ Generate Battle Arena (24 Questions)</span>
+            </div>
+
+            <!-- Analysis drawer -->
+            <div class="analysis-mobile-drawer" id="analysis-drawer">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <span style="font-family:var(--f-mono); font-size:16px; font-weight:700; color:var(--emerald);">NEURAL DECOMPOSITION</span>
+                <span style="font-family:var(--f-mono); font-size:16px; color:var(--ink-steel);" id="step-time">00:02</span>
+              </div>
+              <div class="step-progress-track">
+                <div class="step-progress-fill" id="step-bar"></div>
+              </div>
+              <div class="step-status-text" id="step-task">Reading Corporate_Strategy_Finals.pdf (187 slides)...</div>
+            </div>
+
+            <!-- Play Arena Now button after scroll -->
+            <div class="btn-emerald-primary" id="btn-play-arena" style="margin-top:20px; background:#111815;">
+              <span>⚔️ Play Arena Now</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- View 2: MCQ Battle Arena -->
+        <div class="view-card" id="mcq-view">
+          <div class="mcq-mobile-card">
+            <div class="xp-float-pop" id="xp-pop">+150 XP • COMBO x2</div>
+            <div class="mcq-top-hud">
+              <div class="hp-badge">
+                <span>HP</span>
+                <div class="hp-bar-track"><div class="hp-bar-fill"></div></div>
+                <span>850</span>
+              </div>
+              <div class="streak-badge">🔥 3 Streak</div>
+            </div>
+
+            <div class="mcq-question-tag">EXAM DILEMMA #4 • CORPORATE STRATEGY</div>
+            <div class="mcq-question-prompt">
+              A market leader is hit with 12% margin erosion from predatory discounters. According to Michael Porter's Generic Framework, what is the fatal mistake?
+            </div>
+
+            <div class="mcq-options-stack">
+              <div class="mcq-option-btn" id="opt-a">
+                <div class="opt-letter">A</div>
+                <div class="opt-text">Discounting prices into a cost-war without achieving structural low-cost leadership</div>
+              </div>
+              <div class="mcq-option-btn" id="opt-b">
+                <div class="opt-letter">B</div>
+                <div class="opt-text">Immediately acquiring the smallest competitor to absorb short-term excess capacity</div>
+              </div>
+            </div>
+
+            <div class="feedback-callout" id="fb-box">
+              <strong>Correct!</strong> A firm that attempts both cost leadership and differentiation without structural advantage gets "stuck in the middle" with depressed returns.
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 2: BENEFITS -->
+    <div class="stage-slide" id="slide-2">
+      <div class="benefits-mobile-wrap">
+        <div class="ben-card" id="ben-1">
+          <div class="ben-icon">🎯</div>
+          <div class="ben-content">
+            <div class="ben-title">Active Recall Simulation</div>
+            <div class="ben-desc">Re-reading 200 slides creates an illusion of competence. Battle simulations test what you can actually retrieve under timed exam pressure.</div>
+          </div>
+        </div>
+
+        <div class="ben-card" id="ben-2">
+          <div class="ben-icon">⚡</div>
+          <div class="ben-content">
+            <div class="ben-title">Exam-Grade Trap Detection</div>
+            <div class="ben-desc">Trained on real university exam formats to spot the trick phrasing, subtle exceptions, and distractor options professors use.</div>
+          </div>
+        </div>
+
+        <div class="ben-card" id="ben-3">
+          <div class="ben-icon">📈</div>
+          <div class="ben-content">
+            <div class="ben-title">Spaced Retention Engine</div>
+            <div class="ben-desc">Missed concepts return dynamically across battle rounds until you hit 95%+ mastery before entering the exam room.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- STAGE 3: OUTRO CTA -->
+    <div class="stage-slide" id="slide-3">
+      <div class="outro-mobile-card">
+        <div class="outro-hero-title">
+          Stop Re-Reading.<br>
+          Start <em>Conquering</em>.
+        </div>
+        <div class="outro-sub-title">
+          Turn any lecture syllabus or PDF slides into an interactive exam battle arena in 10 seconds.
+        </div>
+        <div class="outro-btn" id="outro-cta-btn">
+          <span>Start Free Arena ➔</span>
+        </div>
+        <div class="domain-badge">StudyArena.app</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    var w = 1080;
+    var h = 1920;
+    var t = 0;
+    var lastPlayX = w / 2;
+    var lastPlayY = 1450;
+
+    function getCenter(el) {
+      if (!el) return { x: 0, y: 0 };
+      var r = el.getBoundingClientRect();
+      return { x: r.left + r.width / 2, y: r.top + r.height / 2 };
+    }
+
+    function setTipPointer(x, y) {
+      pointer.style.transform = "translate(" + x + "px, " + y + "px)";
+    }
+
+    function easeInOutCubic(x) {
+      return x < 0.5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2;
+    }
+    function easeOutCubic(x) {
+      return 1 - Math.pow(1 - x, 3);
+    }
+    function easeInOutQuart(x) {
+      return x < 0.5 ? 8 * x * x * x * x : 1 - Math.pow(-2 * x + 2, 4) / 2;
+    }
+
+    var stages = [
+      { start: 0, end: 6 },
+      { start: 6, end: 19 },
+      { start: 19, end: 24 },
+      { start: 24, end: 30 }
+    ];
+
+    var filmReel = document.getElementById("film-reel");
+    var pointer = document.getElementById("v-pointer");
+    var ghostPdf = document.getElementById("ghost-pdf");
+
+    var alarmCard = document.getElementById("alarm-card");
+    var heroHeadline = document.getElementById("hero-headline");
+    var strikeLine = document.getElementById("strike-line");
+    var stage0Sub = document.getElementById("stage0-sub");
+    var iosNotif = document.getElementById("ios-notif");
+    var iosCloseBtn = document.getElementById("ios-close-x");
+    var pdfCard0 = document.getElementById("pdf-card-0");
+
+    var genView = document.getElementById("gen-view");
+    var mcqView = document.getElementById("mcq-view");
+    var genScroll = document.getElementById("gen-scroll");
+    var dzExact = document.getElementById("dz-exact");
+    var scanLaser = document.getElementById("scan-laser");
+    var attDoc = document.getElementById("att-doc");
+    var dzPlaceholder = document.getElementById("dz-placeholder");
+    var btnGenReal = document.getElementById("btn-gen-real");
+    var analysisDrawer = document.getElementById("analysis-drawer");
+    var stepBar = document.getElementById("step-bar");
+    var stepTask = document.getElementById("step-task");
+    var stepTime = document.getElementById("step-time");
+    var btnPlay = document.getElementById("btn-play-arena");
+
+    var optA = document.getElementById("opt-a");
+    var optB = document.getElementById("opt-b");
+    var fbBox = document.getElementById("fb-box");
+    var xpPop = document.getElementById("xp-pop");
+    var outroCta = document.getElementById("outro-cta-btn");
+    var hudTimer = document.getElementById("hud-timer");
+
+    function frameLoop() {
+      var mm = Math.floor(t / 60);
+      var ss = Math.floor(t % 60);
+      hudTimer.textContent = (mm < 10 ? "0" + mm : mm) + ":" + (ss < 10 ? "0" + ss : ss);
+
+      var phase = 0;
+      if (t >= 24) phase = 3;
+      else if (t >= 19) phase = 2;
+      else if (t >= 6) phase = 1;
+      else phase = 0;
+
+      // Smooth horizontal reel slide
+      var targetReelX = -phase * 25; // 4 slides -> 0%, -25%, -50%, -75%
+      filmReel.style.transform = "translateX(" + targetReelX + "%)";
+
+      /* PHASE 0 (0.0s - 6.0s) */
+      if (phase === 0) {
+        ghostPdf.classList.remove("active");
+        if (t < 1.4) {
+          alarmCard.classList.remove("settled");
+          heroHeadline.classList.remove("visible");
+          heroHeadline.classList.remove("settled");
+          strikeLine.classList.remove("struck");
+          stage0Sub.classList.remove("revealed");
+          iosNotif.classList.remove("dismissed");
+          iosCloseBtn.classList.remove("clicked");
+          pdfCard0.style.transform = "none";
+          pdfCard0.classList.remove("drag-grab");
+        } else {
+          alarmCard.classList.add("settled");
+          heroHeadline.classList.add("visible");
+        }
+
+        if (t >= 2.1) strikeLine.classList.add("struck");
+        else strikeLine.classList.remove("struck");
+
+        if (t >= 2.8) {
+          heroHeadline.classList.add("settled");
+          stage0Sub.classList.add("revealed");
+        } else {
+          heroHeadline.classList.remove("settled");
+          stage0Sub.classList.remove("revealed");
+        }
+
+        var closeCenter = getCenter(iosCloseBtn);
+        var cardCenter = getCenter(pdfCard0);
+        var targetCloseX = closeCenter.x || (w * 0.88);
+        var targetCloseY = closeCenter.y || 880;
+        var targetCardX = cardCenter.x || (w / 2);
+        var targetCardY = cardCenter.y || 1120;
+
+        if (t < 4.0) {
+          pointer.classList.remove("visible");
+          pointer.classList.remove("clicking");
+          setTipPointer(w + 50, targetCloseY);
+        } else if (t < 4.45) {
+          pointer.classList.add("visible");
+          pointer.style.opacity = "1";
+          var prog = easeOutCubic((t - 4.0) / 0.45);
+          var startX = w + 40;
+          var startY = targetCloseY - 20;
+          setTipPointer(startX + prog * (targetCloseX - startX), startY + prog * (targetCloseY - startY));
+        } else if (t < 4.75) {
+          setTipPointer(targetCloseX, targetCloseY);
+          pointer.classList.add("clicking");
+          iosCloseBtn.classList.add("clicked");
+          iosNotif.classList.add("dismissed");
+        } else if (t < 5.15) {
+          pointer.classList.remove("clicking");
+          iosCloseBtn.classList.remove("clicked");
+          var prog = easeInOutCubic((t - 4.75) / 0.4);
+          setTipPointer(targetCloseX + prog * (targetCardX - targetCloseX), targetCloseY + prog * (targetCardY - targetCloseY));
+        } else if (t < 5.35) {
+          setTipPointer(targetCardX, targetCardY);
+          pointer.classList.add("clicking");
+          pdfCard0.classList.add("drag-grab");
+        } else {
+          pointer.classList.add("clicking");
+          pdfCard0.classList.add("drag-grab");
+          var dragProg = easeInOutCubic((t - 5.35) / 0.55);
+          var dragDistX = dragProg * 1200;
+          var dragDistY = dragProg * 20;
+          pdfCard0.style.transform = "translate(" + dragDistX + "px, " + dragDistY + "px) rotate(" + (-3 + dragProg * 6) + "deg) scale(1.02)";
+          setTipPointer(targetCardX + dragDistX, targetCardY + dragDistY);
+          if (t >= 5.85) pointer.style.opacity = "0";
+        }
+      }
+
+      /* PHASE 1 (6.0s - 19.0s) */
+      else if (phase === 1) {
+        var tPhase = t - 6.0;
+        if (tPhase < 6.8) {
+          genView.classList.remove("slide-out");
+          mcqView.classList.remove("slide-in");
+
+          if (tPhase < 1.3) {
+            ghostPdf.classList.add("active");
+            pointer.classList.add("clicking");
+            pointer.classList.add("visible");
+            pointer.style.opacity = "1";
+            dzExact.classList.remove("drag-over");
+            scanLaser.classList.remove("active");
+            attDoc.classList.remove("locked");
+            dzPlaceholder.style.display = "flex";
+            btnGenReal.classList.remove("clicked");
+            analysisDrawer.classList.remove("revealed");
+            genScroll.style.transform = "translateY(0px)";
+
+            var inProg = easeOutCubic(tPhase / 1.3);
+            var dzPos = getCenter(dzExact);
+            var startX = -400;
+            var startY = dzPos.y;
+            var curX = startX + inProg * (dzPos.x - startX);
+            var curY = startY + Math.sin(inProg * Math.PI) * 24;
+            setTipPointer(curX, curY);
+
+          } else if (tPhase < 1.8) {
+            ghostPdf.classList.remove("active");
+            pointer.classList.remove("clicking");
+            dzExact.classList.add("drag-over");
+            scanLaser.classList.add("active");
+            attDoc.classList.add("locked");
+            dzPlaceholder.style.display = "none";
+            genScroll.style.transform = "translateY(0px)";
+            var dzPos = getCenter(dzExact);
+            setTipPointer(dzPos.x, dzPos.y);
+
+          } else if (tPhase < 2.6) {
+            dzExact.classList.remove("drag-over");
+            var btnPos = getCenter(btnGenReal);
+            var dzPos = getCenter(dzExact);
+            var btnProg = easeInOutCubic((tPhase - 1.8) / 0.8);
+            var curX = dzPos.x + btnProg * (btnPos.x - dzPos.x);
+            var curY = dzPos.y + btnProg * (btnPos.y - dzPos.y);
+            genScroll.style.transform = "translateY(0px)";
+            setTipPointer(curX, curY);
+
+          } else if (tPhase < 3.1) {
+            var btnPos = getCenter(btnGenReal);
+            setTipPointer(btnPos.x, btnPos.y);
+            pointer.classList.add("clicking");
+            btnGenReal.classList.add("clicked");
+            analysisDrawer.classList.add("revealed");
+            stepBar.style.width = "25%";
+            stepTask.textContent = "Reading Corporate_Strategy_Finals.pdf (187 slides)...";
+            stepTime.textContent = "00:02";
+            genScroll.style.transform = "translateY(0px)";
+
+          } else {
+            pointer.classList.remove("clicking");
+            btnGenReal.classList.remove("clicked");
+            analysisDrawer.classList.add("revealed");
+
+            var scrollTime = tPhase - 3.1;
+            if (scrollTime < 1.1) {
+              stepBar.style.width = "48%";
+              stepTask.textContent = "Extracting Core Frameworks & AACSB Syllabi...";
+              stepTime.textContent = "00:05";
+            } else if (scrollTime < 2.2) {
+              stepBar.style.width = "82%";
+              stepTask.textContent = "Synthesizing 24 Real Exam Dilemmas & Trap Distractors...";
+              stepTime.textContent = "00:09";
+            } else {
+              stepBar.style.width = "100%";
+              stepTask.textContent = "Simulation Compiled & Battle Ready!";
+              stepTime.textContent = "00:12";
+            }
+
+            var scrollNorm = Math.min(1, Math.max(0, scrollTime / 2.6));
+            var scrollY = easeInOutQuart(scrollNorm) * 380;
+            genScroll.style.transform = "translateY(-" + scrollY + "px)";
+
+            var btnPos = getCenter(btnGenReal);
+            var playPos = getCenter(btnPlay);
+            lastPlayX = playPos.x;
+            lastPlayY = playPos.y;
+
+            if (scrollTime < 2.2) {
+              var prog = easeInOutCubic(scrollTime / 2.2);
+              var curX = btnPos.x + prog * (playPos.x - btnPos.x);
+              var curY = btnPos.y + prog * (playPos.y - btnPos.y);
+              setTipPointer(curX, curY);
+            } else {
+              setTipPointer(playPos.x, playPos.y);
+              if (scrollTime >= 2.6 && scrollTime < 3.2) {
+                pointer.classList.add("clicking");
+                btnPlay.classList.add("clicked");
+              } else {
+                pointer.classList.remove("clicking");
+                btnPlay.classList.remove("clicked");
+              }
+            }
+          }
+
+        } else {
+          ghostPdf.classList.remove("active");
+          genView.classList.add("slide-out");
+          mcqView.classList.add("slide-in");
+
+          var tGame = tPhase - 6.8;
+          var bPos = getCenter(optB);
+          var aPos = getCenter(optA);
+
+          var fromX = lastPlayX || (w / 2);
+          var fromY = lastPlayY || (h * 0.75);
+          var readX = w * 0.48;
+          var readY = h * 0.40;
+
+          if (tGame < 1.1) {
+            optB.classList.remove("no");
+            optA.classList.remove("ok");
+            fbBox.style.display = "none";
+            xpPop.classList.remove("show");
+            pointer.classList.remove("clicking");
+            var prog = easeInOutCubic(tGame / 1.1);
+            setTipPointer(fromX + prog * (readX - fromX), fromY + prog * (readY - fromY));
+          } else if (tGame < 2.1) {
+            var prog = easeInOutCubic((tGame - 1.1) / 1.0);
+            pointer.classList.remove("clicking");
+            setTipPointer(readX + prog * (bPos.x - readX), readY + prog * (bPos.y - readY));
+          } else if (tGame < 2.8) {
+            setTipPointer(bPos.x, bPos.y);
+            optB.classList.add("no");
+            optA.classList.remove("ok");
+            if (tGame < 2.4) pointer.classList.add("clicking");
+            else pointer.classList.remove("clicking");
+          } else if (tGame < 3.8) {
+            var prog = easeInOutCubic((tGame - 2.8) / 1.0);
+            pointer.classList.remove("clicking");
+            setTipPointer(bPos.x + prog * (aPos.x - bPos.x), bPos.y + prog * (aPos.y - bPos.y));
+          } else if (tGame < 4.4) {
+            setTipPointer(aPos.x, aPos.y);
+            optB.classList.remove("no");
+            optA.classList.add("ok");
+            fbBox.style.display = "block";
+            xpPop.classList.add("show");
+            if (tGame < 4.15) pointer.classList.add("clicking");
+            else pointer.classList.remove("clicking");
+          } else {
+            pointer.classList.remove("clicking");
+            setTipPointer(aPos.x, aPos.y + 40);
+          }
+        }
+      }
+
+      /* PHASE 2 (19.0s - 24.0s) */
+      else if (phase === 2) {
+        pointer.classList.remove("visible");
+        ghostPdf.classList.remove("active");
+        pointer.classList.remove("clicking");
+        var tBen = t - 19;
+        document.getElementById("ben-1").classList.toggle("active", tBen >= 0.2);
+        document.getElementById("ben-2").classList.toggle("active", tBen >= 1.6);
+        document.getElementById("ben-3").classList.toggle("active", tBen >= 3.2);
+      }
+
+      /* PHASE 3 (24.0s - 30.5s) */
+      else {
+        pointer.classList.add("visible");
+        ghostPdf.classList.remove("active");
+        var tOutro = t - 24;
+        var ctaPos = getCenter(outroCta);
+        if (tOutro < 1.2) {
+          var prog = easeOutCubic(tOutro / 1.2);
+          var startX = ctaPos.x + 240;
+          var startY = ctaPos.y - 160;
+          outroCta.classList.remove("clicked");
+          pointer.classList.remove("clicking");
+          setTipPointer(startX - prog * (startX - ctaPos.x), startY + prog * (ctaPos.y - startY));
+        } else if (tOutro < 2.5) {
+          outroCta.classList.remove("clicked");
+          pointer.classList.remove("clicking");
+          setTipPointer(ctaPos.x, ctaPos.y);
+          if (tOutro >= 1.7 && tOutro < 2.2) {
+            pointer.classList.add("clicking");
+            outroCta.classList.add("clicked");
+          } else {
+            pointer.classList.remove("clicking");
+            outroCta.classList.remove("clicked");
+          }
+        } else {
+          outroCta.classList.remove("clicked");
+          pointer.classList.remove("clicking");
+          setTipPointer(ctaPos.x, ctaPos.y);
+        }
+      }
+    }
+
+    var startTime = performance.now();
+    var timer = setInterval(function() {
+      var now = performance.now();
+      t = (now - startTime) / 1000;
+      frameLoop();
+      if (t >= 30.5) {
+        clearInterval(timer);
+        window.videoFinished = true;
+      }
+    }, 16);
+  </script>
+</body>
+</html>
