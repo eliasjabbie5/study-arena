@@ -176,13 +176,19 @@ window.StudyArenaCompiler = {
     var learnLines = [];
     chapters.forEach(function(ch) {
       var secName = ch.section;
-      if (!secName || secName === "Study Guide" || secName === "Core" || secName === "Foundations") {
-        var matchingZone = zones.find(function(z) { return z.id === ch.zone; });
+      var matchingZone = zones.find(function(z) { return z.id === ch.zone; });
+      var hasSessionSignpost = function(s) {
+        return /session|chapter|lecture|week|module|part/i.test(s || "");
+      };
+      if (matchingZone && hasSessionSignpost(matchingZone.name || matchingZone.sess)) {
+        // If zone has an explicit session/chapter title, always use it as the top-level section rubric
+        secName = matchingZone.name || matchingZone.sess;
+      } else if (!secName || secName === "Study Guide" || secName === "Core" || secName === "Foundations" || !hasSessionSignpost(secName)) {
         if (matchingZone && matchingZone.name) {
           secName = matchingZone.name;
         } else if (matchingZone && matchingZone.sess) {
           secName = matchingZone.sess;
-        } else {
+        } else if (!secName) {
           secName = "Core Study Guide";
         }
       }
@@ -205,8 +211,19 @@ window.StudyArenaCompiler = {
       throw new Error("Engine template bundle not loaded.");
     }
 
+    var customCss = "<style>\n" +
+      ".formula-breakdown{background:rgba(16,185,129,0.06);border:1px solid rgba(16,185,129,0.25);border-radius:10px;padding:14px 18px;margin:14px 0}\n" +
+      ".formula-breakdown b{color:var(--ink);font-weight:600}\n" +
+      ".formula-breakdown ul{margin:8px 0 0;padding-left:20px}\n" +
+      ".formula-breakdown li{margin-bottom:6px;line-height:1.55}\n" +
+      ".how-to-apply{background:var(--surface2);border-left:4px solid var(--accent);border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
+      ".micro-example{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.25);border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
+      ".exam{background:rgba(239,68,68,0.06);border-left:4px solid #ef4444;border-radius:8px;padding:12px 16px;margin:12px 0}\n" +
+      "</style>\n";
+
     var fullHtml = [
       b.head,
+      customCss,
       configJs,
       b.prelude,
       zonesJs,
