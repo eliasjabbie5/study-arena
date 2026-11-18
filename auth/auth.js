@@ -12,6 +12,7 @@
   var DEFAULT_CLIENT_ID = '473457918792-rs6lb669qkstj4ed717vro61mp930ita.apps.googleusercontent.com';
   var USERS_DB_KEY = 'sa_registered_users_v1';
   var DEVELOPER_EMAIL = 'eliasjabbie5@gmail.com';
+  var DEVELOPER_EMAILS = ['eliasjabbie5@gmail.com', 'elias.jabbie.maria@gmail.com'];
   var TELEMETRY_KEY = 'sa_telemetry_events_v1';
 
   var listeners = [];
@@ -51,11 +52,13 @@
     },
 
     DEVELOPER_EMAIL: DEVELOPER_EMAIL,
+    DEVELOPER_EMAILS: DEVELOPER_EMAILS,
 
     isDeveloper: function(user) {
       var u = user || this.getUser();
       if (!u || !u.email) return false;
-      return u.email.toLowerCase().trim() === DEVELOPER_EMAIL.toLowerCase();
+      var clean = u.email.toLowerCase().trim();
+      return DEVELOPER_EMAILS.some(function(dev) { return dev.toLowerCase() === clean; });
     },
 
     setUser: function(user) {
@@ -73,7 +76,7 @@
           try {
             var db = getStoredUsers();
             var key = user.email.toLowerCase().trim();
-            var isDev = (key === DEVELOPER_EMAIL.toLowerCase());
+            var isDev = DEVELOPER_EMAILS.some(function(d) { return d.toLowerCase() === key; });
             if (!db[key]) {
               db[key] = {
                 email: user.email,

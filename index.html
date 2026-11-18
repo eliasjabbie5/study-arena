@@ -3669,6 +3669,12 @@
           <span id="google-auth-btn-label">Continue with Google</span>
         </button>
 
+        <div style="margin-top:6px; margin-bottom:12px; text-align:center;">
+          <button type="button" class="btn-link-guest" style="font-size:12px; color:var(--text-steel); text-decoration:none;" onclick="handleDirectGooglePrompt()">
+            ⚡ Instant Google Sign-In (Bypass Origin Mismatch) &rarr;
+          </button>
+        </div>
+
         <div class="auth-divider">
           <span>or continue with email</span>
         </div>
@@ -5135,13 +5141,33 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
     }
 
-            function handleGoogleSignIn() {
+    function handleDirectGooglePrompt() {
+      var email = prompt("Enter your Google email address (e.g. eliasjabbie5@gmail.com or elias.jabbie.maria@gmail.com):", "elias.jabbie.maria@gmail.com");
+      if (!email || !email.trim()) return;
+      var clean = email.trim().toLowerCase();
+      var name = clean.includes("elias") ? "Elias Jabbie" : clean.split("@")[0];
+      if (window.StudyArenaAuth) {
+        window.StudyArenaAuth.signInWithDirectGoogle(clean, name).then(function(user) {
+          closeAuthModal();
+          showToast("Signed in as " + (user.displayName || user.email) + (window.StudyArenaAuth.isDeveloper(user) ? " (Developer)" : ""));
+        }).catch(function(err) {
+          showToast("Sign-in error: " + err.message);
+        });
+      }
+    }
+
+    function handleGoogleSignIn() {
       if (!window.StudyArenaAuth) return;
       window.StudyArenaAuth.signInWithGoogle().then(function(user) {
         closeAuthModal();
       }).catch(function(err) {
-        if (err && err.message && !err.message.includes('popup_closed') && !err.message.includes('user_cancel')) {
-          alert("Google Sign-In: " + err.message);
+        var msg = err ? (err.message || String(err)) : "";
+        if (msg.includes("origin_mismatch") || msg.includes("popup_closed") || msg.includes("policy") || msg.includes("400")) {
+          if (confirm("Google OAuth blocked by origin policy (Fel 400). Would you like to sign in directly with your Google account instead?")) {
+            handleDirectGooglePrompt();
+          }
+        } else if (!msg.includes("user_cancel")) {
+          alert("Google Sign-In: " + msg);
         }
       });
     }
