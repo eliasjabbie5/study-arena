@@ -1,6 +1,6 @@
 /**
  * Study Arena - Authentication Engine
- * Pure Client-Side Authentication with Google Identity Services (GIS),
+ * Pure Client-Side Authentication with Google Identity Services (GIS) & Direct OAuth,
  * Persistent Browser Sessions, Registered Accounts, and Demo Guest Mode.
  * 100% Pure ASCII.
  */
@@ -98,48 +98,134 @@
       }
     },
 
-    // Sign in with Google Identity Services (GIS)
+    // Check if returning from OAuth redirect with access_token in URL hash
+    checkOAuthRedirect: function() {
+      var self = this;
+      var hash = window.location.hash;
+      if (hash && hash.includes('access_token=')) {
+        var params = new URLSearchParams(hash.substring(1));
+        var token = params.get('access_token');
+        if (token) {
+          try {
+            history.replaceState(null, null, window.location.pathname + window.location.search);
+          } catch (e) {}
+          return fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+            headers: { 'Authorization': 'Bearer ' + token }
+          })
+          .then(function(res) {
+            if (!res.ok) throw new Error('Failed to retrieve user profile.');
+            return res.json();
+          })
+          .then(function(info) {
+            var user = {
+              uid: 'google_' + (info.sub || Math.random().toString(36).substring(2, 10)),
+              displayName: info.name || (info.email ? info.email.split('@')[0] : 'Google User'),
+              email: info.email || '',
+              photoURL: info.picture || '',
+              provider: 'google',
+              createdAt: new Date().toISOString()
+            };
+            self.setUser(user);
+            return user;
+          });
+        }
+      }
+      return Promise.resolve(null);
+    },
+
+    // Sign in with Google (GIS with automatic direct OAuth popup fallback)
     signInWithGoogle: function() {
       var self = this;
-      return new Promise(function(resolve, reject) {
-        var clientId = self.getGoogleClientId();
+      var clientId = self.getGoogleClientId();
+      if (!clientId) {
+        return Promise.reject(new Error('No Google Client ID configured.'));
+      }
 
-        // If no Client ID configured, ask the UI to prompt for Client ID or Real Google Profile
-        if (!clientId) {
-          var err = new Error('No Google Client ID configured.');
-          err.code = 'NO_CLIENT_ID';
-          return reject(err);
-        }
-
-        // Verify GIS client library is loaded
-        if (!window.google || !window.google.accounts || !window.google.accounts.oauth2) {
-          var loadErr = new Error('Google Identity Services library is not loaded. Please check your internet connection or use direct sign-in.');
-          loadErr.code = 'GIS_NOT_LOADED';
-          return reject(loadErr);
-        }
-
-        try {
-          var client = window.google.accounts.oauth2.initTokenClient({
-            client_id: clientId,
-            scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
-            callback: function(tokenResponse) {
-              if (tokenResponse.error) {
-                return reject(new Error(tokenResponse.error_description || tokenResponse.error));
-              }
-              if (!tokenResponse.access_token) {
-                return reject(new Error('No access token returned by Google Identity Services.'));
-              }
-
-              // Fetch verified Google User Profile
-              fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-                headers: {
-                  'Authorization': 'Bearer ' + tokenResponse.access_token
+      // Mode 1: If GIS library is ready, use initTokenClient
+      if (window.google && window.google.accounts && window.google.accounts.oauth2) {
+        return new Promise(function(resolve, reject) {
+          try {
+            var client = window.google.accounts.oauth2.initTokenClient({
+              client_id: clientId,
+              scope: 'https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email openid',
+              callback: function(tokenResponse) {
+                if (tokenResponse.error) {
+                  return reject(new Error(tokenResponse.error_description || tokenResponse.error));
                 }
+                if (!tokenResponse.access_token) {
+                  return reject(new Error('No access token returned by Google.'));
+                }
+
+                fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                  headers: { 'Authorization': 'Bearer ' + tokenResponse.access_token }
+                })
+                .then(function(res) {
+                  if (!res.ok) throw new Error('Failed to retrieve user profile.');
+                  return res.json();
+                })
+                .then(function(info) {
+                  var user = {
+                    uid: 'google_' + (info.sub || Math.random().toString(36).substring(2, 10)),
+                    displayName: info.name || info.email.split('@')[0],
+                    email: info.email,
+                    photoURL: info.picture || '',
+                    provider: 'google',
+                    createdAt: new Date().toISOString()
+                  };
+                  self.setUser(user);
+                  resolve(user);
+                })
+                .catch(reject);
+              }
+            });
+
+            client.requestAccessToken({ prompt: 'select_account' });
+          } catch (initErr) {
+            self.openDirectOAuth(clientId, resolve, reject);
+          }
+        });
+      }
+
+      // Mode 2: Direct Google OAuth Popup / Redirect (Universal compatibility)
+      return new Promise(function(resolve, reject) {
+        self.openDirectOAuth(clientId, resolve, reject);
+      });
+    },
+
+    openDirectOAuth: function(clientId, resolve, reject) {
+      var self = this;
+      var redirectUri = window.location.origin + window.location.pathname;
+      var oauthUrl = 'https://accounts.google.com/o/oauth2/v2/auth?' +
+        'client_id=' + encodeURIComponent(clientId) +
+        '&redirect_uri=' + encodeURIComponent(redirectUri) +
+        '&response_type=token' +
+        '&scope=' + encodeURIComponent('https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile openid') +
+        '&prompt=select_account';
+
+      var popup = window.open(oauthUrl, 'GoogleSignIn', 'width=500,height=620,menubar=no,toolbar=no');
+      if (!popup || popup.closed) {
+        // Popup was blocked by browser -> Redirect current tab
+        window.location.href = oauthUrl;
+        return;
+      }
+
+      var pollTimer = setInterval(function() {
+        try {
+          if (!popup || popup.closed) {
+            clearInterval(pollTimer);
+            return;
+          }
+          if (popup.location && popup.location.href && popup.location.href.includes('access_token=')) {
+            var hash = popup.location.hash;
+            popup.close();
+            clearInterval(pollTimer);
+            var params = new URLSearchParams(hash.substring(1));
+            var token = params.get('access_token');
+            if (token) {
+              fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+                headers: { 'Authorization': 'Bearer ' + token }
               })
-              .then(function(res) {
-                if (!res.ok) throw new Error('Failed to retrieve user profile from Google API.');
-                return res.json();
-              })
+              .then(function(res) { return res.json(); })
               .then(function(info) {
                 var user = {
                   uid: 'google_' + (info.sub || Math.random().toString(36).substring(2, 10)),
@@ -152,20 +238,16 @@
                 self.setUser(user);
                 resolve(user);
               })
-              .catch(function(fetchErr) {
-                reject(fetchErr);
-              });
+              .catch(reject);
             }
-          });
-
-          client.requestAccessToken({ prompt: 'select_account' });
-        } catch (initErr) {
-          reject(initErr);
+          }
+        } catch (crossOriginErr) {
+          // Normal cross-origin while on accounts.google.com
         }
-      });
+      }, 500);
     },
 
-    // Connect real Google account directly
+    // Connect real Google account directly (manual fallback)
     signInWithDirectGoogle: function(email, fullName, photoURL) {
       var self = this;
       return new Promise(function(resolve, reject) {
@@ -252,32 +334,16 @@
           return resolve(existing);
         }
 
-        // New email sign-in fallback (auto-registers seamless account)
-        var prefix = cleanEmail.split('@')[0];
-        var autoName = prefix.charAt(0).toUpperCase() + prefix.slice(1);
-        var autoUser = {
-          uid: 'usr_' + btoa(cleanEmail).replace(/=/g, ''),
-          displayName: autoName,
-          email: cleanEmail,
-          passwordHash: btoa(password),
-          photoURL: '',
-          provider: 'email',
-          createdAt: new Date().toISOString()
-        };
-        db[cleanEmail] = autoUser;
-        saveStoredUsers(db);
-
-        self.setUser(autoUser);
-        resolve(autoUser);
+        return reject(new Error('No account found with this email. Please click "Create Account" above.'));
       });
     },
 
-    // Sign in as Guest / Demo Student
+    // Guest mode
     signInAsGuest: function() {
       var guestUser = {
         uid: 'guest_' + Math.random().toString(36).substring(2, 9),
         displayName: 'Guest Student',
-        email: 'guest.student@studyarena.internal',
+        email: 'guest@studyarena.local',
         photoURL: '',
         provider: 'guest',
         isGuest: true,
@@ -287,12 +353,20 @@
       return Promise.resolve(guestUser);
     },
 
-    // Sign out
     signOut: function() {
       this.setUser(null);
       return Promise.resolve();
     }
   };
+
+  // Check redirect OAuth token on load
+  if (typeof window !== 'undefined') {
+    setTimeout(function() {
+      if (Auth.checkOAuthRedirect) {
+        Auth.checkOAuthRedirect();
+      }
+    }, 100);
+  }
 
   window.StudyArenaAuth = Auth;
 })(window);
