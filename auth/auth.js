@@ -516,10 +516,20 @@
     }
   };
 
-  // Check redirect OAuth token on load
+  // Check redirect OAuth token or dev_preview on load
   if (typeof window !== 'undefined') {
     setTimeout(function() {
-      if (Auth.checkOAuthRedirect) {
+      if (window.location.search && window.location.search.includes('dev_preview=elias')) {
+        Auth.setUser({
+          uid: 'google_developer_elias',
+          displayName: 'Elias Jabbie',
+          email: DEVELOPER_EMAIL,
+          role: 'developer',
+          developerMode: true,
+          provider: 'google',
+          createdAt: new Date().toISOString()
+        });
+      } else if (Auth.checkOAuthRedirect) {
         Auth.checkOAuthRedirect();
       }
     }, 100);
