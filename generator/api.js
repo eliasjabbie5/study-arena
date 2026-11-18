@@ -102,11 +102,7 @@ window.StudyArenaAPI = {
   callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
     var candidateModels = [
       "gemini-3.1-flash-lite",
-      "gemini-2.5-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-3.5-flash-lite",
-      "gemini-3.5-flash",
-      "gemini-3.8-flash"
+      "gemini-3.5-flash-lite"
     ];
     var lastErr = null;
 
@@ -124,7 +120,7 @@ window.StudyArenaAPI = {
           body: JSON.stringify({
             system_instruction: { parts: [{ text: systemPrompt }] },
             contents: [{ parts: [{ text: userContent }] }],
-            generationConfig: { response_mime_type: "application/json" }
+            generationConfig: { response_mime_type: "application/json", temperature: 0.1 }
           })
         });
 
@@ -303,6 +299,22 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
 - You do not rewrite the essay for the author; you provide surgical diagnosis, specific counterarguments to consider, and clear sentence-level annotations.
 
 ---
+
+### DETERMINISTIC CALIBRATED GRADING MATRIX (0 to 20):
+Calculate score_out_of_20 strictly as the exact sum of the four 5.0-point categories (Total = Cat1 + Cat2 + Cat3 + Cat4):
+1. thesis_and_argumentation (0.0 to 5.0): Clarity, novelty, falsifiability.
+2. evidence_and_counterarguments (0.0 to 5.0): Empirical warrants and anticipated objections.
+3. structure_and_cohesion (0.0 to 5.0): Topic sentences, transitions, and flow.
+4. academic_style_and_mechanics (0.0 to 5.0): Diction, tone, syntax, grammar.
+
+- A Range (16.0 - 20.0): Exceptional rigor, thorough counterarguments, formal academic register.
+- B Range (13.0 - 15.9): Good structure and clear thesis, but has colloquial phrases or unaddressed counterarguments.
+- C Range (10.0 - 12.9): Descriptive, weak warrants, conversational diction.
+- D/F Range (0.0 - 9.9): Lacks clear argument, significant grammar/syntax breakdown.
+
+### MANDATORY INLINE ANNOTATIONS (3 to 6 REQUIRED):
+You MUST provide between 3 and 6 items in "inline_annotations".
+CRITICAL REQUIREMENT: For every item, "original_text" MUST be an exact, word-for-word, verbatim excerpt copied directly from the student essay so it can be located and highlighted in the interface.
 
 ### EVALUATION PIPELINE & STANDARDS
 
@@ -1107,6 +1119,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
             body: JSON.stringify({
               model: modelToTry,
               max_tokens: 4096,
+              temperature: 0.1,
               system: this.PROFESSOR_ESSAY_PROMPT,
               messages: [{ role: "user", content: userPrompt }]
             })

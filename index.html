@@ -18,7 +18,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="generator/engine_bundle.js?v=3.6.0"></script>
   <script src="generator/compiler.js?v=3.6.0"></script>
-  <script src="generator/api.js?v=4.1.0"></script>
+  <script src="generator/api.js?v=4.2.0"></script>
   <script src="auth/auth.js?v=2.1.0"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -5474,9 +5474,36 @@ function revealTrap(btn, isCorrect, debriefText) {
       if (!container) return;
 
       var safeText = text;
-      // Sort annotations by original text occurrence to prevent overlap mangling
-      var validAnnotations = annotations.filter(function(a) {
-        return a.original_text && safeText.indexOf(a.original_text) !== -1;
+      // Fuzzy normalization function to match excerpts despite quote styles or minor whitespace
+      function normalizeStr(s) {
+        return (s || "").replace(/[\u2018\u2019]/g, "'").replace(/[\u201C\u201D]/g, '"').replace(/\s+/g, ' ').trim();
+      }
+
+      var normText = normalizeStr(safeText);
+      var validAnnotations = [];
+
+      (annotations || []).forEach(function(a) {
+        if (!a || !a.original_text) return;
+        var rawTarget = a.original_text.trim();
+        if (safeText.indexOf(rawTarget) !== -1) {
+          validAnnotations.push(a);
+          return;
+        }
+        // Try normalized match
+        var normTarget = normalizeStr(rawTarget);
+        if (normText.indexOf(normTarget) !== -1) {
+          // Find actual slice in safeText
+          var words = normTarget.split(' ');
+          if (words.length > 2) {
+            var firstWords = words.slice(0, 3).join(' ');
+            var idx = safeText.toLowerCase().indexOf(firstWords.toLowerCase());
+            if (idx !== -1) {
+              var actualExcerpt = safeText.substr(idx, rawTarget.length);
+              a.original_text = actualExcerpt;
+              validAnnotations.push(a);
+            }
+          }
+        }
       });
 
       // Replace matched substrings with clickable spans
