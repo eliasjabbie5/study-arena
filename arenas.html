@@ -4442,6 +4442,9 @@
       if (msg.indexOf("401") > -1 || msg.toLowerCase().indexOf("authentication") > -1 || msg.toLowerCase().indexOf("invalid") > -1) {
         return { title: "Your API key was rejected", body: "The provider returned an authentication error (HTTP 401). Open Step 2 and check that you pasted a valid key for " + currentProvider.toUpperCase() + "." };
       }
+      if (msg.indexOf("503") > -1 || msg.toLowerCase().indexOf("high demand") > -1 || msg.toLowerCase().indexOf("unavailable") > -1) {
+        return { title: "Google AI high demand spike", body: "Google's AI model was temporarily experiencing high traffic (HTTP 503). Retrying now with the active backup model will succeed." };
+      }
       if (msg.indexOf("429") > -1 || msg.toLowerCase().indexOf("rate") > -1 || msg.toLowerCase().indexOf("quota") > -1) {
         return { title: "Provider rate limit or credit limit reached", body: "Your AI account hit a rate or billing limit (HTTP 429). Wait a moment or check your provider billing dashboard." };
       }

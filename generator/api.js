@@ -99,8 +99,63 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
 };
 
 window.StudyArenaAPI = {
+  callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
+    var candidateModels = [
+      "gemini-3.1-flash-lite",
+      "gemini-2.5-flash-lite",
+      "gemini-flash-lite-latest",
+      "gemini-3.5-flash-lite",
+      "gemini-3.5-flash",
+      "gemini-3.8-flash"
+    ];
+    var lastErr = null;
+
+    for (var i = 0; i < candidateModels.length; i++) {
+      var model = candidateModels[i];
+      try {
+        if (i > 0 && typeof onProgress === "function") {
+          onProgress("Switching to backup AI engine (" + model + ")...", 50);
+        }
+        var url = "https://generativelanguage.googleapis.com/v1beta/models/" + model + ":generateContent?key=" + apiKey;
+        var res = await fetch(url, {
+          signal: signal,
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            system_instruction: { parts: [{ text: systemPrompt }] },
+            contents: [{ parts: [{ text: userContent }] }],
+            generationConfig: { response_mime_type: "application/json" }
+          })
+        });
+
+        if (!res.ok) {
+          var errBody = await res.text();
+          if (res.status === 400 && errBody.includes("API key not valid")) {
+            throw new Error("Google Gemini API key is invalid (HTTP 400). Please click Settings (gear icon) and paste a valid key from Google AI Studio.");
+          }
+          console.warn("[Gemini API] " + model + " returned HTTP " + res.status + ", trying backup model...", errBody.slice(0, 150));
+          lastErr = new Error("Gemini (" + model + " HTTP " + res.status + "): " + errBody);
+          continue;
+        }
+
+        var jsonRes = await res.json();
+        if (jsonRes.candidates && jsonRes.candidates[0] && jsonRes.candidates[0].content && jsonRes.candidates[0].content.parts) {
+          return jsonRes.candidates[0].content.parts[0].text;
+        }
+        throw new Error("Empty candidate received from " + model);
+      } catch (err) {
+        if (err.name === "AbortError") throw err;
+        if (err.message && err.message.includes("API key is invalid")) throw err;
+        lastErr = err;
+        console.warn("[Gemini API] Failed on " + model + ":", err.message);
+      }
+    }
+
+    throw (lastErr || new Error("All Google Gemini candidate models were busy or unavailable. Please retry in a few moments."));
+  },
+
   DEFAULT_GEMINI_KEY: "AQ.Ab8RN6JCOQNgo0Rf8CphejiVWEhrLJDY0FTdph9IUCdhzyPboQ",
-  DEFAULT_GEMINI_MODEL: "gemini-3.5-flash-lite",
+  DEFAULT_GEMINI_MODEL: "gemini-3.1-flash-lite",
   MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials for business and economics students.
 
 Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, interactive study arena.
@@ -747,28 +802,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     } else if (provider === "gemini") {
       onProgress("Creating tools & distractor traps...", 45);
-      var modelName = this.DEFAULT_GEMINI_MODEL;
-      var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
-      var res = await fetch(url, {
-        signal: signal,
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: this.MASTER_PROMPT }] },
-          contents: [{ parts: [{ text: userContent }] }],
-          generationConfig: { response_mime_type: "application/json" }
-        })
-      });
-
-      if (!res.ok) {
-        var errBody = await res.text();
-        if (res.status === 400 && errBody.includes("API key not valid")) {
-          throw new Error("Google Gemini API key is invalid (HTTP 400). Please click Settings (gear icon) and paste a valid key from Google AI Studio (aistudio.google.com/app/apikey).");
-        }
-        throw new Error("Gemini API error (" + res.status + "): " + errBody);
-      }
-      var jsonRes = await res.json();
-      rawResponse = jsonRes.candidates[0].content.parts[0].text;
+      rawResponse = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, userContent, signal, onProgress);
     }
 
     onProgress("Checking questions and explanations...", 78);
@@ -947,27 +981,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     } else if (provider === "gemini") {
       onProgress("Checking sentence structure, grammar & tone...", 55);
-      var modelName = this.DEFAULT_GEMINI_MODEL;
-      var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
-      var res = await fetch(url, {
-        signal: signal,
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: this.PROFESSOR_ESSAY_PROMPT }] },
-          contents: [{ parts: [{ text: userPrompt }] }],
-          generationConfig: { response_mime_type: "application/json" }
-        })
-      });
-      if (!res.ok) {
-        var errBody = await res.text();
-        if (res.status === 400 && errBody.includes("API key not valid")) {
-          throw new Error("Google Gemini API key is invalid (HTTP 400). Please click Settings (gear icon) and paste a valid key from Google AI Studio (aistudio.google.com/app/apikey).");
-        }
-        throw new Error("Gemini API error (" + res.status + "): " + errBody);
-      }
-      var jsonRes = await res.json();
-      rawResponse = jsonRes.candidates[0].content.parts[0].text;
+      rawResponse = await this.callGeminiWithFallback(apiKey, this.PROFESSOR_ESSAY_PROMPT, userPrompt, signal, onProgress);
     }
 
     onProgress("Finding counterarguments & calculating grade...", 85);
