@@ -139,7 +139,9 @@ window.StudyArenaAPI = {
 
   callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
     var candidateModels = [
+      "gemini-flash-lite-latest",
       "gemini-3.1-flash-lite",
+      "gemini-flash-latest",
       "gemini-3.5-flash-lite"
     ];
     var lastErr = null;
@@ -194,9 +196,9 @@ window.StudyArenaAPI = {
 
   getDefaultGeminiKey: function() {
     try {
-      var p1 = "QVEuQWI4Uk42TDgzc0";
-      var p2 = "pjV2loNWdNRHN2SW52eXpYNm";
-      var p3 = "RqUnhjLVpqNmNsOEpfNWZqZWhaRkE=";
+      var p1 = "QVEuQWI4Uk42S3VZVlkwZmdJ";
+      var p2 = "MV9ibWI1cDd6QzVnTncxLXli";
+      var p3 = "YTRRWHN0bDF2a01vakVTcnc=";
       if (typeof atob === "function") {
         return atob(p1 + p2 + p3);
       }
