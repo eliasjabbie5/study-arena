@@ -215,15 +215,121 @@
 
     /* COMPACT 48PX EDITORIAL TOP NAV (ENHANCED FROSTED GLASS) */
     .editorial-nav {
-      position: sticky;
-      top: 0;
-      z-index: 100;
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 48px !important;
+      z-index: 1000 !important;
       background: var(--bg-nav);
       backdrop-filter: blur(24px) saturate(180%);
       -webkit-backdrop-filter: blur(24px) saturate(180%);
       border-bottom: 1px solid var(--line);
-      box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+      box-shadow: inset 0 -1px 0 0 rgba(0, 0, 0, 0.04), 0 2px 8px rgba(0, 0, 0, 0.04);
       transition: border-color 200ms ease;
+    }
+    body:not(.is-authenticated) #app-main {
+      padding-top: 48px;
+    }
+    #overview, #how-it-works, #interactive-demo, #product-features {
+      scroll-margin-top: 60px;
+    }
+
+    /* In-Depth How It Works Section */
+    .how-it-works-section {
+      padding: 64px 0 72px;
+      border-bottom: 1px solid var(--line);
+      background: var(--bg-canvas);
+    }
+    .how-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-top: 32px;
+    }
+    .how-step-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.02);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .how-step-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+      border-color: var(--accent-cta);
+    }
+    .how-step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 6px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--accent-cta);
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 14px;
+    }
+    .how-step-title {
+      font-family: var(--f-serif);
+      font-size: 18px;
+      font-weight: 500;
+      color: var(--text-ink);
+      margin: 0 0 8px;
+      line-height: 1.3;
+    }
+    .how-step-desc {
+      font-size: 13.5px;
+      color: var(--text-graphite);
+      line-height: 1.5;
+      margin: 0 0 16px;
+      flex-grow: 1;
+    }
+    .how-tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+    .how-tag {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--surface-2);
+      color: var(--text-steel);
+      border: 1px solid var(--line);
+    }
+    .how-deep-dive-box {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .deep-dive-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      padding: 18px 20px;
+    }
+    @media (max-width: 768px) {
+      .how-steps-grid {
+        grid-template-columns: 1fr;
+      }
+      .how-deep-dive-box {
+        grid-template-columns: 1fr;
+      }
     }
     .nav-inner {
       display: flex;
@@ -2348,6 +2454,7 @@
       </div>
 
       <div class="public-nav-anchors">
+        <a href="#overview" class="public-nav-link">Overview</a>
         <a href="#how-it-works" class="public-nav-link">How It Works</a>
         <a href="#interactive-demo" class="public-nav-link">Sample Questions</a>
         <a href="#product-features" class="public-nav-link">Features</a>
@@ -2463,7 +2570,7 @@
     <!-- SCREEN 1: THE PRODUCT GALLERY (LANDING VIEW) -->
     <div id="view-landing" class="main-view active">
       <!-- HERO LAUNCH STAGE -->
-      <section class="hero-section">
+      <section class="hero-section" id="overview">
         <div class="container">
           <div class="hero-eyebrow">
             <span>COLLEGE EXAM PREP &middot; ESSAY CHECKER</span>
@@ -2482,6 +2589,93 @@
             <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
               Try Sample Question &darr;
             </a>
+          </div>
+        </div>
+      </section>
+
+      <!-- IN-DEPTH HOW IT WORKS SECTION -->
+      <section class="how-it-works-section" id="how-it-works">
+        <div class="container">
+          <div class="feature-band-head" style="text-align:center; max-width:680px; margin:0 auto 36px;">
+            <div class="mono" style="color:var(--accent-cta); margin-bottom:6px; font-weight:600;">ACADEMIC WORKFLOW &middot; IN DEPTH</div>
+            <h2 class="serif-title" style="font-size:32px; margin-bottom:12px;">How Study Arena Works</h2>
+            <p style="font-size:15px; color:var(--text-graphite); line-height:1.55; margin:0;">
+              From raw course notes to complete exam readiness in three clear, academic steps. Built to teach you the core principles behind every question.
+            </p>
+          </div>
+
+          <!-- 3-STEP GRID -->
+          <div class="how-steps-grid">
+            <!-- STEP 1 -->
+            <div class="how-step-card">
+              <div class="how-step-num">01</div>
+              <h3 class="how-step-title">Ingest Course Material</h3>
+              <p class="how-step-desc">
+                Upload your lecture slide PDFs, reading assignments, syllabi, or copy-paste lecture notes directly. The system reads technical definitions, mathematical formulas, and key theoretical debates.
+              </p>
+              <div class="how-tag-row">
+                <span class="how-tag">Lecture Slides</span>
+                <span class="how-tag">PDF Textbooks</span>
+                <span class="how-tag">Syllabus Outlines</span>
+              </div>
+            </div>
+
+            <!-- STEP 2 -->
+            <div class="how-step-card">
+              <div class="how-step-num">02</div>
+              <h3 class="how-step-title">Generate Practice Arenas</h3>
+              <p class="how-step-desc">
+                The academic engine extracts the most critical learning goals. It crafts realistic college-level questions with intentional common traps (distractors) that professors use to test true mastery.
+              </p>
+              <div class="how-tag-row">
+                <span class="how-tag">Active Recall</span>
+                <span class="how-tag">Common Traps</span>
+                <span class="how-tag">Step-by-Step Logic</span>
+              </div>
+            </div>
+
+            <!-- STEP 3 -->
+            <div class="how-step-card">
+              <div class="how-step-num">03</div>
+              <h3 class="how-step-title">Review &amp; Retain</h3>
+              <p class="how-step-desc">
+                Practice in a simulated exam arena with instant explanations for every choice. Submit your essays for thorough thesis analysis, argument logic checks, and tone recommendations before turning them in.
+              </p>
+              <div class="how-tag-row">
+                <span class="how-tag">Instant Feedback</span>
+                <span class="how-tag">Thesis Scoring</span>
+                <span class="how-tag">Saved Workspaces</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- DUAL ENGINE IN-DEPTH BREAKDOWN -->
+          <div class="how-deep-dive-box">
+            <div class="deep-dive-card">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-cta);"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                <h4 style="font-size:16px; margin:0; font-family:var(--f-serif); font-weight:600;">The Practice Exam Generator</h4>
+              </div>
+              <p style="font-size:13px; color:var(--text-graphite); line-height:1.5; margin:0 0 10px;">
+                Rather than memorizing flashcards, cognitive science shows that retrieval practice &mdash; testing yourself on why wrong answers are wrong &mdash; creates the strongest neural pathways for high test scores.
+              </p>
+              <div style="font-size:12px; color:var(--text-steel); font-family:var(--f-mono);">
+                &bull; Identifies tricky distractor choices &bull; Detailed rationale for each option &bull; Multi-tier difficulty
+              </div>
+            </div>
+
+            <div class="deep-dive-card">
+              <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="color:var(--accent-cta);"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                <h4 style="font-size:16px; margin:0; font-family:var(--f-serif); font-weight:600;">The Professor Essay Reviewer</h4>
+              </div>
+              <p style="font-size:13px; color:var(--text-graphite); line-height:1.5; margin:0 0 10px;">
+                Evaluates your draft across 5 academic dimensions: thesis strength, claim evidence, paragraph coherence, counter-argument handling, and scholarly tone, highlighting exactly where to improve.
+              </p>
+              <div style="font-size:12px; color:var(--text-steel); font-family:var(--f-mono);">
+                &bull; Thesis defensibility grade &bull; Paragraph argument flow &bull; Academic tone polish
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -2587,7 +2781,7 @@
       <section class="feature-band" id="product-features">
         <div class="container">
           <div class="feature-band-head">
-            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">How It Works</div>
+            <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">CORE CAPABILITIES</div>
             <h2>Built for Real Understanding, Not Memorization</h2>
             <p>Every question and essay review is designed to help you understand core concepts and earn higher grades.</p>
           </div>
