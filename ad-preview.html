@@ -1,89 +1,172 @@
 <!doctype html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Study Arena — 30s Hazene-Style Launch Ad</title>
+  <title>Study Arena — High-Velocity Launch Film (Hazene 4-Part Edit)</title>
+  
+  <!-- Fonts strictly matching Study Arena Website -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
+  
+  <!-- GSAP for kinematic choreography -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
   <style>
     :root {
-      --bg: #0B0F19;
-      --card-bg: #111827;
-      --card-border: #1F2937;
-      --accent: #2B4EFF;
-      --accent-glow: rgba(43, 78, 255, 0.45);
-      --neon: #00F5A0;
-      --neon-glow: rgba(0, 245, 160, 0.4);
-      --ink: #F9FAFB;
-      --muted: #9CA3AF;
-      --line: #374151;
-      --f-display: "Bricolage Grotesque", -apple-system, sans-serif;
-      --f-body: "IBM Plex Sans", -apple-system, sans-serif;
-      --f-mono: "IBM Plex Mono", monospace;
+      --f-serif: "Lora", ui-serif, Georgia, serif;
+      --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --f-mono: "JetBrains Mono", ui-monospace, monospace;
+      
+      /* Dark Theme: Obsidian Precision with Luminous Emerald / Mint */
+      --bg-space: #060807;
+      --canvas-bg: #0A0E0C;
+      --card-bg: #111714;
+      --card-inner: #161F1A;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-border-active: rgba(61, 220, 132, 0.4);
+      
+      --ink: #EEF4F0;
+      --ink-muted: #85988D;
+      --ink-dim: #4B5A51;
+      
+      --emerald: #3DDC84;
+      --emerald-dark: #0B7A4F;
+      --emerald-glow: rgba(61, 220, 132, 0.35);
+      --emerald-soft: rgba(61, 220, 132, 0.12);
+      
+      --danger: #FF5E5E;
+      --danger-soft: rgba(255, 94, 94, 0.14);
+      --danger-glow: rgba(255, 94, 94, 0.35);
+      
+      --gold: #FFB800;
+      --gold-soft: rgba(255, 184, 0, 0.14);
+      
+      --shadow-premium: 0 30px 80px -15px rgba(0, 0, 0, 0.8), 0 0 50px rgba(61, 220, 132, 0.12);
+    }
+
+    [data-theme="light"] {
+      --bg-space: #EBEFEA;
+      --canvas-bg: #FFFFFF;
+      --card-bg: #F4F7F4;
+      --card-inner: #FFFFFF;
+      --card-border: rgba(0, 0, 0, 0.08);
+      --card-border-active: rgba(11, 122, 79, 0.4);
+      
+      --ink: #111815;
+      --ink-muted: #56645C;
+      --ink-dim: #94A39A;
+      
+      --emerald: #0B7A4F;
+      --emerald-dark: #065436;
+      --emerald-glow: rgba(11, 122, 79, 0.25);
+      --emerald-soft: #E7F5EE;
+      
+      --danger: #CF1322;
+      --danger-soft: #FFF1F0;
+      --danger-glow: rgba(207, 19, 34, 0.2);
+      
+      --shadow-premium: 0 25px 60px -10px rgba(0, 0, 0, 0.12), 0 0 40px rgba(11, 122, 79, 0.08);
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg);
+      background-color: var(--bg-space);
       color: var(--ink);
-      font-family: var(--f-body);
+      font-family: var(--f-sans);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: 20px;
       overflow-x: hidden;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.08) 1px, transparent 1px);
-      background-size: 28px 28px;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 32px 32px;
+      transition: background-color 0.3s ease;
     }
 
-    /* Outer Container */
-    .ad-wrapper {
+    /* Ambient Spotlight Glow */
+    .spotlight {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 800px;
+      height: 500px;
+      background: radial-gradient(ellipse at center, var(--emerald-glow), transparent 65%);
+      filter: blur(80px);
+      opacity: 0.35;
+      pointer-events: none;
+      z-index: 0;
+      transition: all 0.5s ease;
+    }
+
+    /* Master Wrapper */
+    .ad-container {
+      position: relative;
+      z-index: 1;
       width: 100%;
-      max-width: 860px;
+      max-width: 960px;
       display: flex;
       flex-direction: column;
       gap: 16px;
     }
 
-    /* Top Control Header */
-    .ad-header {
+    /* Control & Meta Bar */
+    .director-bar {
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 4px;
     }
-    .ad-meta {
+    .director-meta {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
     }
-    .badge-pill {
+    .badge-live {
+      display: flex;
+      align-items: center;
+      gap: 6px;
       font-family: var(--f-mono);
       font-size: 11px;
       font-weight: 600;
       text-transform: uppercase;
-      padding: 4px 10px;
-      border-radius: 999px;
-      background: rgba(0, 245, 160, 0.12);
-      color: var(--neon);
-      border: 1px solid rgba(0, 245, 160, 0.3);
+      letter-spacing: 0.06em;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      background: var(--emerald-soft);
+      color: var(--emerald);
+      border: 1px solid var(--emerald-glow);
     }
-    .timer-display {
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--emerald);
+      box-shadow: 0 0 10px var(--emerald);
+      animation: pulseLive 1.2s infinite ease-in-out;
+    }
+    @keyframes pulseLive {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+    .timecode-display {
       font-family: var(--f-mono);
-      font-size: 14px;
-      color: var(--muted);
+      font-size: 13px;
+      color: var(--ink-muted);
       letter-spacing: 0.5px;
+      font-variant-numeric: tabular-nums;
     }
-    .controls {
+    .director-actions {
       display: flex;
+      align-items: center;
       gap: 8px;
     }
-    .btn-ctrl {
+    .btn-action {
       background: var(--card-bg);
       border: 1px solid var(--card-border);
       color: var(--ink);
@@ -93,393 +176,621 @@
       font-family: var(--f-mono);
       font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       gap: 6px;
+      transition: all 0.16s ease;
     }
-    .btn-ctrl:hover {
-      background: #1F2937;
-      border-color: #4B5563;
+    .btn-action:hover {
+      border-color: var(--ink-muted);
+      transform: translateY(-1px);
+    }
+    .btn-action:active {
+      transform: translateY(0);
     }
 
-    /* Main Video Canvas Screen-in-Screen */
-    .screen-canvas {
+    /* Video Frame (16:9 Screen-in-Screen Canvas) */
+    .film-canvas {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
-      background: #0D1322;
-      border: 1.5px solid #1F293D;
-      border-radius: 20px;
+      background: var(--canvas-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 22px;
       overflow: hidden;
-      box-shadow: 0 24px 60px -12px rgba(0, 0, 0, 0.7), 0 0 40px rgba(43, 78, 255, 0.15);
+      box-shadow: var(--shadow-premium);
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: border-color 0.3s ease;
     }
 
-    /* Dynamic Grid inside canvas */
-    .screen-grid {
+    /* Perspective Grid Floor */
+    .film-grid {
       position: absolute;
       inset: 0;
-      background-image: linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-                        linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-      background-size: 40px 40px;
+      background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+      background-size: 44px 44px;
       pointer-events: none;
     }
 
-    /* Scenes (0 - 3) */
-    .scene {
+    /* Dynamic Laser / Scan HUD */
+    .hud-header {
+      position: absolute;
+      top: 18px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      z-index: 10;
+      pointer-events: none;
+    }
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--ink-muted);
+      letter-spacing: 0.05em;
+    }
+    .hud-sq {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      background: var(--emerald);
+      color: #060807;
+      display: grid;
+      place-items: center;
+      font-size: 10px;
+      font-weight: 800;
+    }
+    .audio-wave {
+      display: flex;
+      align-items: flex-end;
+      gap: 3px;
+      height: 16px;
+    }
+    .wave-bar {
+      width: 3px;
+      height: 6px;
+      background: var(--emerald);
+      border-radius: 2px;
+      animation: waveBeat 0.8s infinite ease-in-out alternate;
+    }
+    .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 14px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 10px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.1s; height: 16px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.3s; height: 8px; }
+    @keyframes waveBeat {
+      0% { height: 4px; opacity: 0.4; }
+      100% { height: 16px; opacity: 1; }
+    }
+
+    /* Virtual Mouse Cursor that acts in the ad */
+    .virtual-cursor {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 28px;
+      height: 28px;
+      z-index: 99;
+      pointer-events: none;
+      transition: transform 0.08s linear, opacity 0.2s ease;
+      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
+      opacity: 0;
+    }
+    .virtual-cursor.visible { opacity: 1; }
+    .virtual-cursor svg {
+      width: 100%;
+      height: 100%;
+      fill: #FFFFFF;
+      stroke: #000000;
+      stroke-width: 1.5;
+    }
+
+    /* SCENES SYSTEM */
+    .film-scene {
       position: absolute;
       inset: 0;
+      padding: 40px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 40px;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-      transform: scale(0.97);
+      transform: scale(0.96) translateY(8px);
+      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
     }
-    .scene.active {
+    .film-scene.active {
       opacity: 1;
       pointer-events: auto;
-      transform: scale(1);
+      transform: scale(1) translateY(0);
     }
 
-    /* SCENE 1: PROBLEM */
-    .s1-dread {
+    /* ═══════════════════════════════════════════════════════
+       PHASE 1: PROBLEM (0:00 - 0:06)
+       Chaotic dread: Notifications popping, slide panic, 187 slides
+       ═══════════════════════════════════════════════════════ */
+    .p1-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 16px;
-      max-width: 620px;
+      max-width: 680px;
+      position: relative;
     }
-    .danger-tag {
+    .p1-alarm-chip {
       font-family: var(--f-mono);
-      font-size: 12px;
-      color: #FF5E5E;
-      background: rgba(255, 94, 94, 0.12);
-      border: 1px solid rgba(255, 94, 94, 0.3);
-      padding: 5px 12px;
-      border-radius: 999px;
-      letter-spacing: 0.5px;
-      animation: pulseAlert 2s infinite ease-in-out;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--danger);
+      background: var(--danger-soft);
+      border: 1px solid var(--danger-glow);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      animation: alertJitter 2.5s infinite ease-in-out;
     }
-    @keyframes pulseAlert {
-      0%, 100% { transform: scale(1); opacity: 0.9; }
-      50% { transform: scale(1.04); opacity: 1; }
+    @keyframes alertJitter {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.04); box-shadow: 0 0 20px var(--danger-glow); }
     }
-    .s1-title {
-      font-family: var(--f-display);
-      font-size: clamp(26px, 4vw, 42px);
-      font-weight: 800;
+    .p1-headline {
+      font-family: var(--f-serif);
+      font-size: clamp(28px, 4.4vw, 46px);
+      font-weight: 500;
       line-height: 1.15;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.03em;
+      color: var(--ink);
+      margin-bottom: 16px;
     }
-    .s1-title span.strike {
-      color: #EF4444;
+    .p1-headline .serif-italic {
+      font-style: italic;
+      color: var(--emerald);
+    }
+    .p1-headline .strike-pain {
+      color: var(--danger);
       text-decoration: line-through;
-      opacity: 0.8;
-    }
-    .slide-stack-mock {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-top: 10px;
-    }
-    .slide-card {
-      background: #182238;
-      border: 1px solid #283756;
-      border-radius: 10px;
-      padding: 12px 18px;
-      font-size: 13px;
-      color: #94A3B8;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
-    }
-    .slide-card.warning {
-      border-color: #EF4444;
-      color: #FCA5A5;
-      background: rgba(239, 68, 68, 0.1);
+      text-decoration-thickness: 3px;
     }
 
-    /* SCENE 2: USE CASE (INGESTION & SCAN) */
-    .s2-flow {
+    /* Chaotic floating panic notifications */
+    .floating-cards-layer {
+      position: relative;
+      width: 100%;
+      height: 110px;
+      margin-top: 10px;
+    }
+    .panic-card {
+      position: absolute;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-family: var(--f-mono);
+      color: var(--ink);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+      animation: floatBob 3s infinite ease-in-out alternate;
+    }
+    .panic-card.card-1 {
+      top: 10px; left: 10%;
+      transform: rotate(-4deg);
+      border-color: rgba(255, 94, 94, 0.4);
+    }
+    .panic-card.card-2 {
+      top: 45px; right: 12%;
+      transform: rotate(3deg);
+      border-color: rgba(255, 184, 0, 0.4);
+      animation-delay: -1.2s;
+    }
+    .panic-card.card-3 {
+      top: 55px; left: 32%;
+      transform: rotate(-1deg);
+      background: #180D0D;
+      color: #FFA39E;
+      border-color: var(--danger);
+      animation-delay: -0.6s;
+    }
+    @keyframes floatBob {
+      0% { transform: translateY(0) rotate(-3deg); }
+      100% { transform: translateY(-8px) rotate(-1deg); }
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PHASE 2: USE CASE (0:06 - 0:19)
+       Drag-and-drop ingestion, laser scanner, dynamic pipeline
+       ═══════════════════════════════════════════════════════ */
+    .p2-layout {
+      width: 100%;
+      max-width: 660px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 20px;
-      width: 100%;
-      max-width: 600px;
+      gap: 16px;
     }
-    .dropzone-mock {
+    .p2-dropzone {
       width: 100%;
-      background: rgba(24, 34, 56, 0.7);
-      border: 2px dashed rgba(43, 78, 255, 0.6);
-      border-radius: 16px;
-      padding: 28px 20px;
+      background: var(--card-bg);
+      border: 2px dashed rgba(61, 220, 132, 0.4);
+      border-radius: 18px;
+      padding: 24px 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
       position: relative;
       overflow: hidden;
-      box-shadow: 0 0 30px rgba(43, 78, 255, 0.15);
+      box-shadow: 0 0 40px rgba(61, 220, 132, 0.1);
+      transition: all 0.3s ease;
     }
-    .scanner-line {
+    .p2-dropzone.hovered {
+      border-color: var(--emerald);
+      background: rgba(61, 220, 132, 0.06);
+      transform: scale(1.02);
+    }
+    .p2-laser-scan {
       position: absolute;
-      top: 0;
       left: 0;
+      top: 0;
       width: 100%;
       height: 3px;
-      background: linear-gradient(90deg, transparent, var(--neon), transparent);
-      box-shadow: 0 0 16px var(--neon);
-      animation: scanSweep 2s infinite linear;
+      background: linear-gradient(90deg, transparent, var(--emerald), transparent);
+      box-shadow: 0 0 20px var(--emerald);
+      opacity: 0;
     }
-    @keyframes scanSweep {
+    .p2-laser-scan.scanning {
+      opacity: 1;
+      animation: laserSweep 1.6s infinite linear;
+    }
+    @keyframes laserSweep {
       0% { top: 0%; opacity: 0; }
-      15% { opacity: 1; }
-      85% { opacity: 1; }
+      20% { opacity: 1; }
+      80% { opacity: 1; }
       100% { top: 100%; opacity: 0; }
     }
-    .file-badge {
+    .p2-drag-asset {
+      background: var(--card-inner);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 8px 16px;
       display: flex;
       align-items: center;
       gap: 10px;
-      background: #1E293B;
-      padding: 8px 16px;
-      border-radius: 999px;
-      border: 1px solid #334155;
-      font-size: 13px;
       font-family: var(--f-mono);
-      color: #E2E8F0;
+      font-size: 13px;
+      color: var(--ink);
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
     }
-    .s2-steps {
+    .p2-drag-asset.dropping {
+      transform: translateY(12px) scale(0.96);
+      border-color: var(--emerald);
+    }
+    .pipeline-stepper {
+      width: 100%;
       display: flex;
       flex-direction: column;
       gap: 8px;
-      width: 100%;
     }
-    .s2-step-item {
+    .pipe-step {
       display: flex;
       align-items: center;
-      gap: 10px;
+      justify-content: space-between;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 10px 16px;
       font-size: 13px;
       font-family: var(--f-mono);
-      color: #94A3B8;
-      background: #111827;
-      border: 1px solid #1F2937;
-      padding: 8px 14px;
-      border-radius: 8px;
-      transition: all 0.3s ease;
+      color: var(--ink-muted);
+      transition: all 0.25s ease;
     }
-    .s2-step-item.done {
-      color: var(--neon);
-      border-color: rgba(0, 245, 160, 0.3);
-      background: rgba(0, 245, 160, 0.05);
+    .pipe-step.active {
+      border-color: var(--card-border-active);
+      background: var(--emerald-soft);
+      color: var(--ink);
     }
-    .step-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: #4B5563;
+    .pipe-step.done {
+      border-color: var(--emerald);
+      color: var(--emerald);
+      background: rgba(61, 220, 132, 0.08);
     }
-    .s2-step-item.done .step-dot {
-      background: var(--neon);
-      box-shadow: 0 0 8px var(--neon);
-    }
-
-    /* SCENE 3: BENEFITS (RAPID DELIVERABLES SHOWCASE) */
-    .s3-showcase {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      width: 100%;
-      max-width: 640px;
-    }
-    .badge-switcher {
-      display: flex;
-      gap: 10px;
-    }
-    .benefit-tag {
-      font-family: var(--f-mono);
-      font-size: 12px;
+    .pipe-tag {
+      font-size: 11px;
       font-weight: 700;
-      text-transform: uppercase;
-      padding: 6px 16px;
-      border-radius: 999px;
-      background: #1E293B;
-      border: 1px solid #334155;
-      color: #94A3B8;
-      transition: all 0.3s ease;
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--card-inner);
+      color: var(--ink-muted);
     }
-    .benefit-tag.highlight {
-      background: var(--neon);
-      color: #0B0F19;
-      border-color: var(--neon);
-      box-shadow: 0 0 16px var(--neon-glow);
+    .pipe-step.done .pipe-tag {
+      background: var(--emerald);
+      color: #060807;
     }
 
-    /* Live Game Card Mockup */
-    .game-card-mock {
+    /* ═══════════════════════════════════════════════════════
+       PHASE 3: BENEFITS (0:19 - 0:24)
+       Interactive gameplay, choice click, particle XP explosion
+       ═══════════════════════════════════════════════════════ */
+    .p3-wrap {
       width: 100%;
-      background: #151D30;
-      border: 1.5px solid #283756;
-      border-radius: 14px;
-      padding: 20px;
+      max-width: 680px;
       display: flex;
       flex-direction: column;
       gap: 14px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+      align-items: center;
     }
-    .q-meta {
+    .p3-badge-trio {
       display: flex;
-      justify-content: space-between;
-      font-size: 12px;
+      gap: 10px;
+    }
+    .trio-chip {
       font-family: var(--f-mono);
-      color: #94A3B8;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      color: var(--ink-muted);
+      letter-spacing: 0.06em;
+      transition: all 0.25s ease;
     }
-    .q-title {
-      font-family: var(--f-display);
-      font-size: 17px;
-      font-weight: 600;
+    .trio-chip.active {
+      background: var(--emerald);
+      color: #060807;
+      border-color: var(--emerald);
+      box-shadow: 0 0 18px var(--emerald-glow);
+      transform: translateY(-2px);
+    }
+
+    /* Interactive Game Card */
+    .arena-game-card {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
+      position: relative;
+      overflow: hidden;
+    }
+    .card-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--ink-muted);
+    }
+    .card-prompt {
+      font-family: var(--f-serif);
+      font-size: 18px;
+      font-weight: 500;
       line-height: 1.35;
+      color: var(--ink);
     }
-    .q-choices {
+    .card-choices {
       display: grid;
       gap: 8px;
     }
-    .q-choice {
-      background: #1C2742;
-      border: 1px solid #2B3D66;
-      padding: 10px 14px;
-      border-radius: 8px;
-      font-size: 13px;
+    .card-choice {
+      background: var(--card-inner);
+      border: 1.5px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 13.5px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: #CBD5E1;
+      color: var(--ink);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
     }
-    .q-choice.correct {
-      border-color: var(--neon);
-      background: rgba(0, 245, 160, 0.1);
-      color: #FFFFFF;
-      font-weight: 600;
+    .card-choice:hover {
+      border-color: var(--ink-muted);
     }
-    .q-choice.trap {
-      border-color: #EF4444;
-      background: rgba(239, 68, 68, 0.1);
-      color: #FCA5A5;
-      text-decoration: line-through;
+    .card-choice.active-selection {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+      transform: scale(1.015);
+      box-shadow: 0 0 20px var(--emerald-glow);
     }
-    .xp-burst {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(43, 78, 255, 0.15);
-      border: 1px solid rgba(43, 78, 255, 0.35);
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 13px;
+    .card-choice.trap-shake {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+      color: #FFA39E;
+      animation: trapShake 0.4s ease;
+    }
+    @keyframes trapShake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-6px); }
+      40%, 80% { transform: translateX(6px); }
+    }
+    .choice-badge {
       font-family: var(--f-mono);
-      color: #93C5FD;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
     }
-    .xp-burst strong {
-      color: var(--neon);
-      font-size: 15px;
+    .choice-badge.badge-ok {
+      background: var(--emerald);
+      color: #060807;
+    }
+    .choice-badge.badge-no {
+      background: var(--danger);
+      color: #FFFFFF;
     }
 
-    /* SCENE 4: OUTRO (THE LOCKUP) */
-    .s4-outro {
+    /* Floating XP Particles & Rank Up Banner */
+    .xp-float-toast {
+      position: absolute;
+      top: 14px;
+      right: 20px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #060807;
+      border: 1.5px solid var(--emerald);
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-family: var(--f-mono);
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--emerald);
+      box-shadow: 0 0 25px var(--emerald-glow);
+      opacity: 0;
+      transform: translateY(10px) scale(0.9);
+      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .xp-float-toast.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* ═══════════════════════════════════════════════════════
+       PHASE 4: OUTRO (0:24 - 0:30)
+       Prestige lockup, shiny CTA, student endorsement badges
+       ═══════════════════════════════════════════════════════ */
+    .p4-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      gap: 20px;
-      max-width: 580px;
+      max-width: 620px;
+      gap: 18px;
     }
-    .logo-hero {
+    .p4-logo-hero {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 14px;
     }
-    .logo-box {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      background: linear-gradient(135deg, #2B4EFF, #00F5A0);
+    .p4-emblem {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
       display: grid;
       place-items: center;
+      font-family: var(--f-mono);
       font-size: 24px;
-      box-shadow: 0 0 25px rgba(0, 245, 160, 0.35);
-    }
-    .brand-name {
-      font-family: var(--f-display);
-      font-size: 38px;
       font-weight: 800;
+      color: #060807;
+      box-shadow: 0 0 35px var(--emerald-glow);
+    }
+    .p4-title {
+      font-family: var(--f-serif);
+      font-size: clamp(34px, 4.6vw, 48px);
+      font-weight: 600;
       letter-spacing: -0.03em;
-      background: linear-gradient(to right, #FFFFFF, #93C5FD);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      color: var(--ink);
     }
-    .outro-tagline {
-      font-size: 19px;
-      color: #94A3B8;
+    .p4-tagline {
+      font-family: var(--f-serif);
+      font-size: 21px;
       line-height: 1.4;
+      color: var(--ink-muted);
     }
-    .outro-cta-pill {
-      background: #111827;
-      border: 1.5px solid var(--neon);
-      padding: 12px 28px;
-      border-radius: 999px;
+    .p4-tagline .serif-italic {
+      font-style: italic;
+      color: var(--emerald);
+    }
+    .p4-cta-metallic {
+      position: relative;
+      background: var(--btn-metallic-grad, linear-gradient(180deg, #5CE69A 0%, #3DDC84 65%, #2CB86B 100%));
+      color: #04140B;
       font-family: var(--f-mono);
       font-size: 15px;
-      font-weight: 600;
-      color: #FFFFFF;
-      box-shadow: 0 0 30px rgba(0, 245, 160, 0.25);
-      cursor: pointer;
-      transition: all 0.2s ease;
+      font-weight: 700;
+      padding: 14px 34px;
+      border-radius: 9999px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
+      box-shadow: 0 10px 30px var(--emerald-glow);
+      overflow: hidden;
+      transition: all 0.2s ease;
+      cursor: pointer;
     }
-    .outro-cta-pill:hover {
+    .p4-cta-metallic:hover {
       transform: scale(1.04);
-      background: var(--neon);
-      color: #0B0F19;
+      box-shadow: 0 15px 45px var(--emerald-glow);
+    }
+    /* Sheen Sweep */
+    .p4-cta-metallic::after {
+      content: "";
+      position: absolute;
+      top: -50%;
+      left: -60%;
+      width: 40%;
+      height: 200%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+      transform: rotate(25deg);
+      animation: sheenPass 2.8s infinite ease-in-out;
+    }
+    @keyframes sheenPass {
+      0% { left: -60%; }
+      30%, 100% { left: 140%; }
+    }
+    .p4-endorse-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      color: var(--ink-dim);
     }
 
-    /* Hazene 4-Block Structural Timeline Indicator (Across Bottom) */
-    .timeline-bar {
+    /* ═══════════════════════════════════════════════════════
+       HAZENE 4-BLOCK STRUCTURAL TIMELINE BAR (BOTTOM)
+       ═══════════════════════════════════════════════════════ */
+    .timeline-strip {
       width: 100%;
       display: grid;
-      grid-template-columns: 1fr 2.1fr 1fr 1fr;
-      gap: 8px;
-      margin-top: 4px;
+      grid-template-columns: 1fr 2.15fr 1fr 1fr;
+      gap: 10px;
     }
-    .t-block {
-      background: #111827;
-      border: 1px solid #1F2937;
-      border-radius: 8px;
-      padding: 10px 12px;
+    .t-cell {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 12px 14px;
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      position: relative;
+      gap: 6px;
       cursor: pointer;
       transition: all 0.2s ease;
+      position: relative;
     }
-    .t-block:hover {
-      border-color: #374151;
+    .t-cell:hover {
+      border-color: var(--card-border-active);
     }
-    .t-block-head {
+    .t-cell.active {
+      border-color: var(--emerald);
+      background: var(--emerald-soft);
+    }
+    .t-cell-head {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -487,284 +798,438 @@
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
-      color: #6B7280;
+      color: var(--ink-muted);
+      letter-spacing: 0.05em;
     }
-    .t-block-time {
+    .t-cell.active .t-cell-head {
+      color: var(--emerald);
+    }
+    .t-cell-time {
       font-size: 10px;
       font-weight: 500;
-      color: #4B5563;
+      color: var(--ink-dim);
     }
-    .t-progress-track {
+    .t-rail {
       width: 100%;
       height: 4px;
-      background: #1F2937;
-      border-radius: 999px;
+      background: var(--card-inner);
+      border-radius: 9999px;
       overflow: hidden;
     }
-    .t-progress-fill {
+    .t-fill {
       width: 0%;
       height: 100%;
-      background: var(--neon);
-      border-radius: 999px;
-      box-shadow: 0 0 8px var(--neon);
-      transition: width 0.1s linear;
+      background: var(--emerald);
+      border-radius: 9999px;
+      box-shadow: 0 0 10px var(--emerald);
+      transition: width 0.08s linear;
     }
 
-    /* Active Highlight state for Hazene block */
-    .t-block.active {
-      border-color: rgba(0, 245, 160, 0.4);
-      background: rgba(0, 245, 160, 0.05);
-    }
-    .t-block.active .t-block-head {
-      color: var(--neon);
-    }
-    .t-block.active .t-block-time {
-      color: #9CA3AF;
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      .timeline-strip { grid-template-columns: 1fr 1fr; }
+      .p1-headline { font-size: 24px; }
+      .card-prompt { font-size: 15px; }
+      .film-scene { padding: 20px; }
     }
   </style>
 </head>
 <body>
 
-  <div class="ad-wrapper">
+  <!-- Ambient Luxury Emerald Glow Spotlight -->
+  <div class="spotlight" id="spotlight"></div>
 
-    <!-- Header bar -->
-    <div class="ad-header">
-      <div class="ad-meta">
-        <span class="badge-pill">Hazene 30s Structure</span>
-        <span class="timer-display" id="time-display">0:00 / 0:30</span>
+  <div class="ad-container">
+
+    <!-- Top Director Controller -->
+    <div class="director-bar">
+      <div class="director-meta">
+        <span class="badge-live"><span class="live-dot"></span> Hazene 30s Master Edit</span>
+        <span class="timecode-display" id="timecode">0:00 / 0:30</span>
       </div>
-      <div class="controls">
-        <button class="btn-ctrl" id="btn-toggle">⏸ Pause</button>
-        <button class="btn-ctrl" id="btn-restart">↺ Restart</button>
+      <div class="director-actions">
+        <button class="btn-action" id="btn-playpause">⏸ Pause</button>
+        <button class="btn-action" id="btn-restart">↺ Replay</button>
+        <button class="btn-action" id="btn-theme" title="Toggle Light/Dark Studio">🌓 Theme</button>
       </div>
     </div>
 
-    <!-- Main Screen-in-Screen Canvas -->
-    <div class="screen-canvas">
-      <div class="screen-grid"></div>
+    <!-- 16:9 Screen-in-Screen Film Canvas -->
+    <div class="film-canvas" id="canvas">
+      <div class="film-grid"></div>
 
-      <!-- 1. PROBLEM (0:00 - 0:06) -->
-      <div class="scene" id="scene-0">
-        <div class="s1-dread">
-          <span class="danger-tag">🚨 FINALS IN 48 HOURS</span>
-          <h1 class="s1-title">
-            Stuck memorizing <span class="strike">200 slides</span><br>that all look identical?
+      <!-- Top Technical HUD -->
+      <div class="hud-header">
+        <div class="hud-brand">
+          <div class="hud-sq">⚡</div>
+          <span>STUDY_ARENA // LAUNCH_FILM</span>
+        </div>
+        <div class="audio-wave">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+      </div>
+
+      <!-- Autonomous Virtual Cursor that moves during the demo -->
+      <div class="virtual-cursor" id="v-cursor">
+        <svg viewBox="0 0 24 24">
+          <path d="M3 3l7 18 3-7 7-3L3 3z"/>
+        </svg>
+      </div>
+
+      <!-- ═════════════════════════════════════════════
+           PHASE 1: PROBLEM (0:00 - 0:06)
+           ═════════════════════════════════════════════ -->
+      <div class="film-scene" id="scene-0">
+        <div class="p1-wrap">
+          <span class="p1-alarm-chip">⚠️ Finals Countdown: 48h Remaining</span>
+          <h1 class="p1-headline">
+            Stuck memorizing <span class="strike-pain">200 slides</span><br>
+            that all look <span class="serif-italic">identical</span>?
           </h1>
-          <div class="slide-stack-mock">
-            <div class="slide-card">📄 Lecture_04_Strategy.pdf</div>
-            <div class="slide-card warning">⚠️ 187 slides unread</div>
-            <div class="slide-card">📄 Ethics_Final_Annals.pdf</div>
+          <div class="floating-cards-layer">
+            <div class="panic-card card-1">
+              <span>📄 Strategic_Management_v3.pdf</span>
+              <strong style="color: var(--danger); font-size: 11px;">(187 slides unread)</strong>
+            </div>
+            <div class="panic-card card-2">
+              <span>💬 Group Chat:</span>
+              <span style="color: var(--ink-muted); font-size: 11px;">"Did anyone understand slide 44?!"</span>
+            </div>
+            <div class="panic-card card-3">
+              <span>⚠️ Syllabus:</span>
+              <span style="font-size: 11px;">"Tests conceptual synthesis, not recall"</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 2. USE CASE (0:06 - 0:19) -->
-      <div class="scene" id="scene-1">
-        <div class="s2-flow">
-          <div class="dropzone-mock">
-            <div class="scanner-line"></div>
-            <div class="file-badge">📥 Dropped: <strong>Corporate_Strategy_Finals.pdf</strong></div>
-            <div style="font-size: 13px; color: #94A3B8;">AI Generator synthesizing exam architecture...</div>
+      <!-- ═════════════════════════════════════════════
+           PHASE 2: USE CASE (0:06 - 0:19)
+           ═════════════════════════════════════════════ -->
+      <div class="film-scene" id="scene-1">
+        <div class="p2-layout">
+          <div class="p2-dropzone" id="dz-box">
+            <div class="p2-laser-scan" id="laser"></div>
+            <div class="p2-drag-asset" id="pdf-asset">
+              <span style="font-size: 16px;">📑</span>
+              <span>Corporate_Strategy_Finals.pdf</span>
+              <span style="font-size: 11px; color: var(--emerald); font-weight: 700;">14.2 MB</span>
+            </div>
+            <div style="font-size: 12px; font-family: var(--f-mono); color: var(--ink-muted);">
+              Drag & Drop onto Study Arena → Instant Synthesis
+            </div>
           </div>
-          <div class="s2-steps">
-            <div class="s2-step-item done" id="s2-p1"><span class="step-dot"></span> 1. Deconstructing lecture frameworks & core tensions</div>
-            <div class="s2-step-item" id="s2-p2"><span class="step-dot"></span> 2. Crafting AACSB-grade trap options & distractor logic</div>
-            <div class="s2-step-item" id="s2-p3"><span class="step-dot"></span> 3. Assembling single-file Study Arena</div>
+
+          <div class="pipeline-stepper">
+            <div class="pipe-step done" id="step-1">
+              <span>01 // DECONSTRUCTING LECTURE FRAMEWORKS</span>
+              <span class="pipe-tag">COMPLETED</span>
+            </div>
+            <div class="pipe-step" id="step-2">
+              <span>02 // SYNTHESIZING AACSB-GRADE TRAP DISTRACTORS</span>
+              <span class="pipe-tag" id="tag-2">PENDING</span>
+            </div>
+            <div class="pipe-step" id="step-3">
+              <span>03 // CALIBRATING PROFESSOR RUBRICS & STUDY GAME</span>
+              <span class="pipe-tag" id="tag-3">PENDING</span>
+            </div>
           </div>
         </div>
       </div>
 
-      <!-- 3. BENEFITS (0:19 - 0:24) -->
-      <div class="scene" id="scene-2">
-        <div class="s3-showcase">
-          <div class="badge-switcher">
-            <span class="benefit-tag highlight" id="b-tag-1">Trap MCQs</span>
-            <span class="benefit-tag" id="b-tag-2">Exam Guides</span>
-            <span class="benefit-tag" id="b-tag-3">Rank & XP</span>
+      <!-- ═════════════════════════════════════════════
+           PHASE 3: BENEFITS (0:19 - 0:24)
+           ═════════════════════════════════════════════ -->
+      <div class="film-scene" id="scene-2">
+        <div class="p3-wrap">
+          <div class="p3-badge-trio">
+            <span class="trio-chip active" id="chip-1">01 / TRAP MCQS</span>
+            <span class="trio-chip" id="chip-2">02 / EXAM GUIDES</span>
+            <span class="trio-chip" id="chip-3">03 / RANK & XP</span>
           </div>
-          <div class="game-card-mock">
-            <div class="q-meta">
+
+          <div class="arena-game-card">
+            <!-- Toast notification -->
+            <div class="xp-float-toast" id="xp-toast">
+              <span>⚡ +150 XP</span>
+              <span style="color: var(--ink);">| STREAK 3X 🔥</span>
+            </div>
+
+            <div class="card-topbar">
               <span>ZONE: STRATEGY & DILEMMAS</span>
-              <span style="color: var(--neon);">QUESTION 4 / 32</span>
+              <span style="color: var(--emerald); font-weight: 600;">QUESTION 4 OF 32</span>
             </div>
-            <div class="q-title">
-              A company faces rising regulatory scrutiny in Europe. To optimize long-term shareholder value, leadership should:
+
+            <div class="card-prompt">
+              A company faces rising ESG regulatory scrutiny in Europe. To optimize long-term shareholder value, management should:
             </div>
-            <div class="q-choices">
-              <div class="q-choice correct">
+
+            <div class="card-choices">
+              <div class="card-choice" id="choice-a">
                 <span>A) Proactively integrate CSR audit frameworks into governance</span>
-                <span style="color: var(--neon); font-family: var(--f-mono);">✓ Optimal Trade-off</span>
+                <span class="choice-badge badge-ok" id="badge-a" style="display:none;">OPTIMAL TRADE-OFF</span>
               </div>
-              <div class="q-choice trap">
+              <div class="card-choice" id="choice-b">
                 <span>B) Cut non-core compliance to preserve quarterly margins</span>
-                <span style="color: #EF4444; font-family: var(--f-mono);">✗ Short-term Trap</span>
+                <span class="choice-badge badge-no" id="badge-b" style="display:none;">SHORT-TERM TRAP</span>
               </div>
-            </div>
-            <div class="xp-burst">
-              <span>STREAK MULTIPLIER <strong>3X</strong></span>
-              <span>EARNED <strong>+120 XP</strong> (Promoted to Senior Analyst)</span>
             </div>
           </div>
         </div>
       </div>
 
-      <!-- 4. OUTRO (0:24 - 0:30) -->
-      <div class="scene" id="scene-3">
-        <div class="s4-outro">
-          <div class="logo-hero">
-            <div class="logo-box">⚡</div>
-            <div class="brand-name">Study Arena</div>
+      <!-- ═════════════════════════════════════════════
+           PHASE 4: OUTRO (0:24 - 0:30)
+           ═════════════════════════════════════════════ -->
+      <div class="film-scene" id="scene-3">
+        <div class="p4-wrap">
+          <div class="p4-logo-hero">
+            <div class="p4-emblem">⚡</div>
+            <div class="p4-title">Study Arena</div>
           </div>
-          <p class="outro-tagline">
-            Stop memorizing slides.<br>
-            <strong style="color: #FFFFFF;">Turn your notes into an interactive game in 30 seconds.</strong>
+          <p class="p4-tagline">
+            Stop studying slides.<br>
+            <span class="serif-italic">Start playing the exam.</span>
           </p>
-          <a class="outro-cta-pill" href="https://study-arena-d3kc.vercel.app/" target="_blank">
+          <a class="p4-cta-metallic" href="https://study-arena-d3kc.vercel.app/" target="_blank">
             <span>study-arena-d3kc.vercel.app</span>
             <span style="font-size: 16px;">→</span>
           </a>
+          <div class="p4-endorse-row">
+            <span>✓ AACSB PEDAGOGY</span>
+            <span>·</span>
+            <span>✓ 100% PRIVATE BYOK</span>
+            <span>·</span>
+            <span>✓ ZERO SERVER COST</span>
+          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Hazene 4-Block Structural Timeline Indicator -->
-    <div class="timeline-bar">
-      <!-- 1. Problem (0 - 6s) -->
-      <div class="t-block active" id="tb-0" onclick="jumpTo(0)">
-        <div class="t-block-head">
-          <span>Problem</span>
-          <span class="t-block-time">0:00–0:06</span>
+    <!-- ═════════════════════════════════════════════
+         HAZENE 4-BLOCK STRUCTURAL TIMELINE (BOTTOM)
+         ═════════════════════════════════════════════ -->
+    <div class="timeline-strip">
+      <div class="t-cell active" id="tc-0" onclick="seek(0)">
+        <div class="t-cell-head">
+          <span>01 / Problem</span>
+          <span class="t-cell-time">0:00–0:06</span>
         </div>
-        <div class="t-progress-track">
-          <div class="t-progress-fill" id="t-fill-0"></div>
-        </div>
+        <div class="t-rail"><div class="t-fill" id="tf-0"></div></div>
       </div>
 
-      <!-- 2. Use case (6 - 19s) -->
-      <div class="t-block" id="tb-1" onclick="jumpTo(6)">
-        <div class="t-block-head">
-          <span>Use case</span>
-          <span class="t-block-time">0:06–0:19</span>
+      <div class="t-cell" id="tc-1" onclick="seek(6)">
+        <div class="t-cell-head">
+          <span>02 / Use Case</span>
+          <span class="t-cell-time">0:06–0:19</span>
         </div>
-        <div class="t-progress-track">
-          <div class="t-progress-fill" id="t-fill-1"></div>
-        </div>
+        <div class="t-rail"><div class="t-fill" id="tf-1"></div></div>
       </div>
 
-      <!-- 3. Benefits (19 - 24s) -->
-      <div class="t-block" id="tb-2" onclick="jumpTo(19)">
-        <div class="t-block-head">
-          <span>Benefits</span>
-          <span class="t-block-time">0:19–0:24</span>
+      <div class="t-cell" id="tc-2" onclick="seek(19)">
+        <div class="t-cell-head">
+          <span>03 / Benefits</span>
+          <span class="t-cell-time">0:19–0:24</span>
         </div>
-        <div class="t-progress-track">
-          <div class="t-progress-fill" id="t-fill-2"></div>
-        </div>
+        <div class="t-rail"><div class="t-fill" id="tf-2"></div></div>
       </div>
 
-      <!-- 4. Outro (24 - 30s) -->
-      <div class="t-block" id="tb-3" onclick="jumpTo(24)">
-        <div class="t-block-head">
-          <span>Outro</span>
-          <span class="t-block-time">0:24–0:30</span>
+      <div class="t-cell" id="tc-3" onclick="seek(24)">
+        <div class="t-cell-head">
+          <span>04 / Outro</span>
+          <span class="t-cell-time">0:24–0:30</span>
         </div>
-        <div class="t-progress-track">
-          <div class="t-progress-fill" id="t-fill-3"></div>
-        </div>
+        <div class="t-rail"><div class="t-fill" id="tf-3"></div></div>
       </div>
     </div>
 
   </div>
 
   <script>
-    var TOTAL_DURATION = 30.0;
+    var DURATION = 30.0;
     var currentTime = 0.0;
     var isPlaying = true;
     var lastTick = performance.now();
 
     var phases = [
-      { start: 0, end: 6, sceneIndex: 0 },
-      { start: 6, end: 19, sceneIndex: 1 },
-      { start: 19, end: 24, sceneIndex: 2 },
-      { start: 24, end: 30, sceneIndex: 3 }
+      { start: 0, end: 6, scene: 0 },
+      { start: 6, end: 19, scene: 1 },
+      { start: 19, end: 24, scene: 2 },
+      { start: 24, end: 30, scene: 3 }
     ];
 
-    function update() {
+    var cursorEl = document.getElementById("v-cursor");
+
+    function tick() {
       var now = performance.now();
       var dt = (now - lastTick) / 1000;
       lastTick = now;
 
       if (isPlaying) {
         currentTime += dt;
-        if (currentTime >= TOTAL_DURATION) {
-          currentTime = 0; // Loop seamlessly
+        if (currentTime >= DURATION) {
+          currentTime = 0; // Infinite seamless loop
         }
       }
 
-      render();
-      requestAnimationFrame(update);
+      renderState();
+      requestAnimationFrame(tick);
     }
 
-    function render() {
-      // 1. Update Timer
-      var sec = Math.floor(currentTime);
-      var ms = Math.floor((currentTime % 1) * 10);
-      document.getElementById("time-display").textContent = 
-        (sec < 10 ? "0:0" : "0:") + sec + " / 0:30";
+    function renderState() {
+      // 1. Timecode display
+      var s = Math.floor(currentTime);
+      var cs = Math.floor((currentTime % 1) * 10);
+      document.getElementById("timecode").textContent = 
+        (s < 10 ? "0:0" : "0:") + s + " / 0:30";
 
       // 2. Identify Phase
-      var currentPhaseIdx = 0;
+      var phaseIdx = 0;
       for (var i = 0; i < phases.length; i++) {
         if (currentTime >= phases[i].start && currentTime < phases[i].end) {
-          currentPhaseIdx = i;
+          phaseIdx = i;
           break;
         }
       }
-      if (currentTime >= 24) currentPhaseIdx = 3;
+      if (currentTime >= 24) phaseIdx = 3;
 
-      // 3. Switch Scene Active
-      for (var s = 0; s < 4; s++) {
-        var scEl = document.getElementById("scene-" + s);
-        var tbEl = document.getElementById("tb-" + s);
-        var fillEl = document.getElementById("t-fill-" + s);
+      // 3. Scene Switcher & Timeline Fills
+      for (var idx = 0; idx < 4; idx++) {
+        var sc = document.getElementById("scene-" + idx);
+        var tc = document.getElementById("tc-" + idx);
+        var tf = document.getElementById("tf-" + idx);
 
-        if (s === currentPhaseIdx) {
-          scEl.classList.add("active");
-          tbEl.classList.add("active");
-          var pRange = phases[s].end - phases[s].start;
-          var pCurrent = currentTime - phases[s].start;
-          var pct = Math.min(100, Math.max(0, (pCurrent / pRange) * 100));
-          fillEl.style.width = pct + "%";
+        if (idx === phaseIdx) {
+          sc.classList.add("active");
+          tc.classList.add("active");
+          var range = phases[idx].end - phases[idx].start;
+          var cur = currentTime - phases[idx].start;
+          var pct = Math.min(100, Math.max(0, (cur / range) * 100));
+          tf.style.width = pct + "%";
         } else {
-          scEl.classList.remove("active");
-          tbEl.classList.remove("active");
-          fillEl.style.width = s < currentPhaseIdx ? "100%" : "0%";
+          sc.classList.remove("active");
+          tc.classList.remove("active");
+          tf.style.width = idx < phaseIdx ? "100%" : "0%";
         }
       }
 
-      // 4. Micro-animations inside Phase 2 (Use case)
-      if (currentPhaseIdx === 1) {
-        document.getElementById("s2-p1").classList.toggle("done", currentTime >= 7);
-        document.getElementById("s2-p2").classList.toggle("done", currentTime >= 11);
-        document.getElementById("s2-p3").classList.toggle("done", currentTime >= 15);
+      // 4. MICRO-ANIMATIONS BY PHASE (High-Kinetic Choreography)
+
+      // Phase 1: Problem (Virtual Cursor hovers over panic cards)
+      if (phaseIdx === 0) {
+        cursorEl.classList.add("visible");
+        var p1T = currentTime;
+        if (p1T < 3) {
+          cursorEl.style.transform = "translate(220px, 140px)";
+        } else {
+          cursorEl.style.transform = "translate(580px, 200px)";
+        }
       }
 
-      // 5. Micro-animations inside Phase 3 (Benefits switcher)
-      if (currentPhaseIdx === 2) {
-        var rel = currentTime - 19;
-        document.getElementById("b-tag-1").classList.toggle("highlight", rel < 1.7);
-        document.getElementById("b-tag-2").classList.toggle("highlight", rel >= 1.7 && rel < 3.4);
-        document.getElementById("b-tag-3").classList.toggle("highlight", rel >= 3.4);
+      // Phase 2: Use Case (Cursor grabs PDF -> Drops into zone -> Laser scans -> Steps illuminate)
+      if (phaseIdx === 1) {
+        cursorEl.classList.add("visible");
+        var t2 = currentTime - 6; // 0 to 13s
+
+        var dz = document.getElementById("dz-box");
+        var laser = document.getElementById("laser");
+        var pdf = document.getElementById("pdf-asset");
+        var s2 = document.getElementById("step-2");
+        var s3 = document.getElementById("step-3");
+        var t2_tag = document.getElementById("tag-2");
+        var t3_tag = document.getElementById("tag-3");
+
+        if (t2 < 3.5) {
+          // Dragging PDF
+          cursorEl.style.transform = "translate(440px, 190px)";
+          dz.classList.add("hovered");
+          laser.classList.remove("scanning");
+          pdf.classList.add("dropping");
+        } else if (t2 < 8) {
+          // Scanning
+          cursorEl.style.transform = "translate(700px, 320px)";
+          dz.classList.remove("hovered");
+          laser.classList.add("scanning");
+          s2.classList.add("active");
+          t2_tag.textContent = "SYNTHESIZING...";
+          t2_tag.style.color = "var(--gold)";
+        } else {
+          // Completed
+          laser.classList.remove("scanning");
+          s2.classList.replace("active", "done");
+          t2_tag.textContent = "COMPLETED";
+          s3.classList.add("done");
+          t3_tag.textContent = "READY ✨";
+        }
+      } else {
+        document.getElementById("laser").classList.remove("scanning");
+        document.getElementById("dz-box").classList.remove("hovered");
+        document.getElementById("pdf-asset").classList.remove("dropping");
+      }
+
+      // Phase 3: Benefits (Interactive gameplay click & XP explosion)
+      if (phaseIdx === 2) {
+        cursorEl.classList.add("visible");
+        var t3 = currentTime - 19; // 0 to 5s
+
+        var chA = document.getElementById("choice-a");
+        var chB = document.getElementById("choice-b");
+        var bgA = document.getElementById("badge-a");
+        var bgB = document.getElementById("badge-b");
+        var xpToast = document.getElementById("xp-toast");
+
+        var chip1 = document.getElementById("chip-1");
+        var chip2 = document.getElementById("chip-2");
+        var chip3 = document.getElementById("chip-3");
+
+        if (t3 < 1.6) {
+          // Hovering trap option
+          cursorEl.style.transform = "translate(480px, 310px)";
+          chB.classList.add("trap-shake");
+          bgB.style.display = "inline-block";
+          chA.classList.remove("active-selection");
+          bgA.style.display = "none";
+          xpToast.classList.remove("show");
+          chip1.classList.add("active");
+          chip2.classList.remove("active");
+          chip3.classList.remove("active");
+        } else if (t3 < 3.8) {
+          // Clicking correct choice!
+          cursorEl.style.transform = "translate(460px, 245px)";
+          chB.classList.remove("trap-shake");
+          bgB.style.display = "none";
+          chA.classList.add("active-selection");
+          bgA.style.display = "inline-block";
+          xpToast.classList.add("show");
+          chip1.classList.remove("active");
+          chip2.classList.add("active");
+          chip3.classList.remove("active");
+        } else {
+          chip1.classList.remove("active");
+          chip2.classList.remove("active");
+          chip3.classList.add("active");
+        }
+      }
+
+      // Phase 4: Outro (Cursor hovers over the shiny CTA)
+      if (phaseIdx === 3) {
+        cursorEl.classList.add("visible");
+        cursorEl.style.transform = "translate(500px, 305px)";
       }
     }
 
-    function jumpTo(sec) {
+    function seek(sec) {
       currentTime = sec;
-      render();
+      renderState();
     }
 
-    document.getElementById("btn-toggle").onclick = function() {
+    // Controls
+    document.getElementById("btn-playpause").onclick = function() {
       isPlaying = !isPlaying;
       this.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
     };
@@ -772,11 +1237,18 @@
     document.getElementById("btn-restart").onclick = function() {
       currentTime = 0;
       isPlaying = true;
-      document.getElementById("btn-toggle").textContent = "⏸ Pause";
+      document.getElementById("btn-playpause").textContent = "⏸ Pause";
     };
 
-    // Kick off animation loop
-    requestAnimationFrame(update);
+    // Theme Toggle strictly adhering to Study Arena
+    document.getElementById("btn-theme").onclick = function() {
+      var current = document.documentElement.getAttribute("data-theme") || "dark";
+      var next = current === "dark" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", next);
+    };
+
+    // Start Kinetic Loop
+    requestAnimationFrame(tick);
   </script>
 </body>
 </html>
