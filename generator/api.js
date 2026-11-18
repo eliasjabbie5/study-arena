@@ -798,13 +798,13 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       throw new Error("Simulated API Error (?mock=error active).");
     }
     if (mockMode === "ok" || mockMode === "essay") {
-      onProgress("Deconstructing thesis & genre conventions...", 25);
+      onProgress("Analyzing your thesis and core arguments...", 25);
       await new Promise(function(r) { setTimeout(r, 600); });
-      onProgress("Benchmarking against academic peer literature...", 55);
+      onProgress("Checking sentence structure, grammar & tone...", 55);
       await new Promise(function(r) { setTimeout(r, 700); });
-      onProgress("Formulating counterarguments & dialectical critique...", 78);
+      onProgress("Finding counterarguments & calculating grade...", 85);
       await new Promise(function(r) { setTimeout(r, 600); });
-      onProgress("Finalizing dual university grade matrix...", 95);
+      onProgress("Finalizing helpful feedback & suggestions...", 98);
       await new Promise(function(r) { setTimeout(r, 500); });
       return SAMPLE_MOCK_ESSAY_REVIEW;
     }
@@ -826,7 +826,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     }
     userPrompt += "[ESSAY / PAPER CONTENT]\n" + essayText;
 
-    onProgress("Classifying document genre & target discipline...", 20);
+    onProgress("Analyzing your thesis and core arguments...", 25);
     var rawResponse = "";
 
     if (provider === "claude") {
@@ -945,7 +945,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       rawResponse = jsonRes.choices[0].message.content;
 
     } else if (provider === "gemini") {
-      onProgress("Evaluating thesis & argumentative warrants with Gemini...", 45);
+      onProgress("Checking sentence structure, grammar & tone...", 55);
       var modelName = this.DEFAULT_GEMINI_MODEL;
       var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
       var res = await fetch(url, {
@@ -969,7 +969,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       rawResponse = jsonRes.candidates[0].content.parts[0].text;
     }
 
-    onProgress("Synthesizing professor annotations & dual grading matrix...", 85);
+    onProgress("Finding counterarguments & calculating grade...", 85);
     var reviewData = this.cleanJsonResponse(rawResponse);
     onProgress("Review complete.", 100);
     return reviewData;
