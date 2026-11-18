@@ -418,7 +418,10 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
   },
 
   cleanJsonResponse: function(raw) {
-    var text = raw.trim();
+    if (!raw || typeof raw !== "string" && !raw.trim) {
+      throw new Error("Empty response received from AI model. Please retry.");
+    }
+    var text = String(raw).trim();
     if (text.startsWith("```json")) {
       text = text.substring(7);
     } else if (text.startsWith("```")) {
@@ -748,7 +751,8 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
             }
           } else {
             var claudeJson = await claudeRes.json();
-            rawResponse = claudeJson.content[0].text;
+            var textBlocks = (claudeJson.content || []).filter(function(b) { return b.type === "text" || b.text; });
+          rawResponse = textBlocks.map(function(b) { return b.text; }).join("\n");
             localStorage.setItem("sa_model_claude", modelToTry);
             console.log("SUCCESS with model:", modelToTry);
           }
@@ -936,7 +940,8 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
           }
 
           var jsonRes = await res.json();
-          rawResponse = jsonRes.content[0].text;
+          var textBlocks = (jsonRes.content || []).filter(function(b) { return b.type === "text" || b.text; });
+          rawResponse = textBlocks.map(function(b) { return b.text; }).join("\n");
           localStorage.setItem("sa_model_claude", modelToTry);
           success = true;
           break;
