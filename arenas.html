@@ -2050,10 +2050,13 @@
           <!-- CONTROLS ROW -->
           <div class="console-controls-bar">
             <div style="display:flex; align-items:center; gap:10px;">
-              <span class="provider-badge" id="active-model-badge">
-                <span class="dot-status configured"></span>
-                <span id="active-model-badge-text">Gemini 1.5 Flash &middot; Free Tier</span>
-              </span>
+              <div style="display:flex; align-items:center; gap:8px;">
+                <button type="button" class="provider-badge" id="active-model-badge" onclick="openSettingsModal()" style="cursor:pointer;" title="Click to change AI Provider">
+                  <span class="dot-status configured"></span>
+                  <span id="active-model-badge-text">Gemini 1.5 Flash &middot; Free Tier</span>
+                </button>
+                <button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11px;" onclick="openSettingsModal()">Change Provider</button>
+              </div>
               <input type="hidden" id="model-select" value="gemini-1.5-flash">
             </div>
 
@@ -2179,7 +2182,7 @@
 
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
               <div style="display:flex; align-items:center; gap:8px;">
-                <span class="provider-badge" id="essay-model-badge">Gemini 1.5 Flash &middot; Free Tier</span>
+                <button type="button" class="provider-badge" id="essay-model-badge" onclick="openSettingsModal()" style="cursor:pointer;" title="Click to change AI Provider">Gemini 1.5 Flash &middot; Free Tier</button>
                 <button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11px;" onclick="openSettingsModal()">Change Provider</button>
               </div>
               <div style="display:flex; align-items:center; gap:10px;">
@@ -2412,7 +2415,7 @@
 
       <div style="margin-bottom:16px;">
         <label id="key-input-label" style="display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-ink);">Google Gemini API Key (AIza...):</label>
-        <input type="password" id="api-key-field" style="width:100%; padding:10px 14px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink); font-family:var(--f-mono); font-size:13px;" placeholder="AIzaSy..." autocomplete="off">
+        <input type="password" id="api-key-field" style="width:100%; padding:10px 14px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink); font-family:var(--f-mono); font-size:13px;" placeholder="Paste API key..." autocomplete="off" oninput="onApiKeyInput(this.value)" onkeydown="if(event.key==='Enter')saveKeySettings()">
       </div>
 
       <div id="ai-onboarding-help" style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:20px;"></div>
@@ -2851,37 +2854,55 @@
     }
 
     /* ---------- AI KEY & PROVIDER SETTINGS ---------- */
+    var draftKeys = {};
+
     function updateKeyUI() {
+      currentProvider = localStorage.getItem("sa_ai_provider") || "gemini";
       var key = localStorage.getItem("sa_api_key_" + currentProvider) || localStorage.getItem("study_arena_key_" + currentProvider);
       var ind = document.getElementById("key-ind");
       var badgeText = document.getElementById("active-model-badge-text");
+      var essayBadge = document.getElementById("essay-model-badge");
 
-      if (currentProvider === "gemini") {
-        if (ind) {
-          ind.classList.remove("unconfigured");
-          ind.classList.add("configured");
+      var label = "";
+      var isConfigured = false;
+
+      if (currentProvider === "claude") {
+        if (key && key.trim().length > 5) {
+          label = "Claude 3.5 Sonnet (BYOK)";
+          isConfigured = true;
+        } else {
+          label = "Claude (Key Required)";
+          isConfigured = false;
         }
-        if (badgeText) badgeText.textContent = "Gemini 1.5 Flash \u00b7 Free Tier";
-      } else if (key && key.trim().length > 5) {
-        if (ind) {
-          ind.classList.remove("unconfigured");
-          ind.classList.add("configured");
-        }
-        if (badgeText) {
-          badgeText.textContent = currentProvider === "claude" ? "Claude 3.5 Sonnet \u00b7 BYOK" : "GPT-4o \u00b7 BYOK";
+      } else if (currentProvider === "openai") {
+        if (key && key.trim().length > 5) {
+          label = "OpenAI GPT-4o (BYOK)";
+          isConfigured = true;
+        } else {
+          label = "OpenAI (Key Required)";
+          isConfigured = false;
         }
       } else {
-        if (ind) {
-          ind.classList.remove("configured");
-          ind.classList.add("unconfigured");
+        if (key && key.trim().length > 5) {
+          label = "Gemini 1.5 Flash (Connected)";
+          isConfigured = true;
+        } else {
+          label = "Gemini 1.5 Flash (Free Tier)";
+          isConfigured = false;
         }
-        if (badgeText) {
-          badgeText.textContent = currentProvider.toUpperCase() + " (Key Required)";
-        }
+      }
+
+      if (badgeText) badgeText.textContent = label;
+      if (essayBadge) essayBadge.textContent = label;
+
+      if (ind) {
+        ind.classList.toggle("configured", isConfigured);
+        ind.classList.toggle("unconfigured", !isConfigured);
       }
     }
 
     function openKeyModal() {
+      currentProvider = localStorage.getItem("sa_ai_provider") || "gemini";
       selectProvider(currentProvider);
       updateThemeUI();
       document.getElementById("key-modal").classList.add("open");
@@ -2895,27 +2916,50 @@
       document.getElementById("key-modal").classList.remove("open");
     }
 
+    function onApiKeyInput(val) {
+      val = val.trim();
+      draftKeys[currentProvider] = val;
+      if (val.indexOf("sk-ant-") === 0 && currentProvider !== "claude") {
+        switchKeyProvider("claude");
+      } else if (val.indexOf("AIzaSy") === 0 && currentProvider !== "gemini") {
+        switchKeyProvider("gemini");
+      } else if (val.indexOf("sk-") === 0 && val.indexOf("sk-ant-") !== 0 && currentProvider !== "openai") {
+        switchKeyProvider("openai");
+      }
+    }
+
+    function switchKeyProvider(prov) {
+      var fld = document.getElementById("api-key-field");
+      if (fld && currentProvider) {
+        draftKeys[currentProvider] = fld.value.trim();
+      }
+      selectProvider(prov);
+    }
+
     function selectProvider(p) {
       currentProvider = p;
       var provSelect = document.getElementById("key-provider-select");
       if (provSelect) provSelect.value = p;
+
       var labels = {
-        claude: "Anthropic API key (sk-ant-...):",
-        openai: "OpenAI API key (sk-...):",
-        gemini: "Google Gemini API key (AIza...):"
+        claude: "Anthropic Claude API Key (sk-ant-...):",
+        openai: "OpenAI API Key (sk-...):",
+        gemini: "Google Gemini Free Tier Key (AIzaSy...):"
       };
       var placeholders = {
         claude: "sk-ant-api03-...",
         openai: "sk-proj-...",
-        gemini: "AIzaSy... (or leave blank for Free Tier)"
+        gemini: "AIzaSy..."
       };
+
       var lbl = document.getElementById("key-input-label");
       if (lbl) lbl.textContent = labels[p] || "API Key:";
+
       var fld = document.getElementById("api-key-field");
-      var apiKey = localStorage.getItem("sa_api_key_" + p) || localStorage.getItem("study_arena_key_" + p) || "";
+      var existingKey = draftKeys[p] !== undefined ? draftKeys[p] : (localStorage.getItem("sa_api_key_" + p) || localStorage.getItem("study_arena_key_" + p) || "");
       if (fld) {
         fld.placeholder = placeholders[p] || "Paste API key...";
-        fld.value = apiKey;
+        fld.value = existingKey;
       }
 
       var helpBox = document.getElementById("ai-onboarding-help");
@@ -2928,44 +2972,77 @@
             '<a href="https://aistudio.google.com/app/apikey" target="_blank" rel="noopener" style="display:inline-flex; align-items:center; gap:4px; color:var(--accent-cta); font-size:12px; font-weight:600; text-decoration:none; margin-top:6px;">Get Free Gemini API Key (Google AI Studio) &rarr;</a>' +
             '</div>';
         } else if (p === "claude") {
-          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your Anthropic key at <a href="https://console.anthropic.com/" target="_blank" rel="noopener" style="color:var(--accent-cta);">console.anthropic.com</a>. Billed directly by Anthropic.</div>';
+          helpBox.innerHTML = '<div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-control); padding:10px 14px; margin-top:8px; font-size:12px; color:var(--text-steel); line-height:1.4;">' +
+            'Direct browser access enabled. Paste your Anthropic API key from <a href="https://console.anthropic.com/" target="_blank" rel="noopener" style="color:var(--accent-cta); font-weight:600;">console.anthropic.com</a>. Powered by Claude 3.5 Sonnet.' +
+            '</div>';
         } else if (p === "openai") {
-          helpBox.innerHTML = '<div style="font-size:12px; color:var(--text-steel); margin-top:6px;">Get your OpenAI key at <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:var(--accent-cta);">platform.openai.com</a>. Billed directly by OpenAI.</div>';
+          helpBox.innerHTML = '<div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-control); padding:10px 14px; margin-top:8px; font-size:12px; color:var(--text-steel); line-height:1.4;">' +
+            'Paste your OpenAI key from <a href="https://platform.openai.com/api-keys" target="_blank" rel="noopener" style="color:var(--accent-cta); font-weight:600;">platform.openai.com</a>. Powered by GPT-4o.' +
+            '</div>';
         }
       }
 
       var sel = document.getElementById("model-select");
       if (sel) {
         if (p === "gemini") sel.value = "gemini-1.5-flash";
-        else if (p === "claude") sel.value = "claude-3-5-sonnet-latest";
+        else if (p === "claude") sel.value = "claude-3-5-sonnet-20241022";
         else if (p === "openai") sel.value = "gpt-4o";
       }
-      updateKeyUI();
+    }
+
+    function saveApiKey() {
+      saveKeySettings();
     }
 
     function saveKeySettings() {
-      var val = document.getElementById("api-key-field").value.trim();
-      var selModel = document.getElementById("model-select") ? document.getElementById("model-select").value : "gemini-1.5-flash";
-      localStorage.setItem("sa_ai_provider", currentProvider);
+      var provSelect = document.getElementById("key-provider-select");
+      var prov = provSelect ? provSelect.value : currentProvider;
+      var fld = document.getElementById("api-key-field");
+      var val = fld ? fld.value.trim() : "";
+
+      currentProvider = prov;
+      localStorage.setItem("sa_ai_provider", prov);
+
       if (val) {
-        localStorage.setItem("sa_api_key_" + currentProvider, val);
-        localStorage.setItem("study_arena_key_" + currentProvider, val);
+        localStorage.setItem("sa_api_key_" + prov, val);
+        localStorage.setItem("study_arena_key_" + prov, val);
+        draftKeys[prov] = val;
       } else {
-        localStorage.removeItem("sa_api_key_" + currentProvider);
-        localStorage.removeItem("study_arena_key_" + currentProvider);
+        localStorage.removeItem("sa_api_key_" + prov);
+        localStorage.removeItem("study_arena_key_" + prov);
+        delete draftKeys[prov];
       }
-      if (selModel) localStorage.setItem("sa_model_" + currentProvider, selModel);
+
+      if (prov === "claude") {
+        localStorage.setItem("sa_model_claude", "claude-3-5-sonnet-20241022");
+      } else if (prov === "gemini") {
+        localStorage.setItem("sa_model_gemini", "gemini-1.5-flash");
+      } else if (prov === "openai") {
+        localStorage.setItem("sa_model_openai", "gpt-4o");
+      }
+
       closeKeyModal();
       updateKeyUI();
+      if (typeof showToast === "function") {
+        showToast("Active AI Provider: " + (prov === "claude" ? "Anthropic Claude" : prov === "openai" ? "OpenAI" : "Google Gemini"));
+      }
+    }
+
+    function clearApiKey() {
+      clearKeySettings();
     }
 
     function clearKeySettings() {
       localStorage.removeItem("sa_api_key_" + currentProvider);
       localStorage.removeItem("study_arena_key_" + currentProvider);
+      delete draftKeys[currentProvider];
       var fld = document.getElementById("api-key-field");
       if (fld) fld.value = "";
       updateKeyUI();
       closeKeyModal();
+      if (typeof showToast === "function") {
+        showToast("Cleared " + currentProvider.toUpperCase() + " key.");
+      }
     }
 
     function toggleAnnals() {

@@ -617,13 +617,11 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       // The /v1/models endpoint may list internal research IDs like claude-haiku-5-5
       // that do NOT work via /v1/messages on the standard API tier.
       var SAFE_ALIASES = [
-        "claude-sonnet-4-6",
-        "claude-haiku-4-5-20251001",
-        "claude-haiku-5-5",
-        "claude-sonnet-5-5",
-        "claude-sonnet-5",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-latest",
+        "claude-3-5-haiku-20241022",
         "claude-3-5-haiku-latest",
-        "claude-3-5-sonnet-latest"
+        "claude-3-haiku-20240307"
       ];
 
       var candidateModels = [];
@@ -752,6 +750,9 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
       if (!res.ok) {
         var errBody = await res.text();
+        if (res.status === 400 && errBody.includes("API key not valid")) {
+          throw new Error("Google Gemini API key is invalid (HTTP 400). Please click Settings (gear icon) and paste a valid key from Google AI Studio (aistudio.google.com/app/apikey).");
+        }
         throw new Error("Gemini API error (" + res.status + "): " + errBody);
       }
       var jsonRes = await res.json();
@@ -801,7 +802,11 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     var apiKey = localStorage.getItem("sa_api_key_" + provider);
 
     if (!apiKey) {
-      throw new Error("Missing " + provider.toUpperCase() + " API key. Please click the Settings Cog (\u2699) in the top-right header to configure your key.");
+      if (provider === "gemini") {
+        throw new Error("Google Gemini API key required. Click the Settings Cog (\u2699) to paste your free Google AI Studio key (1,500 requests/day, zero credit card required at aistudio.google.com/app/apikey), or add ?mock=essay to try simulation mode.");
+      } else {
+        throw new Error("Missing " + provider.toUpperCase() + " API key. Click the Settings Cog (\u2699) in the top-right header to configure your " + provider.toUpperCase() + " key.");
+      }
     }
 
     var userPrompt = "Please evaluate the following draft according to your academic professor review guidelines.\n\n";
@@ -815,29 +820,69 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     if (provider === "claude") {
       onProgress("Benchmarking against academic literature with Claude...", 45);
-      var modelName = localStorage.getItem("sa_model_claude") || "claude-3-5-sonnet-20241022";
-      var res = await fetch("https://api.anthropic.com/v1/messages", {
-        signal: signal,
-        method: "POST",
-        headers: {
-          "x-api-key": apiKey,
-          "anthropic-version": "2023-06-01",
-          "content-type": "application/json",
-          "dangerously-allow-browser": "true"
-        },
-        body: JSON.stringify({
-          model: modelName,
-          max_tokens: 4096,
-          system: this.PROFESSOR_ESSAY_PROMPT,
-          messages: [{ role: "user", content: userPrompt }]
-        })
-      });
-      if (!res.ok) {
-        var err = await res.text();
-        throw new Error("Anthropic API error (" + res.status + "): " + err);
+      var candidateModels = [
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-latest",
+        "claude-3-5-haiku-20241022",
+        "claude-3-haiku-20240307"
+      ];
+      var storedModel = localStorage.getItem("sa_model_claude");
+      if (storedModel && !candidateModels.includes(storedModel) && storedModel.indexOf("claude") === 0) {
+        candidateModels.unshift(storedModel);
       }
-      var jsonRes = await res.json();
-      rawResponse = jsonRes.content[0].text;
+
+      var lastError = null;
+      var success = false;
+
+      for (var ci = 0; ci < candidateModels.length; ci++) {
+        var modelToTry = candidateModels[ci];
+        try {
+          var res = await fetch("https://api.anthropic.com/v1/messages", {
+            signal: signal,
+            method: "POST",
+            headers: {
+              "x-api-key": apiKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json",
+              "anthropic-dangerous-direct-browser-access": "true"
+            },
+            body: JSON.stringify({
+              model: modelToTry,
+              max_tokens: 4096,
+              system: this.PROFESSOR_ESSAY_PROMPT,
+              messages: [{ role: "user", content: userPrompt }]
+            })
+          });
+
+          if (!res.ok) {
+            var errBody = await res.text();
+            lastError = "Anthropic API (" + res.status + ") on " + modelToTry + ": " + errBody;
+            if (res.status === 404 || res.status === 400) {
+              continue; // try next candidate model
+            } else if (res.status === 401) {
+              throw new Error("Invalid Anthropic Claude API key (HTTP 401). Please check that your key starts with 'sk-ant-' and is entered correctly in Settings.");
+            } else {
+              throw new Error(lastError);
+            }
+          }
+
+          var jsonRes = await res.json();
+          rawResponse = jsonRes.content[0].text;
+          localStorage.setItem("sa_model_claude", modelToTry);
+          success = true;
+          break;
+
+        } catch (fetchErr) {
+          if (fetchErr.name === "TypeError" && fetchErr.message && fetchErr.message.includes("fetch")) {
+            throw new Error("Claude connection failed (browser fetch blocked). If you have an ad-blocker or Brave Shields active, please allow connections to api.anthropic.com, or check your internet connection.");
+          }
+          throw fetchErr;
+        }
+      }
+
+      if (!success && !rawResponse) {
+        throw new Error(lastError || "Could not complete review with Claude. Please verify your Anthropic API key in Settings.");
+      }
 
     } else if (provider === "openai") {
       onProgress("Benchmarking against academic literature with OpenAI...", 45);
@@ -881,6 +926,9 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       });
       if (!res.ok) {
         var errBody = await res.text();
+        if (res.status === 400 && errBody.includes("API key not valid")) {
+          throw new Error("Google Gemini API key is invalid (HTTP 400). Please click Settings (gear icon) and paste a valid key from Google AI Studio (aistudio.google.com/app/apikey).");
+        }
         throw new Error("Gemini API error (" + res.status + "): " + errBody);
       }
       var jsonRes = await res.json();
