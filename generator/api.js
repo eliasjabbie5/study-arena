@@ -163,7 +163,7 @@ window.StudyArenaAPI = {
             generationConfig: {
               response_mime_type: "application/json",
               temperature: 0.1,
-              maxOutputTokens: 8192
+              maxOutputTokens: 32768
             }
           })
         });
@@ -517,6 +517,42 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       }
     }
     return out.join("");
+  },
+
+  splitCourseTextIntoChunks: function(text) {
+    if (!text || text.length < 18000) return [text];
+    var sessionRegex = /(?:^|\n)(?=(?:Session|Chapter|Lecture|Week|Module|Part)\s+\d+[:\.\s\-\–])/gi;
+    var sections = text.split(sessionRegex).map(function(s) { return s.trim(); }).filter(Boolean);
+    if (sections.length >= 2) {
+      var chunks = [];
+      var cur = "";
+      for (var i = 0; i < sections.length; i++) {
+        if (cur.length + sections[i].length > 15000 && cur.length > 5000) {
+          chunks.push(cur);
+          cur = sections[i];
+        } else {
+          cur = cur ? (cur + "\n\n" + sections[i]) : sections[i];
+        }
+      }
+      if (cur) chunks.push(cur);
+      if (chunks.length > 1) return chunks;
+    }
+    if (text.length > 22000) {
+      var paragraphs = text.split(/\n{2,}/);
+      var pchunks = [];
+      var pcur = "";
+      for (var j = 0; j < paragraphs.length; j++) {
+        if (pcur.length + paragraphs[j].length > 15000 && pcur.length > 5000) {
+          pchunks.push(pcur);
+          pcur = paragraphs[j];
+        } else {
+          pcur = pcur ? (pcur + "\n\n" + paragraphs[j]) : paragraphs[j];
+        }
+      }
+      if (pcur) pchunks.push(pcur);
+      if (pchunks.length > 1) return pchunks;
+    }
+    return [text];
   },
 
   cleanJsonResponse: function(raw) {
@@ -1121,12 +1157,61 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       rawResponse = jsonRes.choices[0].message.content;
 
     } else if (provider === "gemini") {
-      onProgress("Creating tools & distractor traps...", 45);
-      rawResponse = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, userContent, signal, onProgress);
+      var isDev = (window.StudyArenaAuth && typeof window.StudyArenaAuth.isDeveloper === "function" && window.StudyArenaAuth.isDeveloper());
+      var chunks = isDev ? this.splitCourseTextIntoChunks(courseText) : [courseText];
+      if (chunks.length > 1) {
+        onProgress("Large course document detected (~" + Math.round(courseText.length / 5) + " words). Running smart multi-pass synthesis...", 25);
+        var mergedData = null;
+        for (var p = 0; p < chunks.length; p++) {
+          var pctBase = Math.round(25 + (p / chunks.length) * 50);
+          onProgress("Synthesizing Part " + (p + 1) + " of " + chunks.length + " (Chapters, Sessions & Questions)...", pctBase);
+          var chunkUserContent = "COURSE LECTURE MATERIAL (PART " + (p + 1) + " OF " + chunks.length + "):\n\n" + chunks[p];
+          if (teacherNotes && teacherNotes.trim()) {
+            chunkUserContent += "\n\nOPTIONAL TEACHER NOTES / RUBRICS / EXAM STYLE GUIDE:\n\n" + teacherNotes;
+          }
+          if (mergedData && mergedData.zones && mergedData.zones.length > 0) {
+            chunkUserContent += "\n\nIMPORTANT CONTEXT FROM PREVIOUS PASSES:\nAlready created zones: " +
+              mergedData.zones.map(function(z) { return z.id + " (" + z.name + ")"; }).join(", ") +
+              "\nContinue the course curriculum with NEW distinct zones, chapters, and questions for Part " + (p + 1) + ".";
+          }
+          var chunkRaw = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, chunkUserContent, signal, onProgress);
+          var chunkParsed = this.cleanJsonResponse(chunkRaw);
+          if (chunkParsed) {
+            if (!mergedData) {
+              mergedData = chunkParsed;
+            } else {
+              var existingZoneIds = (mergedData.zones || []).map(function(z) { return z.id; });
+              (chunkParsed.zones || []).forEach(function(z) {
+                if (!existingZoneIds.includes(z.id)) {
+                  mergedData.zones.push(z);
+                  existingZoneIds.push(z.id);
+                }
+              });
+              var existingChIds = (mergedData.chapters || []).map(function(c) { return c.id; });
+              (chunkParsed.chapters || []).forEach(function(c) {
+                if (!existingChIds.includes(c.id)) {
+                  mergedData.chapters.push(c);
+                  existingChIds.push(c.id);
+                }
+              });
+              mergedData.questions = (mergedData.questions || []).concat(chunkParsed.questions || []);
+              if (chunkParsed.exams && chunkParsed.exams.length > 0 && (!mergedData.exams || mergedData.exams.length === 0)) {
+                mergedData.exams = chunkParsed.exams;
+              }
+            }
+          }
+        }
+        var courseData = mergedData || {};
+      } else {
+        onProgress("Creating tools & distractor traps...", 45);
+        rawResponse = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, userContent, signal, onProgress);
+      }
     }
 
     onProgress("Checking questions and explanations...", 78);
-    var courseData = this.cleanJsonResponse(rawResponse);
+    if (!courseData) {
+      var courseData = this.cleanJsonResponse(rawResponse);
+    }
     if (!courseData) courseData = {};
     if (!Array.isArray(courseData.questions)) courseData.questions = [];
     if (!Array.isArray(courseData.chapters)) courseData.chapters = [];

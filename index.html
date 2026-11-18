@@ -21,11 +21,11 @@
       return JSON.stringify(obj).replace(/<\//g, '<\\/');
     };
   </script>
-  <script src="generator/engine_bundle.js?v=5.1.9"></script>
-  <script src="generator/compiler.js?v=5.1.9"></script>
-  <script src="generator/api.js?v=5.1.9"></script>
-  <script src="auth/auth.js?v=5.1.9"></script>
-  <script src="auth/sync.js?v=5.1.9"></script>
+  <script src="generator/engine_bundle.js?v=5.2.0"></script>
+  <script src="generator/compiler.js?v=5.2.0"></script>
+  <script src="generator/api.js?v=5.2.0"></script>
+  <script src="auth/auth.js?v=5.2.0"></script>
+  <script src="auth/sync.js?v=5.2.0"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -6313,6 +6313,7 @@ function revealTrap(btn, isCorrect, debriefText) {
       surgicalRedline: true,
       semanticGrader: true,
       shareableLinks: true,
+      splitPaneTextbook: true,
       selectedDiscipline: "Auto-Detect",
       selectedTrap: "Multi-Logical Traps",
       selectedArenaMode: "standard"
@@ -6356,9 +6357,9 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
 
       var f = getDevFeatures();
-      var activeCount = (f.trapRadar ? 1 : 0) + (f.slideRange ? 1 : 0) + (f.surgicalRedline ? 1 : 0) + (f.semanticGrader ? 1 : 0) + (f.shareableLinks ? 1 : 0);
+      var activeCount = (f.trapRadar ? 1 : 0) + (f.slideRange ? 1 : 0) + (f.surgicalRedline ? 1 : 0) + (f.semanticGrader ? 1 : 0) + (f.shareableLinks ? 1 : 0) + (f.splitPaneTextbook ? 1 : 0);
       var badge = document.getElementById("dev-active-feature-badge");
-      if (badge) badge.textContent = activeCount === 5 ? "All 5 ON" : (activeCount === 0 ? "All OFF" : activeCount + " Active");
+      if (badge) badge.textContent = activeCount === 6 ? "All 6 ON" : (activeCount === 0 ? "All OFF" : activeCount + " Active");
 
       // Update modal badges & buttons
       var map = [
@@ -6366,7 +6367,8 @@ function revealTrap(btn, isCorrect, debriefText) {
         { key: "slideRange", b: "badge-f2", t: "toggle-btn-f2" },
         { key: "surgicalRedline", b: "badge-f3", t: "toggle-btn-f3" },
         { key: "semanticGrader", b: "badge-f4", t: "toggle-btn-f4" },
-        { key: "shareableLinks", b: "badge-f5", t: "toggle-btn-f5" }
+        { key: "shareableLinks", b: "badge-f5", t: "toggle-btn-f5" },
+        { key: "splitPaneTextbook", b: "badge-f6", t: "toggle-btn-f6" }
       ];
       map.forEach(function(item) {
         var on = !!f[item.key];
@@ -6407,8 +6409,9 @@ function revealTrap(btn, isCorrect, debriefText) {
       f.surgicalRedline = enableAll;
       f.semanticGrader = enableAll;
       f.shareableLinks = enableAll;
+      f.splitPaneTextbook = enableAll;
       saveDevFeatures(f);
-      showToast(enableAll ? "All 5 Developer Features Enabled!" : "Standard Student View Active (All Dev Features OFF)");
+      showToast(enableAll ? "All 6 Developer Features Enabled!" : "Standard Student View Active (All Dev Features OFF)");
     }
 
     function openDevLabModal() {
@@ -6732,7 +6735,7 @@ function revealTrap(btn, isCorrect, debriefText) {
       <div style="display:flex; gap:10px; margin-bottom:20px; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius-control); border:1px solid var(--line); align-items:center; justify-content:space-between;">
         <span style="font-size:12.5px; font-weight:600; color:var(--text-ink);">Global Feature State:</span>
         <div style="display:flex; gap:8px;">
-          <button type="button" class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="setAllDevFeatures(true)">All 5 Features ON</button>
+          <button type="button" class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="setAllDevFeatures(true)">All 6 Features ON</button>
           <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="setAllDevFeatures(false)">Standard Student View (All OFF)</button>
         </div>
       </div>
@@ -6811,6 +6814,21 @@ function revealTrap(btn, isCorrect, debriefText) {
           <div style="display:flex; gap:8px; align-items:center;">
             <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f5" onclick="toggleDevFeature('shareableLinks')">Disable</button>
             <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('saved')">Open &rarr;</button>
+          </div>
+        </div>
+
+        <!-- FEATURE 6 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 6: Split-Pane Textbook &amp; 10k Generator</strong>
+              <span class="dev-active-badge" id="badge-f6">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Notion-style sticky sidebar TOC, reading time, cram mode, and multi-pass 10k word syllabus engine.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f6" onclick="toggleDevFeature('splitPaneTextbook')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('generator')">Open &rarr;</button>
           </div>
         </div>
       </div>
