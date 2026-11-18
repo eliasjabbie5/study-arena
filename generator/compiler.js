@@ -3,6 +3,10 @@
  * Takes validated course JSON from the AI and compiles it into a single standalone HTML game.
  */
 
+function safeJson(obj) {
+  return JSON.stringify(obj).replace(/<\//g, '<\\/');
+}
+
 window.StudyArenaCompiler = {
   validate: function(data) {
     var errors = [];

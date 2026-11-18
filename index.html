@@ -2616,6 +2616,32 @@
       color: var(--accent-cta);
     }
 
+    @media (max-width: 640px) {
+      .workspace-top-bar {
+        padding: 6px 10px !important;
+        gap: 6px !important;
+        flex-wrap: nowrap !important;
+      }
+      .workspace-view-heading {
+        font-size: 13.5px !important;
+      }
+      .btn-dev-lab {
+        padding: 4px 8px !important;
+        font-size: 10.5px !important;
+        gap: 4px !important;
+      }
+      .btn-dev-lab .dev-lab-text-full { display: none !important; }
+      .btn-dev-lab .dev-lab-text-short { display: inline !important; }
+      .btn-workspace-create {
+        padding: 5px 9px !important;
+        font-size: 11.5px !important;
+        white-space: nowrap !important;
+      }
+    }
+    @media (min-width: 641px) {
+      .btn-dev-lab .dev-lab-text-short { display: none !important; }
+    }
+
     /* Floating Redline Popover (Feature 3) */
     .redline-popover {
       position: absolute;
@@ -2765,14 +2791,14 @@
       </button>
       <span class="workspace-view-heading" id="workspace-view-heading">My Arenas</span>
     </div>
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:8px; flex-shrink:0;">
       <!-- DEV FEATURE LAB BUTTON (GATED TO DEVELOPER) -->
       <button type="button" class="btn-dev-lab" id="dev-lab-trigger-btn" onclick="openDevLabModal()" title="Developer Feature Lab (Elias Jabbie Only)">
         <span class="dev-lab-glow"></span>
-        <span class="mono">⚡ Dev Feature Lab</span>
+        <span class="mono"><span class="dev-lab-text-full">⚡ Dev Feature Lab</span><span class="dev-lab-text-short">⚡ Dev Lab</span></span>
         <span class="dev-active-badge" id="dev-active-feature-badge">All 5 ON</span>
       </button>
-      <button type="button" class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="workspaceNavigate('generator')">
+      <button type="button" class="btn-primary btn-workspace-create" style="padding:7px 14px; font-size:12.5px;" onclick="workspaceNavigate('generator')">
         + Create Arena
       </button>
     </div>
