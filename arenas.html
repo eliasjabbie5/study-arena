@@ -1649,6 +1649,136 @@
       .brand-badge { display: none !important; }
     }
 
+
+    /* ESSAY & PAPER REVIEWER STYLING */
+    .grade-badge-circle {
+      width: 72px;
+      height: 72px;
+      border-radius: var(--radius-pill);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--f-serif);
+      font-size: 32px;
+      font-weight: 700;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+    }
+    .grade-badge-circle.grade-a {
+      background: rgba(16, 185, 129, 0.12);
+      border: 2px solid rgba(16, 185, 129, 0.4);
+      color: #059669;
+    }
+    .grade-badge-circle.grade-b {
+      background: rgba(14, 165, 233, 0.12);
+      border: 2px solid rgba(14, 165, 233, 0.4);
+      color: #0284c7;
+    }
+    .grade-badge-circle.grade-c {
+      background: rgba(245, 158, 11, 0.12);
+      border: 2px solid rgba(245, 158, 11, 0.4);
+      color: #d97706;
+    }
+    .grade-badge-circle.grade-df {
+      background: rgba(239, 68, 68, 0.12);
+      border: 2px solid rgba(239, 68, 68, 0.4);
+      color: #dc2626;
+    }
+    .rubric-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+    }
+    .rubric-card {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 8px;
+    }
+    .rubric-card-score {
+      font-family: var(--f-mono);
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent-cta);
+    }
+    .annotation-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      margin-bottom: 14px;
+      transition: all 180ms ease;
+    }
+    .annotation-card:hover, .annotation-card.active-target {
+      border-color: var(--accent-cta);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      transform: translateY(-1px);
+    }
+    .ann-highlight {
+      padding: 2px 4px;
+      border-radius: 3px;
+      cursor: pointer;
+      transition: background 140ms ease;
+    }
+    .ann-highlight:hover {
+      filter: brightness(0.92);
+    }
+    .ann-hl-grammar {
+      background: rgba(239, 68, 68, 0.18);
+      border-bottom: 2px solid #ef4444;
+    }
+    .ann-hl-register {
+      background: rgba(168, 85, 247, 0.18);
+      border-bottom: 2px solid #a855f7;
+    }
+    .ann-hl-rhetoric {
+      background: rgba(245, 158, 11, 0.18);
+      border-bottom: 2px solid #f59e0b;
+    }
+    .ann-hl-argument {
+      background: rgba(16, 185, 129, 0.18);
+      border-bottom: 2px solid #10b981;
+    }
+    .ann-filter-pill {
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--text-graphite);
+      padding: 5px 12px;
+      border-radius: var(--radius-pill);
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 120ms ease;
+    }
+    .ann-filter-pill.active {
+      background: var(--text-ink);
+      color: var(--surface);
+      border-color: var(--text-ink);
+    }
+    .counterarg-card {
+      background: var(--surface-2);
+      border-left: 4px solid var(--accent-cta);
+      border-radius: 0 var(--radius-card) var(--radius-card) 0;
+      padding: 14px 16px;
+      margin-bottom: 12px;
+    }
+    .essay-doc-viewer {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 24px;
+      font-family: var(--f-serif);
+      font-size: 15.5px;
+      line-height: 1.75;
+      color: var(--text-ink);
+      white-space: pre-wrap;
+    }
+
 </style>
 </head>
 <body>
@@ -1666,6 +1796,9 @@
       <div class="nav-tabs-group">
         <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
         <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')">Generator</button>
+        <button type="button" class="nav-tab" id="nav-essay" onclick="switchMainView('essay')">
+          <span class="tab-label-desktop">Essay Reviewer</span><span class="tab-label-mobile">Review</span>
+        </button>
         <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
           <span class="tab-label-desktop">Saved Arenas</span><span class="tab-label-mobile">Arenas</span> <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
         </button>
@@ -2005,6 +2138,202 @@
       </div>
     </div>
 
+
+    <!-- SCREEN 4: ESSAY & RESEARCH PAPER REVIEWER VIEW -->
+    <div id="view-essay" class="main-view" style="display:none; padding: 48px 0 96px;">
+      <div class="container" style="max-width:960px;">
+
+        <!-- CONSOLE INPUT STAGE -->
+        <div class="console-section" style="margin-bottom:28px;">
+          <div class="console-header">
+            <div class="console-title-group">
+              <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-cta); margin-bottom:4px; font-weight:600;">ACADEMIC ESSAY &amp; RESEARCH AUDITOR</div>
+              <h2>University Faculty Paper Reviewer</h2>
+              <p style="font-size:13px; color:var(--text-graphite); margin:4px 0 0; line-height:1.45;">Doctoral-level academic critique, thesis forensics, counterargument mapping, and dual university grading (A-F &amp; /20 scale).</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadSampleEssay()">
+                Load Sample Essay
+              </button>
+            </div>
+          </div>
+
+          <!-- INPUT FORM -->
+          <div id="essay-input-container">
+            <div style="margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <label for="essay-text-input" style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink);">
+                  Draft Content (Essay, Research Paper, or Study)
+                </label>
+                <span id="essay-word-count" class="mono" style="font-size:11px; color:var(--text-steel);">0 words &middot; 0 chars</span>
+              </div>
+              <textarea id="essay-text-input" class="textarea-field" style="width:100%; min-height:220px; font-family:var(--f-serif); font-size:15px; line-height:1.6; padding:16px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="Paste your essay, academic research draft, or literature review here... (Or click 'Load Sample Essay' above for a quick demonstration)" oninput="updateEssayStats()"></textarea>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <label for="essay-rubric-input" style="display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; color:var(--text-graphite);">
+                Assignment Prompt, Course Rubric, or Specific Evaluation Goals (Optional)
+              </label>
+              <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Master's in Law &amp; Economics, evaluating antitrust doctrine under Section 2...">
+            </div>
+
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+              <div style="display:flex; align-items:center; gap:8px;">
+                <span class="provider-badge" id="essay-model-badge">Gemini 1.5 Flash &middot; Free Tier</span>
+                <button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11px;" onclick="openSettingsModal()">Change Provider</button>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
+                <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
+                  Grade &amp; Review Essay &rarr;
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- PROGRESS INDICATOR -->
+          <div id="essay-progress-container" style="display:none; padding:36px 16px; text-align:center;">
+            <div style="display:inline-block; width:36px; height:36px; border:3px solid var(--line); border-top-color:var(--accent-cta); border-radius:50%; animation:spin 0.8s linear infinite; margin-bottom:14px;"></div>
+            <div id="essay-progress-step" class="mono" style="font-size:13px; font-weight:600; color:var(--text-ink); margin-bottom:10px;">Reading thesis &amp; rhetorical structure...</div>
+            <div style="max-width:320px; height:6px; background:var(--surface-2); border-radius:4px; margin:0 auto; overflow:hidden;">
+              <div id="essay-progress-bar" style="width:15%; height:100%; background:var(--accent-cta); transition:width 0.3s ease;"></div>
+            </div>
+          </div>
+
+          <!-- ERROR ALERT -->
+          <div id="essay-error-alert" style="display:none; margin-top:16px; padding:12px 16px; border-radius:var(--radius-control); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#dc2626; font-size:13px;"></div>
+        </div>
+
+        <!-- RESULTS DASHBOARD -->
+        <div id="essay-results-dashboard" style="display:none;">
+
+          <!-- TOP BANNER: DUAL GRADE & DOCUMENT INTEL -->
+          <div class="console-section" style="margin-bottom:24px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px; padding-bottom:20px; border-bottom:1px solid var(--line);">
+              <div style="display:flex; align-items:center; gap:20px;">
+                <div id="res-grade-circle" class="grade-badge-circle grade-a">A-</div>
+                <div>
+                  <div style="display:flex; align-items:baseline; gap:8px;">
+                    <span id="res-score-number" class="mono" style="font-size:32px; font-weight:700; color:var(--text-ink);">16.5</span>
+                    <span class="mono" style="font-size:16px; color:var(--text-steel);">/ 20.0</span>
+                  </div>
+                  <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-top:2px;">
+                    European &middot; International Faculty Scale
+                  </div>
+                </div>
+              </div>
+
+              <!-- DOCUMENT INTEL TAGS -->
+              <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
+                <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                  <span id="res-detected-genre" class="card-badge">Argumentative Policy Paper</span>
+                  <span id="res-detected-discipline" class="card-badge">Law &amp; Economics</span>
+                </div>
+                <div style="font-size:12px; color:var(--text-steel);">
+                  Academic Register: <strong id="res-detected-tone" style="color:var(--text-ink);">Advanced Undergraduate</strong>
+                </div>
+              </div>
+            </div>
+
+            <!-- GRADE SUMMARY -->
+            <div style="margin-top:18px;">
+              <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Faculty Rubric Assessment</div>
+              <p id="res-grade-summary" style="font-size:14px; line-height:1.55; color:var(--text-ink); margin:0;"></p>
+            </div>
+
+            <!-- RUBRIC 4-DIMENSION BREAKDOWN -->
+            <div class="rubric-grid" id="res-rubric-grid">
+              <!-- Dynamically populated -->
+            </div>
+          </div>
+
+          <!-- PROFESSOR EXECUTIVE CRITIQUE & COUNTERARGUMENTS -->
+          <div class="console-section" style="margin-bottom:24px;">
+            <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Faculty Written Feedback</div>
+            <h3 class="serif-title" style="font-size:22px; margin:0 0 14px;">Professor's Critique</h3>
+            <p id="res-prof-summary" style="font-size:14.5px; line-height:1.6; color:var(--text-ink); margin-bottom:20px; font-style:italic;"></p>
+
+            <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; margin-bottom:24px;">
+              <!-- CORE STRENGTHS -->
+              <div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-card); padding:18px;">
+                <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#059669; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                  Distinction Strengths
+                </div>
+                <ul id="res-strengths-list" style="margin:0; padding-left:18px; font-size:13px; line-height:1.55; color:var(--text-ink);"></ul>
+              </div>
+
+              <!-- CRITICAL SHORTCOMINGS -->
+              <div style="background:var(--surface-2); border:1px solid var(--line); border-radius:var(--radius-card); padding:18px;">
+                <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:#d97706; margin-bottom:10px; display:flex; align-items:center; gap:6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                  Opportunities for Revision
+                </div>
+                <ul id="res-shortcomings-list" style="margin:0; padding-left:18px; font-size:13px; line-height:1.55; color:var(--text-ink);"></ul>
+              </div>
+            </div>
+
+            <!-- COUNTERARGUMENTS TO ADD -->
+            <div>
+              <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                Dialectical Depth &amp; Counterarguments to Integrate
+              </div>
+              <div id="res-counterarguments-container"></div>
+            </div>
+          </div>
+
+          <!-- ANNOTATED ESSAY & REWRITE WORKBENCH -->
+          <div class="console-section" style="margin-bottom:28px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:18px;">
+              <div>
+                <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:var(--accent-cta); font-weight:600; margin-bottom:4px;">LINE-BY-LINE FORENSICS</div>
+                <h3 class="serif-title" style="font-size:22px; margin:0;">Annotated Draft &amp; Polished Rewrites</h3>
+              </div>
+
+              <!-- FILTER PILLS -->
+              <div style="display:flex; gap:6px; flex-wrap:wrap;">
+                <button type="button" class="ann-filter-pill active" onclick="filterAnnotations('ALL', this)">All</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('GRAMMAR_SYNTAX', this)">Grammar</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ACADEMIC_REGISTER', this)">Tone</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('RHETORICAL_STRENGTH', this)">Rhetoric</button>
+                <button type="button" class="ann-filter-pill" onclick="filterAnnotations('ARGUMENT_EXPANSION', this)">Warrants</button>
+              </div>
+            </div>
+
+            <!-- DUAL VIEW: ESSAY TEXT WITH HIGHLIGHTS & FEEDBACK CARDS -->
+            <div style="display:grid; grid-template-columns:1fr; gap:20px;">
+              <div>
+                <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-bottom:8px;">
+                  Interactive Text (Click any highlighted passage to focus its rewrite card)
+                </div>
+                <div id="res-annotated-text" class="essay-doc-viewer"></div>
+              </div>
+
+              <div>
+                <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-bottom:8px;">
+                  Detailed Feedback &amp; Rewrites (<span id="res-annotations-count">0</span> items)
+                </div>
+                <div id="res-annotations-cards-container"></div>
+              </div>
+            </div>
+
+            <!-- ACTION BAR -->
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-top:24px; padding-top:18px; border-top:1px solid var(--line);">
+              <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="copyFullReport(this)">
+                Copy Full Report (Markdown)
+              </button>
+              <button type="button" class="btn-primary" style="padding:8px 20px; font-size:13px;" onclick="reviewAnotherEssay()">
+                Review Another Essay &rarr;
+              </button>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+
   </main>
 
 
@@ -2168,20 +2497,23 @@
 
       var viewLanding = document.getElementById("view-landing");
       var viewGenerator = document.getElementById("view-generator");
+      var viewEssay = document.getElementById("view-essay");
       var viewSaved = document.getElementById("view-saved");
 
       var navLanding = document.getElementById("nav-landing");
       var navGenerator = document.getElementById("nav-generator") || document.getElementById("nav-create");
+      var navEssay = document.getElementById("nav-essay");
       var navSaved = document.getElementById("nav-saved");
       var navTryBtn = document.getElementById("nav-try-btn");
 
-      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : viewSaved;
-      var otherViews = [viewLanding, viewGenerator, viewSaved].filter(function(v) { return v && v !== targetView; });
+      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : (viewName === "essay") ? viewEssay : viewSaved;
+      var otherViews = [viewLanding, viewGenerator, viewEssay, viewSaved].filter(function(v) { return v && v !== targetView; });
 
       if (navLanding) navLanding.classList.toggle("active", viewName === "landing");
       if (navGenerator) navGenerator.classList.toggle("active", viewName === "generator");
+      if (navEssay) navEssay.classList.toggle("active", viewName === "essay");
       if (navSaved) navSaved.classList.toggle("active", viewName === "saved");
-      if (navTryBtn) navTryBtn.style.display = (viewName === "generator") ? "none" : "inline-flex";
+      if (navTryBtn) navTryBtn.style.display = (viewName === "generator" || viewName === "essay") ? "none" : "inline-flex";
 
       var prefersReduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -2212,6 +2544,8 @@
         if (history.replaceState) history.replaceState(null, "", "#saved");
       } else if (viewName === "generator") {
         if (history.replaceState) history.replaceState(null, "", "#generator");
+      } else if (viewName === "essay") {
+        if (history.replaceState) history.replaceState(null, "", "#essay");
       } else {
         if (history.replaceState) history.replaceState(null, "", window.location.pathname + window.location.search);
       }
@@ -3151,7 +3485,7 @@
       } else if (window.location.hash === "#generator" || window.location.hash === "#create" || new URLSearchParams(window.location.search).get("view") === "generator" || new URLSearchParams(window.location.search).get("mock") === "ok") {
         switchMainView("generator");
       } else {
-        switchMainView("landing");
+        switchMainView("saved");
       }
     })();
   
@@ -3378,7 +3712,7 @@ function revealTrap(btn, isCorrect, debriefText) {
           } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
             switchMainView("generator");
           } else {
-            switchMainView("landing");
+            switchMainView("saved");
           }
         })();
         
@@ -3391,7 +3725,7 @@ function revealTrap(btn, isCorrect, debriefText) {
           } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
             switchMainView("generator");
           } else {
-            switchMainView("landing");
+            switchMainView("saved");
           }
         })();
         
@@ -3404,7 +3738,7 @@ function revealTrap(btn, isCorrect, debriefText) {
           } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
             switchMainView("generator");
           } else {
-            switchMainView("landing");
+            switchMainView("saved");
           }
         })();
         
@@ -3417,16 +3751,372 @@ function revealTrap(btn, isCorrect, debriefText) {
           } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
             switchMainView("generator");
           } else {
-            switchMainView("landing");
+            switchMainView("saved");
           }
         })();
         
   
 
         (function() {
-          switchMainView("saved");
+          var params = new URLSearchParams(window.location.search);
+          if (params.get("view") === "saved" || window.location.hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "essay" || window.location.hash === "#essay") {
+            switchMainView("essay");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok" || window.location.hash === "#generator" || window.location.hash === "#create") {
+            switchMainView("generator");
+          } else {
+            switchMainView("saved");
+          }
         })();
         
-  </script>
+  
+
+
+    /* ---------- ACADEMIC ESSAY REVIEWER CLIENT LOGIC ---------- */
+    var currentEssayData = null;
+    var currentEssayOriginalText = "";
+
+    var SAMPLE_ESSAY_TEXT = "The Antitrust Implications of Generative AI Platform Ecosystems\n\n" +
+      "In recent years, the rapid commercialization of large language models has raised urgent questions regarding market concentration in artificial intelligence. Tech giants are basically locking down all the best GPUs so smaller startups don't stand a chance.\n\n" +
+      "Examining the market definition, several empirical indicators suggests anticompetitive tying. Dominant cloud providers bundle access to foundation model APIs with their legacy enterprise software suites, thereby foreclosing contestable markets. Because switching models is hard, customers have to accept whatever prices the big platforms charge.\n\n" +
+      "Furthermore, upstream investments by hyperscalers into pioneering AI laboratories mirror traditional joint ventures designed to circumvent merger clearance. It seems that maybe antitrust regulators might perhaps want to look into these cloud partnerships. Without proactive regulatory intervention, the generative layer will replicate the durable gatekeeper dynamics observed in search and mobile operating systems.";
+
+    function loadSampleEssay() {
+      var textarea = document.getElementById("essay-text-input");
+      var rubric = document.getElementById("essay-rubric-input");
+      if (textarea) {
+        textarea.value = SAMPLE_ESSAY_TEXT;
+        updateEssayStats();
+      }
+      if (rubric) {
+        rubric.value = "Advanced Seminar in Industrial Organization & Tech Antitrust (Grading scale 0-20)";
+      }
+    }
+
+    function updateEssayStats() {
+      var textarea = document.getElementById("essay-text-input");
+      var counter = document.getElementById("essay-word-count");
+      if (!textarea || !counter) return;
+      var text = textarea.value.trim();
+      var words = text ? text.split(/\s+/).length : 0;
+      var chars = text.length;
+      counter.textContent = words + " words \u00b7 " + chars + " chars";
+    }
+
+    function clearEssayInput() {
+      var textarea = document.getElementById("essay-text-input");
+      var rubric = document.getElementById("essay-rubric-input");
+      if (textarea) textarea.value = "";
+      if (rubric) rubric.value = "";
+      updateEssayStats();
+      var err = document.getElementById("essay-error-alert");
+      if (err) err.style.display = "none";
+    }
+
+    function reviewAnotherEssay() {
+      var results = document.getElementById("essay-results-dashboard");
+      var input = document.getElementById("essay-input-container");
+      var progress = document.getElementById("essay-progress-container");
+      if (results) results.style.display = "none";
+      if (progress) progress.style.display = "none";
+      if (input) input.style.display = "block";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    async function startEssayReview() {
+      var textarea = document.getElementById("essay-text-input");
+      var rubric = document.getElementById("essay-rubric-input");
+      var errBox = document.getElementById("essay-error-alert");
+      var inputContainer = document.getElementById("essay-input-container");
+      var progressContainer = document.getElementById("essay-progress-container");
+      var progressStep = document.getElementById("essay-progress-step");
+      var progressBar = document.getElementById("essay-progress-bar");
+      var resultsDashboard = document.getElementById("essay-results-dashboard");
+
+      if (errBox) errBox.style.display = "none";
+
+      var essayText = textarea ? textarea.value.trim() : "";
+      if (!essayText || essayText.length < 50) {
+        if (errBox) {
+          errBox.textContent = "Please provide an essay or paper draft of at least 50 characters to analyze.";
+          errBox.style.display = "block";
+        }
+        return;
+      }
+
+      currentEssayOriginalText = essayText;
+      if (inputContainer) inputContainer.style.display = "none";
+      if (progressContainer) progressContainer.style.display = "block";
+      if (resultsDashboard) resultsDashboard.style.display = "none";
+
+      try {
+        var rubricHint = rubric ? rubric.value.trim() : "";
+        var data = await window.StudyArenaAPI.reviewEssay(essayText, rubricHint, function(msg, pct) {
+          if (progressStep) progressStep.textContent = msg;
+          if (progressBar) progressBar.style.width = pct + "%";
+        });
+
+        currentEssayData = data;
+        renderEssayResults(data, essayText);
+
+        if (progressContainer) progressContainer.style.display = "none";
+        if (resultsDashboard) resultsDashboard.style.display = "block";
+        window.scrollTo({ top: 0, behavior: "smooth" });
+
+      } catch (err) {
+        console.error("Essay review failed:", err);
+        if (progressContainer) progressContainer.style.display = "none";
+        if (inputContainer) inputContainer.style.display = "block";
+        if (errBox) {
+          errBox.textContent = err.message || "Failed to analyze essay. Please check your API settings.";
+          errBox.style.display = "block";
+        }
+      }
+    }
+
+    function renderEssayResults(data, originalText) {
+      // 1. Grade Badge & Score
+      var gradeCircle = document.getElementById("res-grade-circle");
+      var scoreNum = document.getElementById("res-score-number");
+      var gradeSummary = document.getElementById("res-grade-summary");
+      var genreTag = document.getElementById("res-detected-genre");
+      var disciplineTag = document.getElementById("res-detected-discipline");
+      var toneTag = document.getElementById("res-detected-tone");
+
+      var letter = (data.grades && data.grades.letter_grade) ? data.grades.letter_grade : "B";
+      var score20 = (data.grades && data.grades.score_out_of_20) ? data.grades.score_out_of_20 : 15.0;
+
+      if (gradeCircle) {
+        gradeCircle.textContent = letter;
+        gradeCircle.className = "grade-badge-circle";
+        if (letter.indexOf("A") === 0) gradeCircle.classList.add("grade-a");
+        else if (letter.indexOf("B") === 0) gradeCircle.classList.add("grade-b");
+        else if (letter.indexOf("C") === 0) gradeCircle.classList.add("grade-c");
+        else gradeCircle.classList.add("grade-df");
+      }
+
+      if (scoreNum) scoreNum.textContent = Number(score20).toFixed(1);
+      if (gradeSummary) gradeSummary.textContent = (data.grades && data.grades.grade_summary) ? data.grades.grade_summary : "";
+
+      if (genreTag) genreTag.textContent = (data.document_analysis && data.document_analysis.detected_type) ? data.document_analysis.detected_type : "Academic Essay";
+      if (disciplineTag) disciplineTag.textContent = (data.document_analysis && data.document_analysis.discipline) ? data.document_analysis.discipline : "General Academia";
+      if (toneTag) toneTag.textContent = (data.document_analysis && data.document_analysis.academic_tone_rating) ? data.document_analysis.academic_tone_rating : "Standard Academic";
+
+      // 2. Rubric Breakdown Grid
+      var rubricGrid = document.getElementById("res-rubric-grid");
+      if (rubricGrid && data.grades && data.grades.rubric_breakdown) {
+        var rb = data.grades.rubric_breakdown;
+        var dims = [
+          { key: "thesis_and_argumentation", label: "Thesis & Argumentation" },
+          { key: "evidence_and_counterarguments", label: "Evidence & Counterarguments" },
+          { key: "structure_and_cohesion", label: "Structure & Cohesion" },
+          { key: "academic_style_and_mechanics", label: "Academic Style & Mechanics" }
+        ];
+
+        var gridHtml = "";
+        dims.forEach(function(d) {
+          var item = rb[d.key] || { score: 4.0, max: 5.0, feedback: "" };
+          var pct = Math.round((item.score / item.max) * 100);
+          gridHtml += '<div class="rubric-card">' +
+            '<div>' +
+              '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">' +
+                '<span style="font-size:12px; font-weight:600; color:var(--text-ink);">' + d.label + '</span>' +
+                '<span class="rubric-card-score">' + item.score + ' <span style="font-size:11px; opacity:0.65;">/ ' + item.max + '</span></span>' +
+              '</div>' +
+              '<div style="width:100%; height:5px; background:var(--line); border-radius:3px; overflow:hidden; margin-bottom:8px;">' +
+                '<div style="width:' + pct + '%; height:100%; background:var(--accent-cta); border-radius:3px;"></div>' +
+              '</div>' +
+              '<div style="font-size:12px; color:var(--text-graphite); line-height:1.45;">' + (item.feedback || "") + '</div>' +
+            '</div>' +
+          '</div>';
+        });
+        rubricGrid.innerHTML = gridHtml;
+      }
+
+      // 3. Professor Executive Critique
+      var profSummary = document.getElementById("res-prof-summary");
+      var strengthsList = document.getElementById("res-strengths-list");
+      var shortcomingsList = document.getElementById("res-shortcomings-list");
+      var counterargsContainer = document.getElementById("res-counterarguments-container");
+
+      if (profSummary && data.professor_critique) {
+        profSummary.textContent = '"' + (data.professor_critique.executive_summary || "") + '"';
+      }
+
+      if (strengthsList && data.professor_critique && data.professor_critique.core_strengths) {
+        strengthsList.innerHTML = data.professor_critique.core_strengths.map(function(s) {
+          return '<li style="margin-bottom:6px;">' + s + '</li>';
+        }).join("");
+      }
+
+      if (shortcomingsList && data.professor_critique && data.professor_critique.critical_shortcomings) {
+        shortcomingsList.innerHTML = data.professor_critique.critical_shortcomings.map(function(s) {
+          return '<li style="margin-bottom:6px;">' + s + '</li>';
+        }).join("");
+      }
+
+      if (counterargsContainer && data.professor_critique && data.professor_critique.counterarguments_to_add) {
+        counterargsContainer.innerHTML = data.professor_critique.counterarguments_to_add.map(function(c) {
+          return '<div class="counterarg-card">' +
+            '<div style="font-size:13px; font-weight:600; color:var(--text-ink); margin-bottom:4px;">' +
+              '&middot; Opposing Stance: ' + c.opposing_viewpoint +
+            '</div>' +
+            '<div style="font-size:12px; color:var(--text-graphite); line-height:1.45; margin-bottom:4px;">' +
+              '<strong>Where to Integrate:</strong> ' + c.where_to_integrate +
+            '</div>' +
+            '<div style="font-size:12px; color:#059669; line-height:1.45;">' +
+              '<strong>Scholarly Value:</strong> ' + c.how_it_strengthens_paper +
+            '</div>' +
+          '</div>';
+        }).join("");
+      }
+
+      // 4. Annotated Text & Highlight Spans
+      renderAnnotatedSpans(originalText, data.inline_annotations || []);
+      renderAnnotationCards(data.inline_annotations || []);
+    }
+
+    function renderAnnotatedSpans(text, annotations) {
+      var container = document.getElementById("res-annotated-text");
+      if (!container) return;
+
+      var safeText = text;
+      // Sort annotations by original text occurrence to prevent overlap mangling
+      var validAnnotations = annotations.filter(function(a) {
+        return a.original_text && safeText.indexOf(a.original_text) !== -1;
+      });
+
+      // Replace matched substrings with clickable spans
+      validAnnotations.forEach(function(ann, idx) {
+        var catClass = "ann-hl-grammar";
+        if (ann.category === "ACADEMIC_REGISTER") catClass = "ann-hl-register";
+        else if (ann.category === "RHETORICAL_STRENGTH") catClass = "ann-hl-rhetoric";
+        else if (ann.category === "ARGUMENT_EXPANSION") catClass = "ann-hl-argument";
+
+        var span = '<span class="ann-highlight ' + catClass + '" id="hl-' + (ann.id || idx) + '" onclick="focusAnnotationCard('' + (ann.id || idx) + '')">' + ann.original_text + '</span>';
+        safeText = safeText.replace(ann.original_text, span);
+      });
+
+      container.innerHTML = safeText;
+    }
+
+    function renderAnnotationCards(annotations, filterCategory) {
+      var container = document.getElementById("res-annotations-cards-container");
+      var countBadge = document.getElementById("res-annotations-count");
+      if (!container) return;
+
+      var filtered = annotations;
+      if (filterCategory && filterCategory !== "ALL") {
+        filtered = annotations.filter(function(a) { return a.category === filterCategory; });
+      }
+
+      if (countBadge) countBadge.textContent = filtered.length;
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-steel); font-size:13px;">No annotations in this category.</div>';
+        return;
+      }
+
+      var html = "";
+      filtered.forEach(function(ann, idx) {
+        var cardId = ann.id || ('ann-' + idx);
+        var catLabel = "Grammar & Syntax";
+        var catColor = "#dc2626";
+        if (ann.category === "ACADEMIC_REGISTER") { catLabel = "Academic Register & Tone"; catColor = "#9333ea"; }
+        else if (ann.category === "RHETORICAL_STRENGTH") { catLabel = "Rhetorical Strength"; catColor = "#d97706"; }
+        else if (ann.category === "ARGUMENT_EXPANSION") { catLabel = "Scholarly Warrant & Expansion"; catColor = "#059669"; }
+
+        html += '<div class="annotation-card" id="card-' + cardId + '">' +
+          '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+            '<span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:' + catColor + '; display:flex; align-items:center; gap:6px;">' +
+              '<span style="width:7px; height:7px; border-radius:50%; background:' + catColor + ';"></span>' + catLabel +
+            '</span>' +
+            '<span class="mono" style="font-size:11px; color:var(--text-steel);">' + cardId + '</span>' +
+          '</div>' +
+
+          '<div style="background:var(--surface-2); border-left:3px solid ' + catColor + '; padding:8px 12px; margin-bottom:10px; font-family:var(--f-serif); font-size:13.5px; color:var(--text-ink);">' +
+            '&ldquo;' + ann.original_text + '&rdquo;' +
+          '</div>' +
+
+          '<div style="font-size:12.5px; color:var(--text-graphite); line-height:1.45; margin-bottom:8px;">' +
+            '<strong>Diagnosis:</strong> ' + ann.issue_diagnosis +
+          '</div>' +
+
+          (ann.professor_tip ? (
+            '<div style="font-size:12px; color:var(--text-steel); line-height:1.4; margin-bottom:10px; font-style:italic;">' +
+              '&middot; Faculty Tip: ' + ann.professor_tip +
+            '</div>'
+          ) : '') +
+
+          '<div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.25); border-radius:var(--radius-control); padding:10px 12px; margin-top:8px;">' +
+            '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;">' +
+              '<span style="font-size:11px; font-weight:600; text-transform:uppercase; color:#059669; letter-spacing:0.04em;">Polished Academic Rewrite:</span>' +
+              '<button type="button" class="btn-ghost" style="padding:2px 8px; font-size:11px;" onclick="copyRewriteText(this, '' + cardId + '')">Copy</button>' +
+            '</div>' +
+            '<div id="rewrite-text-' + cardId + '" style="font-size:13.5px; font-family:var(--f-serif); color:var(--text-ink); line-height:1.5;">' +
+              ann.suggested_rewrite +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      });
+
+      container.innerHTML = html;
+    }
+
+    function filterAnnotations(category, btn) {
+      var pills = document.querySelectorAll(".ann-filter-pill");
+      pills.forEach(function(p) { p.classList.remove("active"); });
+      if (btn) btn.classList.add("active");
+
+      if (currentEssayData && currentEssayData.inline_annotations) {
+        renderAnnotationCards(currentEssayData.inline_annotations, category);
+      }
+    }
+
+    function focusAnnotationCard(id) {
+      var card = document.getElementById("card-" + id);
+      if (card) {
+        document.querySelectorAll(".annotation-card").forEach(function(c) { c.classList.remove("active-target"); });
+        card.classList.add("active-target");
+        card.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      }
+    }
+
+    function copyRewriteText(btn, id) {
+      var elem = document.getElementById("rewrite-text-" + id);
+      if (!elem) return;
+      var text = elem.textContent.trim();
+      navigator.clipboard.writeText(text).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = "Copied!";
+        setTimeout(function() { btn.textContent = orig; }, 1500);
+      });
+    }
+
+    function copyFullReport(btn) {
+      if (!currentEssayData) return;
+      var d = currentEssayData;
+      var md = "# University Faculty Paper Review\n\n" +
+        "**Overall Grade:** " + (d.grades ? d.grades.letter_grade : "") + " (" + (d.grades ? d.grades.score_out_of_20 : "") + "/20.0)\n" +
+        "**Document Genre:** " + (d.document_analysis ? d.document_analysis.detected_type : "") + "\n" +
+        "**Discipline:** " + (d.document_analysis ? d.document_analysis.discipline : "") + "\n\n" +
+        "## Faculty Rubric Assessment\n" +
+        (d.grades ? d.grades.grade_summary : "") + "\n\n" +
+        "## Professor Executive Critique\n" +
+        (d.professor_critique ? d.professor_critique.executive_summary : "") + "\n\n" +
+        "### Key Strengths\n" +
+        ((d.professor_critique && d.professor_critique.core_strengths) ? d.professor_critique.core_strengths.map(function(s) { return "- " + s; }).join("\n") : "") + "\n\n" +
+        "### Revision Shortcomings\n" +
+        ((d.professor_critique && d.professor_critique.critical_shortcomings) ? d.professor_critique.critical_shortcomings.map(function(s) { return "- " + s; }).join("\n") : "") + "\n";
+
+      navigator.clipboard.writeText(md).then(function() {
+        var orig = btn.textContent;
+        btn.textContent = "Copied Markdown Report!";
+        setTimeout(function() { btn.textContent = orig; }, 1800);
+      });
+    }
+
+</script>
 </body>
 </html>

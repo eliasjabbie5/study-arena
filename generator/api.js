@@ -3,6 +3,101 @@
  * Supports Claude (Anthropic), ChatGPT (OpenAI), and Google Gemini via client-side BYOK.
  */
 
+
+var SAMPLE_MOCK_ESSAY_REVIEW = {
+  "document_analysis": {
+    "detected_type": "Argumentative Policy Paper",
+    "discipline": "Law & Economics / Industrial Organization",
+    "primary_objective": "Evaluating whether vertical integration in LLM foundation model APIs constitutes anti-competitive foreclosure under Section 2 of the Sherman Act.",
+    "academic_tone_rating": "Advanced Undergraduate / Early Postgraduate"
+  },
+  "grades": {
+    "letter_grade": "A-",
+    "score_out_of_20": 16.5,
+    "grade_summary": "An intellectually ambitious, well-researched critique that successfully applies multi-sided market frameworks to AI infrastructure. The paper demonstrates sophisticated synthesis of antitrust doctrine but would reach publishable distinction with deeper empirical calibration of switching costs.",
+    "rubric_breakdown": {
+      "thesis_and_argumentation": {
+        "score": 4.2,
+        "max": 5.0,
+        "feedback": "The thesis is provocative and falsifiable, avoiding the trap of generic tech skepticism."
+      },
+      "evidence_and_counterarguments": {
+        "score": 3.8,
+        "max": 5.0,
+        "feedback": "Strong doctrinal citations; however, open-weight models (e.g. LLaMA ecosystem) as a competitive discipline are insufficiently countered."
+      },
+      "structure_and_cohesion": {
+        "score": 4.3,
+        "max": 5.0,
+        "feedback": "Clear progression from technological bottlenecks (compute clusters) to economic market failures."
+      },
+      "academic_style_and_mechanics": {
+        "score": 4.2,
+        "max": 5.0,
+        "feedback": "Precise legal-economic diction with minimal conversational drift."
+      }
+    }
+  },
+  "professor_critique": {
+    "executive_summary": "This is an impressive, high-caliber essay that engages deeply with cutting-edge scholarship. You demonstrate command over both technological nuances (e.g. GPU cluster scaling) and legal standards (e.g. essential facilities doctrine). To elevate this to a top first-class grade (A+ / 18+), you must address the deflationary pressure of commoditized open-weight models.",
+    "core_strengths": [
+      "Rigorous application of the essential facilities doctrine to hyperscaler compute infrastructure.",
+      "Clear differentiation between model training capital costs and inference marginal costs.",
+      "Nuanced analysis of multi-homing versus single-homing API consumer behavior."
+    ],
+    "critical_shortcomings": [
+      "Overstatement of developer lock-in given standardized abstraction frameworks (e.g., LiteLLM, LangChain).",
+      "Occasional reliance on assertion rather than empirical pricing differentials between proprietary and open models."
+    ],
+    "counterarguments_to_add": [
+      {
+        "opposing_viewpoint": "Open-weight models commoditize the intelligence layer, preventing proprietary vendors from extracting monopoly rents.",
+        "where_to_integrate": "Section III, following the discussion of API pricing power.",
+        "how_it_strengthens_paper": "By refuting the 'open-source commoditization' thesis using compute-as-a-chokepoint arguments, you preempt the primary defense tech monopolists raise in court."
+      },
+      {
+        "opposing_viewpoint": "Dynamic efficiency: rapid innovation cycles render current market dominance temporary and vulnerable to algorithmic breakthroughs.",
+        "where_to_integrate": "Section IV before the conclusion.",
+        "how_it_strengthens_paper": "Demonstrates awareness of Schumpeterian creative destruction and explains why capital intensity insulates today's incumbents."
+      }
+    ]
+  },
+  "inline_annotations": [
+    {
+      "id": "ann-1",
+      "category": "ACADEMIC_REGISTER",
+      "original_text": "Tech giants are basically locking down all the best GPUs so smaller startups don't stand a chance.",
+      "issue_diagnosis": "Informal tone ('basically locking down', 'don\'t stand a chance') undermines an otherwise rigorous economic argument.",
+      "professor_tip": "Frame infrastructural advantage in terms of vertical foreclosure and capital barriers to entry.",
+      "suggested_rewrite": "Incumbent technology conglomerates exercise upstream foreclosure over high-bandwidth memory semiconductor clusters, substantially elevating structural barriers to entry for uncapitalized entrants."
+    },
+    {
+      "id": "ann-2",
+      "category": "ARGUMENT_EXPANSION",
+      "original_text": "Because switching models is hard, customers have to accept whatever prices the big platforms charge.",
+      "issue_diagnosis": "Assumes switching costs are prohibitive without specifying whether lock-in arises from proprietary embeddings, fine-tuning data pipelines, or API protocol incompatibility.",
+      "professor_tip": "Cite technical switching frictions specifically to justify your claim of price inelasticity.",
+      "suggested_rewrite": "High architectural switching costs\u2014rooted in proprietary vector embeddings and custom prompt orchestration\u2014render enterprise demand comparatively inelastic, granting dominant model providers significant pricing discretion."
+    },
+    {
+      "id": "ann-3",
+      "category": "GRAMMAR_SYNTAX",
+      "original_text": "Examining the market definition, several empirical indicators suggests anticompetitive tying.",
+      "issue_diagnosis": "Subject-verb disagreement: plural noun phrase 'several empirical indicators' requires the plural verb 'suggest'.",
+      "professor_tip": "Ensure verb agreement when modifying clauses separate subject and predicate.",
+      "suggested_rewrite": "Examining the market definition, several empirical indicators suggest anticompetitive tying."
+    },
+    {
+      "id": "ann-4",
+      "category": "RHETORICAL_STRENGTH",
+      "original_text": "It seems that maybe antitrust regulators might perhaps want to look into these cloud partnerships.",
+      "issue_diagnosis": "Excessive hedging ('seems that maybe', 'might perhaps') weakens your policy recommendation into timid speculation.",
+      "professor_tip": "Adopt an authoritative policy voice. State recommendations assertively with normative clarity.",
+      "suggested_rewrite": "Consequently, antitrust authorities should initiate formal Hart-Scott-Rodino structural reviews of cloud-model joint ventures."
+    }
+  ]
+};
+
 window.StudyArenaAPI = {
   MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials for business and economics students.
 
@@ -139,6 +234,93 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 - Exactly 6-8 MCQs total (including 2 labeled with 'trick': true).
 - Exactly 2 Short Answer questions with keyword grading rubrics.
 CRITICAL: Keep all body text concise and compact so the full output completes well within token limits and closes all JSON schema brackets cleanly.`,
+
+
+  PROFESSOR_ESSAY_PROMPT: `You are an elite University Professor, Academic Peer Reviewer, and Faculty Writing Director. Your objective is to perform a rigorous, constructive, and comprehensive critique of student essays, academic research papers, literature reviews, and empirical studies.
+
+You do not write the essay for the student. Instead, you provide doctoral-level academic feedback, identifying structural strengths, rhetorical weaknesses, grammatical errors, and missed scholarship opportunities, culminating in a standardized university grade.
+
+---
+
+### EVALUATION PIPELINE & STANDARDS
+
+#### 1. Document Genre & Intent Classification
+Before grading, automatically deduce the document type, target discipline, and rhetorical aim:
+- Genre Identification: (e.g., Argumentative Essay, Empirical Research Report, Systematic Literature Review, Policy Brief, Analytical Paper, Case Study, Rhetorical Analysis).
+- Target Audience & Register: Evaluate whether the draft conforms to conventions of the detected genre (e.g., APA/MLA/Chicago conventions, hedging language, third-person objective tone vs. argumentative assertiveness).
+
+#### 2. Comparative Benchmark against Gold-Standard Academic Literature
+Evaluate the submission against high-distinction, peer-reviewed university-level benchmarks:
+- Thesis & Core Stance: Is the thesis falsifiable, nuanced, and intellectually ambitious, or merely descriptive?
+- Dialectical Depth & Counterarguments: Does the author anticipate strong objections, alternate interpretations, and edge cases, or does it present a one-sided monologue?
+- Evidence & Scholarly Warrants: Are empirical claims backed by warrants, data, or peer-reviewed citations, or do they rely on assertions?
+- Structural Cohesion: Assess paragraph topic sentences, transitional logic between arguments, and conclusion synthesis (avoiding simple repetition).
+
+#### 3. Granular Sentence-Level Annotations & Rewrites
+Pinpoint exact text passages and categorize feedback into:
+- GRAMMAR_SYNTAX: Subject-verb agreement, dangling modifiers, punctuation, run-on sentences.
+- ACADEMIC_REGISTER: Replacing colloquial phrasing, filler words, or informal tone with scholarly diction.
+- RHETORICAL_STRENGTH: Rephrasing weak claims, removing unwarranted hedges, or sharpening clarity.
+- ARGUMENT_EXPANSION: Flagging where a counterargument, empirical citation, or theoretical backing is needed.
+For every annotation, provide the exact target quote (verbatim substring from the student essay so it can be matched and highlighted), the diagnosis, an actionable tip, and a polished rewrite.
+
+#### 4. Dual Grading Matrix (Real University Standards)
+Provide two correlated grades calibrated against real university faculty distributions:
+1. Letter Grade: A+, A, A-, B+, B, B-, C+, C, C-, D, or F.
+   - A Range (16.0 - 20.0): Publishable or first-class honors quality. Original insight, air-tight thesis, strong counterarguments, pristine scholarly tone.
+   - B Range (13.0 - 15.9): Solid upper-division work. Clear thesis and good structure, but contains mild argumentative gaps or pedestrian prose.
+   - C Range (10.0 - 12.9): Passing but superficial. Descriptive rather than analytical, unaddressed objections, weak evidence.
+   - D Range (8.0 - 9.9): Serious analytical or structural failures, disjointed arguments, poor academic register.
+   - F Range (0.0 - 7.9): Fails basic university criteria, absent thesis, incoherent claims, or pervasive language breakdown.
+2. Scale out of 20.0: European / International University Standard (e.g., 15.5/20).
+
+---
+
+### STRICT JSON OUTPUT FORMAT
+You must return ONLY a valid, parseable JSON object with NO markdown code blocks, NO backticks, and NO trailing text, matching this exact schema:
+
+{
+  "document_analysis": {
+    "detected_type": "string (e.g. Comparative Policy Analysis)",
+    "discipline": "string (e.g. Political Science / Economics)",
+    "primary_objective": "string (Summary of what the author is arguing or testing)",
+    "academic_tone_rating": "string (e.g. Advanced Scholarly, Intermediate Undergraduate, Colloquial)"
+  },
+  "grades": {
+    "letter_grade": "A | A- | B+ | B | B- | C+ | C | C- | D | F",
+    "score_out_of_20": 15.5,
+    "grade_summary": "string (2-3 sentences explaining why this exact grade was awarded based on faculty rubrics)",
+    "rubric_breakdown": {
+      "thesis_and_argumentation": { "score": 4.0, "max": 5.0, "feedback": "string" },
+      "evidence_and_counterarguments": { "score": 3.5, "max": 5.0, "feedback": "string" },
+      "structure_and_cohesion": { "score": 4.0, "max": 5.0, "feedback": "string" },
+      "academic_style_and_mechanics": { "score": 4.0, "max": 5.0, "feedback": "string" }
+    }
+  },
+  "professor_critique": {
+    "executive_summary": "string (Overall evaluation in a constructive, professorial voice)",
+    "core_strengths": ["string", "string"],
+    "critical_shortcomings": ["string", "string"],
+    "counterarguments_to_add": [
+      {
+        "opposing_viewpoint": "string",
+        "where_to_integrate": "string",
+        "how_it_strengthens_paper": "string"
+      }
+    ]
+  },
+  "inline_annotations": [
+    {
+      "id": "ann-1",
+      "category": "GRAMMAR_SYNTAX | ACADEMIC_REGISTER | RHETORICAL_STRENGTH | ARGUMENT_EXPANSION",
+      "original_text": "Exact substring from the essay to highlight",
+      "issue_diagnosis": "Detailed explanation of why this passage needs revision",
+      "professor_tip": "Advice on how to think about this revision",
+      "suggested_rewrite": "Polished academic rewrite of the target sentence or passage"
+    }
+  ]
+}`,
+
 
   sanitizeJsonControlChars: function(raw) {
     var out = [];
@@ -588,4 +770,127 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
       compiledHtml: compiledHtml
     };
   }
+,
+
+
+  reviewEssay: async function(essayText, rubricHint, onProgress) {
+    this.abort();
+    this.currentController = new AbortController();
+    var signal = this.currentController.signal;
+
+    var params = new URLSearchParams(window.location.search);
+    var mockMode = params.get("mock");
+    if (mockMode === "error") {
+      onProgress("Scanning rhetorical structure...", 20);
+      await new Promise(function(r) { setTimeout(r, 400); });
+      throw new Error("Simulated API Error (?mock=error active).");
+    }
+    if (mockMode === "ok" || mockMode === "essay") {
+      onProgress("Deconstructing thesis & genre conventions...", 25);
+      await new Promise(function(r) { setTimeout(r, 600); });
+      onProgress("Benchmarking against academic peer literature...", 55);
+      await new Promise(function(r) { setTimeout(r, 700); });
+      onProgress("Formulating counterarguments & dialectical critique...", 78);
+      await new Promise(function(r) { setTimeout(r, 600); });
+      onProgress("Finalizing dual university grade matrix...", 95);
+      await new Promise(function(r) { setTimeout(r, 500); });
+      return SAMPLE_MOCK_ESSAY_REVIEW;
+    }
+
+    var provider = localStorage.getItem("sa_ai_provider") || "gemini";
+    var apiKey = localStorage.getItem("sa_api_key_" + provider);
+
+    if (!apiKey) {
+      throw new Error("Missing " + provider.toUpperCase() + " API key. Please click the Settings Cog (\u2699) in the top-right header to configure your key.");
+    }
+
+    var userPrompt = "Please evaluate the following draft according to your academic professor review guidelines.\n\n";
+    if (rubricHint && rubricHint.trim()) {
+      userPrompt += "[STUDENT GOAL / RUBRIC / TOPIC NOTES]\n" + rubricHint.trim() + "\n\n";
+    }
+    userPrompt += "[ESSAY / PAPER CONTENT]\n" + essayText;
+
+    onProgress("Classifying document genre & target discipline...", 20);
+    var rawResponse = "";
+
+    if (provider === "claude") {
+      onProgress("Benchmarking against academic literature with Claude...", 45);
+      var modelName = localStorage.getItem("sa_model_claude") || "claude-3-5-sonnet-20241022";
+      var res = await fetch("https://api.anthropic.com/v1/messages", {
+        signal: signal,
+        method: "POST",
+        headers: {
+          "x-api-key": apiKey,
+          "anthropic-version": "2023-06-01",
+          "content-type": "application/json",
+          "dangerously-allow-browser": "true"
+        },
+        body: JSON.stringify({
+          model: modelName,
+          max_tokens: 4096,
+          system: this.PROFESSOR_ESSAY_PROMPT,
+          messages: [{ role: "user", content: userPrompt }]
+        })
+      });
+      if (!res.ok) {
+        var err = await res.text();
+        throw new Error("Anthropic API error (" + res.status + "): " + err);
+      }
+      var jsonRes = await res.json();
+      rawResponse = jsonRes.content[0].text;
+
+    } else if (provider === "openai") {
+      onProgress("Benchmarking against academic literature with OpenAI...", 45);
+      var modelName = localStorage.getItem("sa_model_openai") || "gpt-4o";
+      var res = await fetch("https://api.openai.com/v1/chat/completions", {
+        signal: signal,
+        method: "POST",
+        headers: {
+          "Authorization": "Bearer " + apiKey,
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          model: modelName,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: this.PROFESSOR_ESSAY_PROMPT },
+            { role: "user", content: userPrompt }
+          ]
+        })
+      });
+      if (!res.ok) {
+        var err = await res.text();
+        throw new Error("OpenAI API error (" + res.status + "): " + err);
+      }
+      var jsonRes = await res.json();
+      rawResponse = jsonRes.choices[0].message.content;
+
+    } else if (provider === "gemini") {
+      onProgress("Evaluating thesis & argumentative warrants with Gemini...", 45);
+      var modelName = localStorage.getItem("sa_model_gemini") || "gemini-1.5-flash";
+      var url = "https://generativelanguage.googleapis.com/v1beta/models/" + modelName + ":generateContent?key=" + apiKey;
+      var res = await fetch(url, {
+        signal: signal,
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: this.PROFESSOR_ESSAY_PROMPT }] },
+          contents: [{ parts: [{ text: userPrompt }] }],
+          generationConfig: { response_mime_type: "application/json" }
+        })
+      });
+      if (!res.ok) {
+        var errBody = await res.text();
+        throw new Error("Gemini API error (" + res.status + "): " + errBody);
+      }
+      var jsonRes = await res.json();
+      rawResponse = jsonRes.candidates[0].content.parts[0].text;
+    }
+
+    onProgress("Synthesizing professor annotations & dual grading matrix...", 85);
+    var reviewData = this.cleanJsonResponse(rawResponse);
+    onProgress("Review complete.", 100);
+    return reviewData;
+  }
+
 };
