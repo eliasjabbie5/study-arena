@@ -613,40 +613,40 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Checking API connection...", 25);
+      onProgress("Checking API connection & active models...", 25);
       var allModels = await this.fetchClaudeModels(apiKey);
       console.log("Anthropic /v1/models returned:", allModels);
 
-      // Clear any previously-saved model (Fable, research tier IDs, etc.)
-      localStorage.removeItem("sa_model_claude");
-
-      // Proven Anthropic aliases - try these FIRST before anything from /v1/models.
-      // The /v1/models endpoint may list internal research IDs like claude-haiku-5-5
-      // that do NOT work via /v1/messages on the standard API tier.
-      var SAFE_ALIASES = [
-        "claude-3-5-sonnet-20241022",
-        "claude-3-5-sonnet-latest",
-        "claude-3-5-haiku-20241022",
-        "claude-3-5-haiku-latest",
-        "claude-3-haiku-20240307"
-      ];
-
       var candidateModels = [];
 
-      // 1. Standard aliases first
-      SAFE_ALIASES.forEach(function(m) {
-        if (!candidateModels.includes(m)) candidateModels.push(m);
-      });
-
-      // 2. Any safe models from /v1/models not already in the list
-      if (allModels.length > 0) {
+      // 1. Account-specific active models from /v1/models first
+      if (allModels && allModels.length > 0) {
         allModels.filter(function(m) {
           var l = m.toLowerCase();
-          return !l.includes("fable") && !l.includes("opus") && !l.includes("mythos");
+          return !l.includes("fable") && !l.includes("mythos");
         }).forEach(function(m) {
           if (!candidateModels.includes(m)) candidateModels.push(m);
         });
       }
+
+      // 2. Known production model IDs across Anthropic tiers
+      var KNOWN_MODELS = [
+        "claude-3-7-sonnet-20250219",
+        "claude-3-7-sonnet-latest",
+        "claude-3-7-sonnet",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620",
+        "claude-3-5-sonnet-latest",
+        "claude-3-5-haiku-20241022",
+        "claude-3-5-haiku-latest",
+        "claude-3-haiku-20240307",
+        "claude-3-opus-20240229",
+        "claude-3-opus-latest"
+      ];
+
+      KNOWN_MODELS.forEach(function(m) {
+        if (!candidateModels.includes(m)) candidateModels.push(m);
+      });
 
       console.log("Candidate models to try:", candidateModels);
       var attemptErrors = [];
@@ -826,17 +826,40 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     var rawResponse = "";
 
     if (provider === "claude") {
-      onProgress("Benchmarking against academic literature with Claude...", 45);
-      var candidateModels = [
+      onProgress("Discovering active Claude models for key...", 25);
+      var allModels = await this.fetchClaudeModels(apiKey);
+      console.log("Anthropic /v1/models returned:", allModels);
+
+      var candidateModels = [];
+
+      // 1. Account-specific active models from /v1/models first
+      if (allModels && allModels.length > 0) {
+        allModels.filter(function(m) {
+          var l = m.toLowerCase();
+          return !l.includes("fable") && !l.includes("mythos");
+        }).forEach(function(m) {
+          if (!candidateModels.includes(m)) candidateModels.push(m);
+        });
+      }
+
+      // 2. Known production model IDs across Anthropic tiers
+      var KNOWN_MODELS = [
+        "claude-3-7-sonnet-20250219",
+        "claude-3-7-sonnet-latest",
+        "claude-3-7-sonnet",
         "claude-3-5-sonnet-20241022",
+        "claude-3-5-sonnet-20240620",
         "claude-3-5-sonnet-latest",
         "claude-3-5-haiku-20241022",
-        "claude-3-haiku-20240307"
+        "claude-3-5-haiku-latest",
+        "claude-3-haiku-20240307",
+        "claude-3-opus-20240229",
+        "claude-3-opus-latest"
       ];
-      var storedModel = localStorage.getItem("sa_model_claude");
-      if (storedModel && !candidateModels.includes(storedModel) && storedModel.indexOf("claude") === 0) {
-        candidateModels.unshift(storedModel);
-      }
+
+      KNOWN_MODELS.forEach(function(m) {
+        if (!candidateModels.includes(m)) candidateModels.push(m);
+      });
 
       var lastError = null;
       var success = false;
@@ -888,7 +911,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       }
 
       if (!success && !rawResponse) {
-        throw new Error(lastError || "Could not complete review with Claude. Please verify your Anthropic API key in Settings.");
+        throw new Error("No active Claude model found for this key on Anthropic's API (last error: " + (lastError || "404") + "). Please verify in console.anthropic.com that your account has active model access and billing credits, or use the built-in free Gemini engine.");
       }
 
     } else if (provider === "openai") {
