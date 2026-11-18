@@ -516,23 +516,23 @@
     }
   };
 
-  // Check redirect OAuth token or dev_preview on load
+  // Check redirect OAuth token or dev_preview on load (synchronous for dev preview)
   if (typeof window !== 'undefined') {
-    setTimeout(function() {
-      if (window.location.search && window.location.search.includes('dev_preview=elias')) {
-        Auth.setUser({
-          uid: 'google_developer_elias',
-          displayName: 'Elias Jabbie',
-          email: DEVELOPER_EMAIL,
-          role: 'developer',
-          developerMode: true,
-          provider: 'google',
-          createdAt: new Date().toISOString()
-        });
-      } else if (Auth.checkOAuthRedirect) {
+    if (window.location.search && window.location.search.includes('dev_preview=elias')) {
+      Auth.setUser({
+        uid: 'google_developer_elias',
+        displayName: 'Elias Jabbie',
+        email: DEVELOPER_EMAIL,
+        role: 'developer',
+        developerMode: true,
+        provider: 'google',
+        createdAt: new Date().toISOString()
+      });
+    } else if (Auth.checkOAuthRedirect) {
+      setTimeout(function() {
         Auth.checkOAuthRedirect();
-      }
-    }, 100);
+      }, 50);
+    }
   }
 
   window.StudyArenaAuth = Auth;
