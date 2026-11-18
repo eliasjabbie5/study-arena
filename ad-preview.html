@@ -1,122 +1,92 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <title>Study Arena — High-Velocity Launch Film (Hazene 4-Part Edit)</title>
+  <title>Study Arena — 30s Launch Film (White Gallery Edition)</title>
   
-  <!-- Fonts strictly matching Study Arena Website -->
+  <!-- Exact Website Typography: Lora (Skinny/Delicate 300/400), Inter, JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap">
-  
-  <!-- GSAP for kinematic choreography -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,300;0,400;0,500;1,400&display=swap">
 
   <style>
+    /* ═══════════════════════════════════════════════════════════════
+       PERMANENT PURE WHITE THEME (Apple White Gallery & Luxury Emerald)
+       Strictly matching Study Arena website index.html
+       ═══════════════════════════════════════════════════════════════ */
     :root {
-      --f-serif: "Lora", ui-serif, Georgia, serif;
+      --f-serif: "Lora", ui-serif, Georgia, Cambria, serif;
       --f-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       --f-mono: "JetBrains Mono", ui-monospace, monospace;
-      
-      /* Dark Theme: Obsidian Precision with Luminous Emerald / Mint */
-      --bg-space: #060807;
-      --canvas-bg: #0A0E0C;
-      --card-bg: #111714;
-      --card-inner: #161F1A;
-      --card-border: rgba(255, 255, 255, 0.08);
-      --card-border-active: rgba(61, 220, 132, 0.4);
-      
-      --ink: #EEF4F0;
-      --ink-muted: #85988D;
-      --ink-dim: #4B5A51;
-      
-      --emerald: #3DDC84;
-      --emerald-dark: #0B7A4F;
-      --emerald-glow: rgba(61, 220, 132, 0.35);
-      --emerald-soft: rgba(61, 220, 132, 0.12);
-      
-      --danger: #FF5E5E;
-      --danger-soft: rgba(255, 94, 94, 0.14);
-      --danger-glow: rgba(255, 94, 94, 0.35);
-      
-      --gold: #FFB800;
-      --gold-soft: rgba(255, 184, 0, 0.14);
-      
-      --shadow-premium: 0 30px 80px -15px rgba(0, 0, 0, 0.8), 0 0 50px rgba(61, 220, 132, 0.12);
-    }
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-    [data-theme="light"] {
-      --bg-space: #EBEFEA;
+      /* Gallery Canvas */
+      --bg-studio: #F4F6F4;
       --canvas-bg: #FFFFFF;
-      --card-bg: #F4F7F4;
-      --card-inner: #FFFFFF;
-      --card-border: rgba(0, 0, 0, 0.08);
-      --card-border-active: rgba(11, 122, 79, 0.4);
+      --surface: #FFFFFF;
+      --surface-2: #F6F8F6;
       
+      /* Precision Lines & Borders */
+      --line: rgba(0, 0, 0, 0.08);
+      --line-subtle: rgba(0, 0, 0, 0.04);
+      --control-border: rgba(0, 0, 0, 0.12);
+      
+      /* Inks */
       --ink: #111815;
-      --ink-muted: #56645C;
-      --ink-dim: #94A39A;
+      --ink-graphite: #3E4A44;
+      --ink-steel: #718077;
       
-      --emerald: #0B7A4F;
-      --emerald-dark: #065436;
-      --emerald-glow: rgba(11, 122, 79, 0.25);
-      --emerald-soft: #E7F5EE;
+      /* Luxury Emerald Precision */
+      --accent: #0B7A4F;
+      --accent-hover: #08603E;
+      --accent-soft: #E7F5EE;
+      --accent-glow: rgba(11, 122, 79, 0.28);
       
+      /* Academic Trap & Correct States */
       --danger: #CF1322;
       --danger-soft: #FFF1F0;
-      --danger-glow: rgba(207, 19, 34, 0.2);
+      --danger-line: #FFCCC7;
+      --good: #389E0D;
+      --good-soft: #F6FFED;
+      --good-line: #B7EB8F;
       
-      --shadow-premium: 0 25px 60px -10px rgba(0, 0, 0, 0.12), 0 0 40px rgba(11, 122, 79, 0.08);
+      --shadow-float: rgba(0, 0, 0, 0.03) 0px 30px 40px, 
+                      rgba(0, 0, 0, 0.05) 0px 14px 18px, 
+                      rgba(0, 0, 0, 0.06) 0px 2px 6px;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
-      background-color: var(--bg-space);
+      background-color: var(--bg-studio);
       color: var(--ink);
       font-family: var(--f-sans);
+      font-weight: 300;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      padding: 24px;
       overflow-x: hidden;
-      background-image: radial-gradient(rgba(255, 255, 255, 0.06) 1px, transparent 1px);
-      background-size: 32px 32px;
-      transition: background-color 0.3s ease;
+      background-image: radial-gradient(rgba(0, 0, 0, 0.04) 1px, transparent 1px);
+      background-size: 28px 28px;
+      -webkit-font-smoothing: antialiased;
     }
 
-    /* Ambient Spotlight Glow */
-    .spotlight {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 800px;
-      height: 500px;
-      background: radial-gradient(ellipse at center, var(--emerald-glow), transparent 65%);
-      filter: blur(80px);
-      opacity: 0.35;
-      pointer-events: none;
-      z-index: 0;
-      transition: all 0.5s ease;
-    }
-
-    /* Master Wrapper */
-    .ad-container {
-      position: relative;
-      z-index: 1;
+    /* Outer Wrapper */
+    .film-wrap {
       width: 100%;
       max-width: 960px;
       display: flex;
       flex-direction: column;
       gap: 16px;
+      position: relative;
     }
 
-    /* Control & Meta Bar */
-    .director-bar {
+    /* Top Director Header */
+    .director-header {
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -127,185 +97,198 @@
       align-items: center;
       gap: 12px;
     }
-    .badge-live {
+    .live-chip {
       display: flex;
       align-items: center;
       gap: 6px;
       font-family: var(--f-mono);
       font-size: 11px;
       font-weight: 600;
+      letter-spacing: 0.05em;
       text-transform: uppercase;
-      letter-spacing: 0.06em;
-      padding: 5px 12px;
+      padding: 4px 12px;
       border-radius: 9999px;
-      background: var(--emerald-soft);
-      color: var(--emerald);
-      border: 1px solid var(--emerald-glow);
+      background: var(--accent-soft);
+      color: var(--accent);
+      border: 1px solid rgba(11, 122, 79, 0.2);
     }
-    .live-dot {
-      width: 7px;
-      height: 7px;
+    .live-pulse {
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
-      background: var(--emerald);
-      box-shadow: 0 0 10px var(--emerald);
-      animation: pulseLive 1.2s infinite ease-in-out;
+      background: var(--accent);
+      box-shadow: 0 0 8px var(--accent);
+      animation: pulseLive 1.4s infinite ease-in-out;
     }
     @keyframes pulseLive {
       0%, 100% { opacity: 1; transform: scale(1); }
-      50% { opacity: 0.4; transform: scale(0.8); }
+      50% { opacity: 0.35; transform: scale(0.8); }
     }
-    .timecode-display {
+    .timer-text {
       font-family: var(--f-mono);
       font-size: 13px;
-      color: var(--ink-muted);
-      letter-spacing: 0.5px;
+      color: var(--ink-steel);
       font-variant-numeric: tabular-nums;
     }
-    .director-actions {
+    .director-ctrls {
       display: flex;
-      align-items: center;
       gap: 8px;
     }
-    .btn-action {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+    .btn-ctrl {
+      background: var(--surface);
+      border: 1px solid var(--control-border);
       color: var(--ink);
-      padding: 7px 14px;
+      padding: 6px 14px;
       border-radius: 8px;
       font-size: 12px;
       font-family: var(--f-mono);
-      font-weight: 600;
+      font-weight: 500;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.16s ease;
+      transition: all 0.14s ease;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
     }
-    .btn-action:hover {
-      border-color: var(--ink-muted);
+    .btn-ctrl:hover {
+      background: var(--surface-2);
+      border-color: var(--ink-steel);
       transform: translateY(-1px);
     }
-    .btn-action:active {
-      transform: translateY(0);
-    }
 
-    /* Video Frame (16:9 Screen-in-Screen Canvas) */
+    /* ═══════════════════════════════════════════════════════════════
+       MAIN 16:9 SCREEN-IN-SCREEN CANVAS (PURE APPLE WHITE GALLERY)
+       ═══════════════════════════════════════════════════════════════ */
     .film-canvas {
       position: relative;
       width: 100%;
       aspect-ratio: 16 / 9;
       background: var(--canvas-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 22px;
+      border: 1px solid var(--line);
+      border-radius: 28px;
       overflow: hidden;
-      box-shadow: var(--shadow-premium);
+      box-shadow: var(--shadow-float);
       display: flex;
       align-items: center;
       justify-content: center;
-      transition: border-color 0.3s ease;
     }
 
-    /* Perspective Grid Floor */
-    .film-grid {
+    /* Subtle Architectural Floor Grid */
+    .canvas-grid {
       position: absolute;
       inset: 0;
       background-image: 
-        linear-gradient(to right, rgba(255, 255, 255, 0.035) 1px, transparent 1px),
-        linear-gradient(to bottom, rgba(255, 255, 255, 0.035) 1px, transparent 1px);
+        linear-gradient(to right, rgba(0, 0, 0, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(0, 0, 0, 0.025) 1px, transparent 1px);
       background-size: 44px 44px;
       pointer-events: none;
     }
 
-    /* Dynamic Laser / Scan HUD */
-    .hud-header {
+    /* Top HUD: Editorial Nav Bar from Website */
+    .hud-nav {
       position: absolute;
-      top: 18px;
-      left: 24px;
-      right: 24px;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 48px;
+      padding: 0 24px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      border-bottom: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.85);
+      backdrop-filter: blur(16px);
       z-index: 10;
       pointer-events: none;
     }
     .hud-brand {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-family: var(--f-mono);
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--ink-muted);
-      letter-spacing: 0.05em;
+      gap: 10px;
     }
-    .hud-sq {
-      width: 16px;
-      height: 16px;
-      border-radius: 4px;
-      background: var(--emerald);
-      color: #060807;
+    .hud-logo-sq {
+      width: 24px;
+      height: 24px;
+      background: var(--ink);
+      color: #FFFFFF;
       display: grid;
       place-items: center;
-      font-size: 10px;
-      font-weight: 800;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 4px;
     }
-    .audio-wave {
+    .hud-title {
+      font-weight: 600;
+      font-size: 13.5px;
+      letter-spacing: -0.02em;
+    }
+    .hud-badge {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 4px;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      color: var(--ink-steel);
+    }
+    .hud-audio-wave {
       display: flex;
       align-items: flex-end;
       gap: 3px;
-      height: 16px;
+      height: 14px;
     }
     .wave-bar {
-      width: 3px;
-      height: 6px;
-      background: var(--emerald);
+      width: 2.5px;
+      height: 4px;
+      background: var(--accent);
       border-radius: 2px;
-      animation: waveBeat 0.8s infinite ease-in-out alternate;
+      animation: audioBeat 0.7s infinite alternate ease-in-out;
     }
-    .wave-bar:nth-child(2) { animation-delay: 0.2s; height: 14px; }
-    .wave-bar:nth-child(3) { animation-delay: 0.4s; height: 10px; }
-    .wave-bar:nth-child(4) { animation-delay: 0.1s; height: 16px; }
-    .wave-bar:nth-child(5) { animation-delay: 0.3s; height: 8px; }
-    @keyframes waveBeat {
-      0% { height: 4px; opacity: 0.4; }
-      100% { height: 16px; opacity: 1; }
+    .wave-bar:nth-child(2) { animation-delay: 0.15s; height: 12px; }
+    .wave-bar:nth-child(3) { animation-delay: 0.35s; height: 8px; }
+    .wave-bar:nth-child(4) { animation-delay: 0.1s; height: 14px; }
+    .wave-bar:nth-child(5) { animation-delay: 0.25s; height: 6px; }
+    @keyframes audioBeat {
+      0% { height: 3px; opacity: 0.35; }
+      100% { height: 14px; opacity: 1; }
     }
 
-    /* Virtual Mouse Cursor that acts in the ad */
-    .virtual-cursor {
+    /* Virtual Realistic Mouse Cursor */
+    .v-cursor {
       position: absolute;
       top: 50%;
       left: 50%;
-      width: 28px;
-      height: 28px;
+      width: 26px;
+      height: 26px;
       z-index: 99;
       pointer-events: none;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.25));
       transition: transform 0.08s linear, opacity 0.2s ease;
-      filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.6));
       opacity: 0;
     }
-    .virtual-cursor.visible { opacity: 1; }
-    .virtual-cursor svg {
+    .v-cursor.visible { opacity: 1; }
+    .v-cursor svg {
       width: 100%;
       height: 100%;
-      fill: #FFFFFF;
-      stroke: #000000;
+      fill: #111815;
+      stroke: #FFFFFF;
       stroke-width: 1.5;
     }
 
-    /* SCENES SYSTEM */
+    /* Film Scenes */
     .film-scene {
       position: absolute;
       inset: 0;
-      padding: 40px;
+      padding: 60px 40px 30px;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
       opacity: 0;
       pointer-events: none;
-      transform: scale(0.96) translateY(8px);
-      transition: opacity 0.35s cubic-bezier(0.16, 1, 0.3, 1), transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: scale(0.97) translateY(6px);
+      transition: opacity 0.35s var(--ease-out), transform 0.35s var(--ease-out);
     }
     .film-scene.active {
       opacity: 1;
@@ -313,69 +296,71 @@
       transform: scale(1) translateY(0);
     }
 
-    /* ═══════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
        PHASE 1: PROBLEM (0:00 - 0:06)
-       Chaotic dread: Notifications popping, slide panic, 187 slides
-       ═══════════════════════════════════════════════════════ */
-    .p1-wrap {
+       Skinny Lora typography, chaotic student notifications popping
+       ═══════════════════════════════════════════════════════════════ */
+    .s1-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
-      max-width: 680px;
+      max-width: 660px;
       position: relative;
     }
-    .p1-alarm-chip {
+    .eyebrow-chip {
       font-family: var(--f-mono);
       font-size: 11px;
-      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
       color: var(--danger);
       background: var(--danger-soft);
-      border: 1px solid var(--danger-glow);
-      padding: 6px 14px;
+      border: 1px solid var(--danger-line);
+      padding: 4px 12px;
       border-radius: 9999px;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: 14px;
+      margin-bottom: 16px;
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      animation: alertJitter 2.5s infinite ease-in-out;
+      animation: alertPulse 2s infinite ease-in-out;
     }
-    @keyframes alertJitter {
+    @keyframes alertPulse {
       0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.04); box-shadow: 0 0 20px var(--danger-glow); }
+      50% { transform: scale(1.03); }
     }
-    .p1-headline {
+    .s1-headline {
       font-family: var(--f-serif);
-      font-size: clamp(28px, 4.4vw, 46px);
-      font-weight: 500;
-      line-height: 1.15;
-      letter-spacing: -0.03em;
+      font-size: clamp(28px, 4.2vw, 44px);
+      font-weight: 300; /* Skinny Lora */
+      line-height: 1.18;
+      letter-spacing: -0.025em;
       color: var(--ink);
-      margin-bottom: 16px;
+      margin-bottom: 12px;
     }
-    .p1-headline .serif-italic {
+    .s1-headline .serif-italic {
+      font-family: var(--f-serif);
       font-style: italic;
-      color: var(--emerald);
+      font-weight: 400;
+      color: var(--accent);
     }
-    .p1-headline .strike-pain {
+    .s1-headline .strike-pain {
       color: var(--danger);
       text-decoration: line-through;
-      text-decoration-thickness: 3px;
+      text-decoration-thickness: 2.5px;
+      opacity: 0.9;
     }
 
-    /* Chaotic floating panic notifications */
-    .floating-cards-layer {
+    /* Floating Panic Cards Layer */
+    .panic-layer {
       position: relative;
       width: 100%;
       height: 110px;
-      margin-top: 10px;
+      margin-top: 8px;
     }
     .panic-card {
       position: absolute;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      border: 1px solid var(--line);
       border-radius: 12px;
       padding: 10px 16px;
       display: flex;
@@ -384,361 +369,386 @@
       font-size: 13px;
       font-family: var(--f-mono);
       color: var(--ink);
-      box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-      animation: floatBob 3s infinite ease-in-out alternate;
+      box-shadow: var(--shadow-float);
+      animation: panicBob 3s infinite ease-in-out alternate;
     }
-    .panic-card.card-1 {
-      top: 10px; left: 10%;
-      transform: rotate(-4deg);
-      border-color: rgba(255, 94, 94, 0.4);
+    .panic-card.c1 {
+      top: 6px; left: 6%;
+      transform: rotate(-3.5deg);
+      border-color: rgba(207, 19, 34, 0.3);
     }
-    .panic-card.card-2 {
-      top: 45px; right: 12%;
-      transform: rotate(3deg);
-      border-color: rgba(255, 184, 0, 0.4);
-      animation-delay: -1.2s;
+    .panic-card.c2 {
+      top: 48px; right: 8%;
+      transform: rotate(2.5deg);
+      border-color: rgba(0, 0, 0, 0.12);
+      animation-delay: -1s;
     }
-    .panic-card.card-3 {
-      top: 55px; left: 32%;
+    .panic-card.c3 {
+      top: 58px; left: 30%;
       transform: rotate(-1deg);
-      background: #180D0D;
-      color: #FFA39E;
-      border-color: var(--danger);
-      animation-delay: -0.6s;
+      background: var(--danger-soft);
+      border-color: var(--danger-line);
+      color: var(--danger);
+      animation-delay: -1.6s;
     }
-    @keyframes floatBob {
-      0% { transform: translateY(0) rotate(-3deg); }
-      100% { transform: translateY(-8px) rotate(-1deg); }
+    @keyframes panicBob {
+      0% { transform: translateY(0) rotate(-2deg); }
+      100% { transform: translateY(-7px) rotate(-1deg); }
     }
 
-    /* ═══════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
        PHASE 2: USE CASE (0:06 - 0:19)
-       Drag-and-drop ingestion, laser scanner, dynamic pipeline
-       ═══════════════════════════════════════════════════════ */
-    .p2-layout {
+       Exact website dropzone, laser scanner, dynamic pipeline steps
+       ═══════════════════════════════════════════════════════════════ */
+    .s2-wrap {
       width: 100%;
       max-width: 660px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 16px;
+      gap: 14px;
     }
-    .p2-dropzone {
+    /* Exactly matching .dropzone-box from index.html */
+    .dropzone-box-mock {
       width: 100%;
-      background: var(--card-bg);
-      border: 2px dashed rgba(61, 220, 132, 0.4);
-      border-radius: 18px;
-      padding: 24px 20px;
+      border: 1.5px dashed var(--line);
+      border-radius: 28px;
+      padding: 30px 24px;
+      text-align: center;
+      background: var(--surface-2);
+      position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
       gap: 12px;
-      position: relative;
-      overflow: hidden;
-      box-shadow: 0 0 40px rgba(61, 220, 132, 0.1);
-      transition: all 0.3s ease;
+      box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+      transition: all 180ms var(--ease-out);
     }
-    .p2-dropzone.hovered {
-      border-color: var(--emerald);
-      background: rgba(61, 220, 132, 0.06);
-      transform: scale(1.02);
+    .dropzone-box-mock.hovered {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: scale(1.015);
     }
-    .p2-laser-scan {
+    .drop-laser {
       position: absolute;
-      left: 0;
       top: 0;
+      left: 0;
       width: 100%;
-      height: 3px;
-      background: linear-gradient(90deg, transparent, var(--emerald), transparent);
-      box-shadow: 0 0 20px var(--emerald);
+      height: 2.5px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      box-shadow: 0 0 14px var(--accent);
       opacity: 0;
     }
-    .p2-laser-scan.scanning {
+    .drop-laser.active {
       opacity: 1;
       animation: laserSweep 1.6s infinite linear;
     }
     @keyframes laserSweep {
       0% { top: 0%; opacity: 0; }
-      20% { opacity: 1; }
-      80% { opacity: 1; }
+      15% { opacity: 1; }
+      85% { opacity: 1; }
       100% { top: 100%; opacity: 0; }
     }
-    .p2-drag-asset {
-      background: var(--card-inner);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 8px 16px;
+    .pdf-card-draggable {
+      background: #FFFFFF;
+      border: 1px solid var(--control-border);
+      border-radius: 12px;
+      padding: 9px 18px;
       display: flex;
       align-items: center;
       gap: 10px;
       font-family: var(--f-mono);
       font-size: 13px;
       color: var(--ink);
-      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-      transition: transform 0.3s ease;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
+      transition: all 0.25s var(--ease-out);
     }
-    .p2-drag-asset.dropping {
-      transform: translateY(12px) scale(0.96);
-      border-color: var(--emerald);
+    .pdf-card-draggable.dropped {
+      border-color: var(--accent);
+      background: var(--accent-soft);
+      transform: translateY(10px) scale(0.96);
     }
-    .pipeline-stepper {
+    .pipeline-list {
       width: 100%;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 7px;
     }
-    .pipe-step {
+    .pipe-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
+      background: #FFFFFF;
+      border: 1px solid var(--line);
       border-radius: 10px;
-      padding: 10px 16px;
-      font-size: 13px;
+      padding: 9px 16px;
+      font-size: 12.5px;
       font-family: var(--f-mono);
-      color: var(--ink-muted);
-      transition: all 0.25s ease;
+      color: var(--ink-steel);
+      transition: all 0.2s ease;
     }
-    .pipe-step.active {
-      border-color: var(--card-border-active);
-      background: var(--emerald-soft);
+    .pipe-item.active {
+      border-color: rgba(11, 122, 79, 0.4);
+      background: var(--accent-soft);
       color: var(--ink);
     }
-    .pipe-step.done {
-      border-color: var(--emerald);
-      color: var(--emerald);
-      background: rgba(61, 220, 132, 0.08);
+    .pipe-item.done {
+      border-color: var(--good-line);
+      background: var(--good-soft);
+      color: var(--good);
     }
-    .pipe-tag {
-      font-size: 11px;
+    .pipe-badge {
+      font-size: 10px;
       font-weight: 700;
-      padding: 3px 8px;
+      padding: 2px 7px;
       border-radius: 4px;
-      background: var(--card-inner);
-      color: var(--ink-muted);
+      background: var(--surface-2);
+      color: var(--ink-steel);
     }
-    .pipe-step.done .pipe-tag {
-      background: var(--emerald);
-      color: #060807;
+    .pipe-item.done .pipe-badge {
+      background: var(--good);
+      color: #FFFFFF;
     }
 
-    /* ═══════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
        PHASE 3: BENEFITS (0:19 - 0:24)
-       Interactive gameplay, choice click, particle XP explosion
-       ═══════════════════════════════════════════════════════ */
-    .p3-wrap {
+       Exact website .qcard, chips, options, feedback reveal, XP
+       ═══════════════════════════════════════════════════════════════ */
+    .s3-wrap {
       width: 100%;
       max-width: 680px;
       display: flex;
       flex-direction: column;
-      gap: 14px;
       align-items: center;
-    }
-    .p3-badge-trio {
-      display: flex;
-      gap: 10px;
-    }
-    .trio-chip {
-      font-family: var(--f-mono);
-      font-size: 11px;
-      font-weight: 700;
-      text-transform: uppercase;
-      padding: 6px 14px;
-      border-radius: 9999px;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      color: var(--ink-muted);
-      letter-spacing: 0.06em;
-      transition: all 0.25s ease;
-    }
-    .trio-chip.active {
-      background: var(--emerald);
-      color: #060807;
-      border-color: var(--emerald);
-      box-shadow: 0 0 18px var(--emerald-glow);
-      transform: translateY(-2px);
-    }
-
-    /* Interactive Game Card */
-    .arena-game-card {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 16px;
-      padding: 22px;
-      display: flex;
-      flex-direction: column;
       gap: 14px;
-      box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-      position: relative;
-      overflow: hidden;
     }
-    .card-topbar {
+    .benefit-chips-row {
       display: flex;
-      align-items: center;
-      justify-content: space-between;
-      font-family: var(--f-mono);
-      font-size: 11px;
-      color: var(--ink-muted);
-    }
-    .card-prompt {
-      font-family: var(--f-serif);
-      font-size: 18px;
-      font-weight: 500;
-      line-height: 1.35;
-      color: var(--ink);
-    }
-    .card-choices {
-      display: grid;
       gap: 8px;
     }
-    .card-choice {
-      background: var(--card-inner);
-      border: 1.5px solid var(--card-border);
-      border-radius: 10px;
-      padding: 12px 16px;
-      font-size: 13.5px;
+    .nav-tab-mock {
+      background: none;
+      border: 1px solid var(--line);
+      padding: 5px 14px;
+      font-family: var(--f-sans);
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--ink-graphite);
+      border-radius: 9999px;
+      background: #FFFFFF;
+      transition: all 140ms var(--ease-out);
+    }
+    .nav-tab-mock.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: rgba(11, 122, 79, 0.3);
+      font-weight: 600;
+    }
+
+    /* Exactly matching .qcard from engine/head.html */
+    .qcard-mock {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 24px;
+      padding: 24px 28px;
+      display: grid;
+      gap: 14px;
+      box-shadow: var(--shadow-float);
+      position: relative;
+    }
+    .qcard-top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--ink);
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-      cursor: pointer;
     }
-    .card-choice:hover {
-      border-color: var(--ink-muted);
+    .q-chips {
+      display: flex;
+      gap: 8px;
     }
-    .card-choice.active-selection {
-      border-color: var(--emerald);
-      background: var(--emerald-soft);
-      transform: scale(1.015);
-      box-shadow: 0 0 20px var(--emerald-glow);
-    }
-    .card-choice.trap-shake {
-      border-color: var(--danger);
-      background: var(--danger-soft);
-      color: #FFA39E;
-      animation: trapShake 0.4s ease;
-    }
-    @keyframes trapShake {
-      0%, 100% { transform: translateX(0); }
-      20%, 60% { transform: translateX(-6px); }
-      40%, 80% { transform: translateX(6px); }
-    }
-    .choice-badge {
+    .chip-element {
       font-family: var(--f-mono);
       font-size: 11px;
-      font-weight: 700;
-      padding: 2px 8px;
-      border-radius: 4px;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--ink-steel);
+      border-radius: 99px;
+      padding: 2px 10px;
     }
-    .choice-badge.badge-ok {
-      background: var(--emerald);
-      color: #060807;
+    .chip-element.t-mcq {
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-color: transparent;
     }
-    .choice-badge.badge-no {
-      background: var(--danger);
-      color: #FFFFFF;
+    .qtext-mock {
+      font-family: var(--f-serif);
+      font-size: 19px;
+      font-weight: 500;
+      line-height: 1.35;
+      letter-spacing: -.02em;
+      color: var(--ink);
+    }
+    .opts-mock {
+      display: grid;
+      gap: 9px;
+    }
+    .opt-mock {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      text-align: left;
+      background: var(--surface-2);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      transition: all 140ms var(--ease-out);
+      cursor: pointer;
+    }
+    .opt-mock .k {
+      font-family: var(--f-mono);
+      font-size: 11px;
+      font-weight: 600;
+      min-width: 24px;
+      height: 24px;
+      border-radius: 6px;
+      display: grid;
+      place-items: center;
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      flex: none;
+      color: var(--ink);
+    }
+    .opt-mock.ok {
+      border-color: var(--good);
+      background: var(--good-soft);
+    }
+    .opt-mock.no {
+      border-color: var(--danger);
+      background: var(--danger-soft);
+    }
+    /* Explanatory feedback box revealing */
+    .fb-mock {
+      border-radius: 12px;
+      padding: 10px 14px;
+      border: 1px solid var(--good-line);
+      background: var(--good-soft);
+      font-size: 12.5px;
+      line-height: 1.4;
+      color: var(--good);
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .fb-mock strong { font-weight: 600; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
-    /* Floating XP Particles & Rank Up Banner */
-    .xp-float-toast {
+    /* Floating XP Toast */
+    .xp-toast-chip {
       position: absolute;
       top: 14px;
       right: 20px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: #060807;
-      border: 1.5px solid var(--emerald);
-      padding: 6px 14px;
+      gap: 6px;
+      background: #FFFFFF;
+      border: 1px solid var(--good);
+      color: var(--good);
+      padding: 5px 12px;
       border-radius: 9999px;
       font-family: var(--f-mono);
-      font-size: 12px;
+      font-size: 11px;
       font-weight: 700;
-      color: var(--emerald);
-      box-shadow: 0 0 25px var(--emerald-glow);
+      box-shadow: 0 4px 15px rgba(56, 158, 13, 0.2);
       opacity: 0;
-      transform: translateY(10px) scale(0.9);
-      transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+      transform: translateY(8px);
+      transition: all 0.3s var(--ease-out);
     }
-    .xp-float-toast.show {
+    .xp-toast-chip.show {
       opacity: 1;
-      transform: translateY(0) scale(1);
+      transform: translateY(0);
     }
 
-    /* ═══════════════════════════════════════════════════════
+    /* ═══════════════════════════════════════════════════════════════
        PHASE 4: OUTRO (0:24 - 0:30)
-       Prestige lockup, shiny CTA, student endorsement badges
-       ═══════════════════════════════════════════════════════ */
-    .p4-wrap {
+       Skinny Lora prestige lockup, metallic emerald CTA button
+       ═══════════════════════════════════════════════════════════════ */
+    .s4-wrap {
       display: flex;
       flex-direction: column;
       align-items: center;
       text-align: center;
       max-width: 620px;
-      gap: 18px;
+      gap: 16px;
     }
-    .p4-logo-hero {
+    .s4-logo {
       display: flex;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
     }
-    .p4-emblem {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--emerald), var(--emerald-dark));
+    .s4-emblem {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #FFFFFF;
       display: grid;
       place-items: center;
       font-family: var(--f-mono);
-      font-size: 24px;
-      font-weight: 800;
-      color: #060807;
-      box-shadow: 0 0 35px var(--emerald-glow);
+      font-size: 20px;
+      font-weight: 700;
+      box-shadow: 0 8px 24px var(--accent-glow);
     }
-    .p4-title {
+    .s4-brand-text {
       font-family: var(--f-serif);
-      font-size: clamp(34px, 4.6vw, 48px);
-      font-weight: 600;
-      letter-spacing: -0.03em;
+      font-size: 38px;
+      font-weight: 400;
+      letter-spacing: -0.02em;
       color: var(--ink);
     }
-    .p4-tagline {
+    .s4-subtext {
       font-family: var(--f-serif);
-      font-size: 21px;
+      font-size: 22px;
+      font-weight: 300; /* Skinny Lora */
       line-height: 1.4;
-      color: var(--ink-muted);
+      color: var(--ink-graphite);
     }
-    .p4-tagline .serif-italic {
+    .s4-subtext .serif-italic {
+      font-family: var(--f-serif);
       font-style: italic;
-      color: var(--emerald);
+      font-weight: 400;
+      color: var(--accent);
     }
-    .p4-cta-metallic {
+    /* Exactly matching the metallic emerald CTA from index.html */
+    .btn-metallic-cta {
       position: relative;
-      background: var(--btn-metallic-grad, linear-gradient(180deg, #5CE69A 0%, #3DDC84 65%, #2CB86B 100%));
-      color: #04140B;
+      background: linear-gradient(180deg, #138E5E 0%, #0B7A4F 60%, #075C3B 100%);
+      color: #FFFFFF;
       font-family: var(--f-mono);
-      font-size: 15px;
-      font-weight: 700;
-      padding: 14px 34px;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+      padding: 13px 32px;
       border-radius: 9999px;
       text-decoration: none;
       display: inline-flex;
       align-items: center;
       gap: 10px;
-      box-shadow: 0 10px 30px var(--emerald-glow);
+      box-shadow: 0 10px 25px var(--accent-glow);
       overflow: hidden;
-      transition: all 0.2s ease;
+      transition: all 0.16s ease;
       cursor: pointer;
     }
-    .p4-cta-metallic:hover {
-      transform: scale(1.04);
-      box-shadow: 0 15px 45px var(--emerald-glow);
+    .btn-metallic-cta:hover {
+      transform: scale(1.03);
+      box-shadow: 0 14px 35px var(--accent-glow);
     }
-    /* Sheen Sweep */
-    .p4-cta-metallic::after {
+    .btn-metallic-cta::after {
       content: "";
       position: absolute;
       top: -50%;
@@ -747,24 +757,24 @@
       height: 200%;
       background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
       transform: rotate(25deg);
-      animation: sheenPass 2.8s infinite ease-in-out;
+      animation: sheenSweep 2.8s infinite ease-in-out;
     }
-    @keyframes sheenPass {
+    @keyframes sheenSweep {
       0% { left: -60%; }
       30%, 100% { left: 140%; }
     }
-    .p4-endorse-row {
+    .s4-trust-row {
       display: flex;
       align-items: center;
       gap: 12px;
       font-family: var(--f-mono);
       font-size: 11px;
-      color: var(--ink-dim);
+      color: var(--ink-steel);
     }
 
-    /* ═══════════════════════════════════════════════════════
-       HAZENE 4-BLOCK STRUCTURAL TIMELINE BAR (BOTTOM)
-       ═══════════════════════════════════════════════════════ */
+    /* ═══════════════════════════════════════════════════════════════
+       HAZENE 4-BLOCK STRUCTURAL TIMELINE (BOTTOM - WHITE GALLERY)
+       ═══════════════════════════════════════════════════════════════ */
     .timeline-strip {
       width: 100%;
       display: grid;
@@ -772,23 +782,23 @@
       gap: 10px;
     }
     .t-cell {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
+      background: #FFFFFF;
+      border: 1px solid var(--line);
+      border-radius: 12px;
       padding: 12px 14px;
       display: flex;
       flex-direction: column;
       gap: 6px;
       cursor: pointer;
-      transition: all 0.2s ease;
-      position: relative;
+      transition: all 0.16s ease;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     }
     .t-cell:hover {
-      border-color: var(--card-border-active);
+      border-color: rgba(0, 0, 0, 0.2);
     }
     .t-cell.active {
-      border-color: var(--emerald);
-      background: var(--emerald-soft);
+      border-color: var(--accent);
+      background: var(--accent-soft);
     }
     .t-cell-head {
       display: flex;
@@ -796,75 +806,73 @@
       justify-content: space-between;
       font-family: var(--f-mono);
       font-size: 11px;
-      font-weight: 700;
+      font-weight: 600;
       text-transform: uppercase;
-      color: var(--ink-muted);
+      color: var(--ink-steel);
       letter-spacing: 0.05em;
     }
     .t-cell.active .t-cell-head {
-      color: var(--emerald);
+      color: var(--accent);
+      font-weight: 700;
     }
     .t-cell-time {
       font-size: 10px;
       font-weight: 500;
-      color: var(--ink-dim);
+      color: var(--ink-steel);
     }
     .t-rail {
       width: 100%;
       height: 4px;
-      background: var(--card-inner);
+      background: var(--surface-2);
       border-radius: 9999px;
       overflow: hidden;
+      border: 1px solid var(--line-subtle);
     }
     .t-fill {
       width: 0%;
       height: 100%;
-      background: var(--emerald);
+      background: var(--accent);
       border-radius: 9999px;
-      box-shadow: 0 0 10px var(--emerald);
+      box-shadow: 0 0 6px var(--accent-glow);
       transition: width 0.08s linear;
     }
 
-    /* Responsive adjustments */
     @media (max-width: 768px) {
       .timeline-strip { grid-template-columns: 1fr 1fr; }
-      .p1-headline { font-size: 24px; }
-      .card-prompt { font-size: 15px; }
-      .film-scene { padding: 20px; }
+      .film-scene { padding: 40px 20px 20px; }
+      .s1-headline { font-size: 24px; }
+      .qtext-mock { font-size: 16px; }
     }
   </style>
 </head>
 <body>
 
-  <!-- Ambient Luxury Emerald Glow Spotlight -->
-  <div class="spotlight" id="spotlight"></div>
+  <div class="film-wrap">
 
-  <div class="ad-container">
-
-    <!-- Top Director Controller -->
-    <div class="director-bar">
+    <!-- Top Director Bar -->
+    <div class="director-header">
       <div class="director-meta">
-        <span class="badge-live"><span class="live-dot"></span> Hazene 30s Master Edit</span>
-        <span class="timecode-display" id="timecode">0:00 / 0:30</span>
+        <span class="live-chip"><span class="live-pulse"></span> White Gallery Edit</span>
+        <span class="timer-text" id="timecode">0:00 / 0:30</span>
       </div>
-      <div class="director-actions">
-        <button class="btn-action" id="btn-playpause">⏸ Pause</button>
-        <button class="btn-action" id="btn-restart">↺ Replay</button>
-        <button class="btn-action" id="btn-theme" title="Toggle Light/Dark Studio">🌓 Theme</button>
+      <div class="director-ctrls">
+        <button class="btn-ctrl" id="btn-toggle">⏸ Pause</button>
+        <button class="btn-ctrl" id="btn-replay">↺ Replay</button>
       </div>
     </div>
 
-    <!-- 16:9 Screen-in-Screen Film Canvas -->
-    <div class="film-canvas" id="canvas">
-      <div class="film-grid"></div>
+    <!-- 16:9 Screen Canvas (Always Pure White Apple Gallery) -->
+    <div class="film-canvas">
+      <div class="canvas-grid"></div>
 
-      <!-- Top Technical HUD -->
-      <div class="hud-header">
+      <!-- Website Top Editorial Nav HUD -->
+      <div class="hud-nav">
         <div class="hud-brand">
-          <div class="hud-sq">⚡</div>
-          <span>STUDY_ARENA // LAUNCH_FILM</span>
+          <div class="hud-logo-sq">SA</div>
+          <span class="hud-title">Study Arena</span>
+          <span class="hud-badge">AACSB ED.</span>
         </div>
-        <div class="audio-wave">
+        <div class="hud-audio-wave">
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
           <div class="wave-bar"></div>
@@ -873,8 +881,8 @@
         </div>
       </div>
 
-      <!-- Autonomous Virtual Cursor that moves during the demo -->
-      <div class="virtual-cursor" id="v-cursor">
+      <!-- Autonomous Virtual Cursor -->
+      <div class="v-cursor" id="cursor">
         <svg viewBox="0 0 24 24">
           <path d="M3 3l7 18 3-7 7-3L3 3z"/>
         </svg>
@@ -882,26 +890,27 @@
 
       <!-- ═════════════════════════════════════════════
            PHASE 1: PROBLEM (0:00 - 0:06)
+           Skinny Lora serif + Authentic Student Panic
            ═════════════════════════════════════════════ -->
-      <div class="film-scene" id="scene-0">
-        <div class="p1-wrap">
-          <span class="p1-alarm-chip">⚠️ Finals Countdown: 48h Remaining</span>
-          <h1 class="p1-headline">
+      <div class="film-scene" id="sc-0">
+        <div class="s1-wrap">
+          <span class="eyebrow-chip">⚠️ Finals Countdown: 48h Remaining</span>
+          <h1 class="s1-headline">
             Stuck memorizing <span class="strike-pain">200 slides</span><br>
             that all look <span class="serif-italic">identical</span>?
           </h1>
-          <div class="floating-cards-layer">
-            <div class="panic-card card-1">
-              <span>📄 Strategic_Management_v3.pdf</span>
+          <div class="panic-layer">
+            <div class="panic-card c1">
+              <span>📄 Corporate_Strategy_v3.pdf</span>
               <strong style="color: var(--danger); font-size: 11px;">(187 slides unread)</strong>
             </div>
-            <div class="panic-card card-2">
+            <div class="panic-card c2">
               <span>💬 Group Chat:</span>
-              <span style="color: var(--ink-muted); font-size: 11px;">"Did anyone understand slide 44?!"</span>
+              <span style="color: var(--ink-steel); font-size: 11px;">"Did anyone understand slide 44?!"</span>
             </div>
-            <div class="panic-card card-3">
-              <span>⚠️ Syllabus:</span>
-              <span style="font-size: 11px;">"Tests conceptual synthesis, not recall"</span>
+            <div class="panic-card c3">
+              <span>⚠️ Professor:</span>
+              <span style="font-size: 11px;">"The final tests conceptual synthesis, not recall."</span>
             </div>
           </div>
         </div>
@@ -909,33 +918,34 @@
 
       <!-- ═════════════════════════════════════════════
            PHASE 2: USE CASE (0:06 - 0:19)
+           Exact Website .dropzone-box + Laser Scanning + Pipeline
            ═════════════════════════════════════════════ -->
-      <div class="film-scene" id="scene-1">
-        <div class="p2-layout">
-          <div class="p2-dropzone" id="dz-box">
-            <div class="p2-laser-scan" id="laser"></div>
-            <div class="p2-drag-asset" id="pdf-asset">
+      <div class="film-scene" id="sc-1">
+        <div class="s2-wrap">
+          <div class="dropzone-box-mock" id="dz">
+            <div class="drop-laser" id="laser"></div>
+            <div class="pdf-card-draggable" id="pdf-doc">
               <span style="font-size: 16px;">📑</span>
               <span>Corporate_Strategy_Finals.pdf</span>
-              <span style="font-size: 11px; color: var(--emerald); font-weight: 700;">14.2 MB</span>
+              <span style="font-size: 11px; color: var(--accent); font-weight: 600;">14.2 MB</span>
             </div>
-            <div style="font-size: 12px; font-family: var(--f-mono); color: var(--ink-muted);">
-              Drag & Drop onto Study Arena → Instant Synthesis
+            <div style="font-size: 12px; font-family: var(--f-mono); color: var(--ink-steel);">
+              Drop your slides or notes &rarr; Instant Academic Synthesis
             </div>
           </div>
 
-          <div class="pipeline-stepper">
-            <div class="pipe-step done" id="step-1">
+          <div class="pipeline-list">
+            <div class="pipe-item done" id="step-1">
               <span>01 // DECONSTRUCTING LECTURE FRAMEWORKS</span>
-              <span class="pipe-tag">COMPLETED</span>
+              <span class="pipe-badge">COMPLETED</span>
             </div>
-            <div class="pipe-step" id="step-2">
+            <div class="pipe-item" id="step-2">
               <span>02 // SYNTHESIZING AACSB-GRADE TRAP DISTRACTORS</span>
-              <span class="pipe-tag" id="tag-2">PENDING</span>
+              <span class="pipe-badge" id="tag-2">PENDING</span>
             </div>
-            <div class="pipe-step" id="step-3">
+            <div class="pipe-item" id="step-3">
               <span>03 // CALIBRATING PROFESSOR RUBRICS & STUDY GAME</span>
-              <span class="pipe-tag" id="tag-3">PENDING</span>
+              <span class="pipe-badge" id="tag-3">PENDING</span>
             </div>
           </div>
         </div>
@@ -943,40 +953,48 @@
 
       <!-- ═════════════════════════════════════════════
            PHASE 3: BENEFITS (0:19 - 0:24)
+           Exact Website .qcard + Chip + Choices + Feedback + XP
            ═════════════════════════════════════════════ -->
-      <div class="film-scene" id="scene-2">
-        <div class="p3-wrap">
-          <div class="p3-badge-trio">
-            <span class="trio-chip active" id="chip-1">01 / TRAP MCQS</span>
-            <span class="trio-chip" id="chip-2">02 / EXAM GUIDES</span>
-            <span class="trio-chip" id="chip-3">03 / RANK & XP</span>
+      <div class="film-scene" id="sc-2">
+        <div class="s3-wrap">
+          <div class="benefit-chips-row">
+            <span class="nav-tab-mock active" id="tab-1">01 / TRAP MCQS</span>
+            <span class="nav-tab-mock" id="tab-2">02 / EXAM GUIDES</span>
+            <span class="nav-tab-mock" id="tab-3">03 / RANK & XP</span>
           </div>
 
-          <div class="arena-game-card">
-            <!-- Toast notification -->
-            <div class="xp-float-toast" id="xp-toast">
+          <!-- Exact .qcard from Study Arena Game -->
+          <div class="qcard-mock">
+            <div class="xp-toast-chip" id="xp-chip">
               <span>⚡ +150 XP</span>
               <span style="color: var(--ink);">| STREAK 3X 🔥</span>
             </div>
 
-            <div class="card-topbar">
-              <span>ZONE: STRATEGY & DILEMMAS</span>
-              <span style="color: var(--emerald); font-weight: 600;">QUESTION 4 OF 32</span>
+            <div class="qcard-top">
+              <div class="q-chips">
+                <span class="chip-element t-mcq">QUESTION 4 OF 32</span>
+                <span class="chip-element">STRATEGY & DILEMMAS</span>
+              </div>
             </div>
 
-            <div class="card-prompt">
+            <div class="qtext-mock">
               A company faces rising ESG regulatory scrutiny in Europe. To optimize long-term shareholder value, management should:
             </div>
 
-            <div class="card-choices">
-              <div class="card-choice" id="choice-a">
-                <span>A) Proactively integrate CSR audit frameworks into governance</span>
-                <span class="choice-badge badge-ok" id="badge-a" style="display:none;">OPTIMAL TRADE-OFF</span>
+            <div class="opts-mock">
+              <div class="opt-mock" id="opt-a">
+                <span class="k">A</span>
+                <span class="tx">Proactively integrate CSR audit frameworks into governance</span>
               </div>
-              <div class="card-choice" id="choice-b">
-                <span>B) Cut non-core compliance to preserve quarterly margins</span>
-                <span class="choice-badge badge-no" id="badge-b" style="display:none;">SHORT-TERM TRAP</span>
+              <div class="opt-mock" id="opt-b">
+                <span class="k">B</span>
+                <span class="tx">Cut non-core compliance to preserve quarterly margins</span>
               </div>
+            </div>
+
+            <!-- Explanatory Feedback Box Revealing -->
+            <div class="fb-mock" id="fb-box">
+              <strong>Correct (Optimal Trade-off).</strong> Proactively integrating CSR into governance avoids European non-compliance penalties while protecting institutional reputation.
             </div>
           </div>
         </div>
@@ -984,26 +1002,27 @@
 
       <!-- ═════════════════════════════════════════════
            PHASE 4: OUTRO (0:24 - 0:30)
+           Skinny Lora Lockup + Metallic Emerald CTA
            ═════════════════════════════════════════════ -->
-      <div class="film-scene" id="scene-3">
-        <div class="p4-wrap">
-          <div class="p4-logo-hero">
-            <div class="p4-emblem">⚡</div>
-            <div class="p4-title">Study Arena</div>
+      <div class="film-scene" id="sc-3">
+        <div class="s4-wrap">
+          <div class="s4-logo">
+            <div class="s4-emblem">SA</div>
+            <div class="s4-brand-text">Study Arena</div>
           </div>
-          <p class="p4-tagline">
+          <p class="s4-subtext">
             Stop studying slides.<br>
             <span class="serif-italic">Start playing the exam.</span>
           </p>
-          <a class="p4-cta-metallic" href="https://study-arena-d3kc.vercel.app/" target="_blank">
+          <a class="btn-metallic-cta" href="https://study-arena-d3kc.vercel.app/" target="_blank">
             <span>study-arena-d3kc.vercel.app</span>
-            <span style="font-size: 16px;">→</span>
+            <span style="font-size: 16px;">&rarr;</span>
           </a>
-          <div class="p4-endorse-row">
+          <div class="s4-trust-row">
             <span>✓ AACSB PEDAGOGY</span>
-            <span>·</span>
+            <span>&middot;</span>
             <span>✓ 100% PRIVATE BYOK</span>
-            <span>·</span>
+            <span>&middot;</span>
             <span>✓ ZERO SERVER COST</span>
           </div>
         </div>
@@ -1012,10 +1031,10 @@
     </div>
 
     <!-- ═════════════════════════════════════════════
-         HAZENE 4-BLOCK STRUCTURAL TIMELINE (BOTTOM)
+         HAZENE 4-BLOCK STRUCTURAL TIMELINE (WHITE GALLERY)
          ═════════════════════════════════════════════ -->
     <div class="timeline-strip">
-      <div class="t-cell active" id="tc-0" onclick="seek(0)">
+      <div class="t-cell active" id="tc-0" onclick="jumpTo(0)">
         <div class="t-cell-head">
           <span>01 / Problem</span>
           <span class="t-cell-time">0:00–0:06</span>
@@ -1023,7 +1042,7 @@
         <div class="t-rail"><div class="t-fill" id="tf-0"></div></div>
       </div>
 
-      <div class="t-cell" id="tc-1" onclick="seek(6)">
+      <div class="t-cell" id="tc-1" onclick="jumpTo(6)">
         <div class="t-cell-head">
           <span>02 / Use Case</span>
           <span class="t-cell-time">0:06–0:19</span>
@@ -1031,7 +1050,7 @@
         <div class="t-rail"><div class="t-fill" id="tf-1"></div></div>
       </div>
 
-      <div class="t-cell" id="tc-2" onclick="seek(19)">
+      <div class="t-cell" id="tc-2" onclick="jumpTo(19)">
         <div class="t-cell-head">
           <span>03 / Benefits</span>
           <span class="t-cell-time">0:19–0:24</span>
@@ -1039,7 +1058,7 @@
         <div class="t-rail"><div class="t-fill" id="tf-2"></div></div>
       </div>
 
-      <div class="t-cell" id="tc-3" onclick="seek(24)">
+      <div class="t-cell" id="tc-3" onclick="jumpTo(24)">
         <div class="t-cell-head">
           <span>04 / Outro</span>
           <span class="t-cell-time">0:24–0:30</span>
@@ -1052,203 +1071,190 @@
 
   <script>
     var DURATION = 30.0;
-    var currentTime = 0.0;
+    var curTime = 0.0;
     var isPlaying = true;
     var lastTick = performance.now();
 
     var phases = [
-      { start: 0, end: 6, scene: 0 },
-      { start: 6, end: 19, scene: 1 },
-      { start: 19, end: 24, scene: 2 },
-      { start: 24, end: 30, scene: 3 }
+      { start: 0, end: 6 },
+      { start: 6, end: 19 },
+      { start: 19, end: 24 },
+      { start: 24, end: 30 }
     ];
 
-    var cursorEl = document.getElementById("v-cursor");
+    var cursor = document.getElementById("cursor");
 
-    function tick() {
+    function loop() {
       var now = performance.now();
       var dt = (now - lastTick) / 1000;
       lastTick = now;
 
       if (isPlaying) {
-        currentTime += dt;
-        if (currentTime >= DURATION) {
-          currentTime = 0; // Infinite seamless loop
+        curTime += dt;
+        if (curTime >= DURATION) {
+          curTime = 0;
         }
       }
 
-      renderState();
-      requestAnimationFrame(tick);
+      render();
+      requestAnimationFrame(loop);
     }
 
-    function renderState() {
-      // 1. Timecode display
-      var s = Math.floor(currentTime);
-      var cs = Math.floor((currentTime % 1) * 10);
+    function render() {
+      // 1. Timecode
+      var s = Math.floor(curTime);
       document.getElementById("timecode").textContent = 
         (s < 10 ? "0:0" : "0:") + s + " / 0:30";
 
       // 2. Identify Phase
-      var phaseIdx = 0;
+      var phase = 0;
       for (var i = 0; i < phases.length; i++) {
-        if (currentTime >= phases[i].start && currentTime < phases[i].end) {
-          phaseIdx = i;
+        if (curTime >= phases[i].start && curTime < phases[i].end) {
+          phase = i;
           break;
         }
       }
-      if (currentTime >= 24) phaseIdx = 3;
+      if (curTime >= 24) phase = 3;
 
-      // 3. Scene Switcher & Timeline Fills
-      for (var idx = 0; idx < 4; idx++) {
-        var sc = document.getElementById("scene-" + idx);
-        var tc = document.getElementById("tc-" + idx);
-        var tf = document.getElementById("tf-" + idx);
+      // 3. Update Scenes & Timeline Bars
+      for (var j = 0; j < 4; j++) {
+        var sc = document.getElementById("sc-" + j);
+        var tc = document.getElementById("tc-" + j);
+        var tf = document.getElementById("tf-" + j);
 
-        if (idx === phaseIdx) {
+        if (j === phase) {
           sc.classList.add("active");
           tc.classList.add("active");
-          var range = phases[idx].end - phases[idx].start;
-          var cur = currentTime - phases[idx].start;
-          var pct = Math.min(100, Math.max(0, (cur / range) * 100));
+          var span = phases[j].end - phases[j].start;
+          var elapsed = curTime - phases[j].start;
+          var pct = Math.min(100, Math.max(0, (elapsed / span) * 100));
           tf.style.width = pct + "%";
         } else {
           sc.classList.remove("active");
           tc.classList.remove("active");
-          tf.style.width = idx < phaseIdx ? "100%" : "0%";
+          tf.style.width = j < phase ? "100%" : "0%";
         }
       }
 
-      // 4. MICRO-ANIMATIONS BY PHASE (High-Kinetic Choreography)
+      // 4. MICRO-ANIMATIONS BY PHASE
 
-      // Phase 1: Problem (Virtual Cursor hovers over panic cards)
-      if (phaseIdx === 0) {
-        cursorEl.classList.add("visible");
-        var p1T = currentTime;
-        if (p1T < 3) {
-          cursorEl.style.transform = "translate(220px, 140px)";
+      // Phase 1 (Problem): Cursor hovers around chaotic notification cards
+      if (phase === 0) {
+        cursor.classList.add("visible");
+        if (curTime < 3) {
+          cursor.style.transform = "translate(240px, 160px)";
         } else {
-          cursorEl.style.transform = "translate(580px, 200px)";
+          cursor.style.transform = "translate(580px, 210px)";
         }
       }
 
-      // Phase 2: Use Case (Cursor grabs PDF -> Drops into zone -> Laser scans -> Steps illuminate)
-      if (phaseIdx === 1) {
-        cursorEl.classList.add("visible");
-        var t2 = currentTime - 6; // 0 to 13s
+      // Phase 2 (Use case): Cursor physically drops PDF into zone -> Laser scan sweeps -> Pipeline ticks
+      if (phase === 1) {
+        cursor.classList.add("visible");
+        var t2 = curTime - 6;
 
-        var dz = document.getElementById("dz-box");
+        var dz = document.getElementById("dz");
         var laser = document.getElementById("laser");
-        var pdf = document.getElementById("pdf-asset");
+        var pdf = document.getElementById("pdf-doc");
         var s2 = document.getElementById("step-2");
         var s3 = document.getElementById("step-3");
-        var t2_tag = document.getElementById("tag-2");
-        var t3_tag = document.getElementById("tag-3");
+        var tag2 = document.getElementById("tag-2");
+        var tag3 = document.getElementById("tag-3");
 
-        if (t2 < 3.5) {
+        if (t2 < 3.2) {
           // Dragging PDF
-          cursorEl.style.transform = "translate(440px, 190px)";
+          cursor.style.transform = "translate(450px, 200px)";
           dz.classList.add("hovered");
-          laser.classList.remove("scanning");
-          pdf.classList.add("dropping");
+          laser.classList.remove("active");
+          pdf.classList.add("dropped");
         } else if (t2 < 8) {
           // Scanning
-          cursorEl.style.transform = "translate(700px, 320px)";
+          cursor.style.transform = "translate(700px, 330px)";
           dz.classList.remove("hovered");
-          laser.classList.add("scanning");
+          laser.classList.add("active");
           s2.classList.add("active");
-          t2_tag.textContent = "SYNTHESIZING...";
-          t2_tag.style.color = "var(--gold)";
+          tag2.textContent = "SYNTHESIZING...";
+          tag2.style.color = "var(--accent)";
         } else {
-          // Completed
-          laser.classList.remove("scanning");
+          // Done
+          laser.classList.remove("active");
           s2.classList.replace("active", "done");
-          t2_tag.textContent = "COMPLETED";
+          tag2.textContent = "COMPLETED";
           s3.classList.add("done");
-          t3_tag.textContent = "READY ✨";
+          tag3.textContent = "READY ✨";
         }
       } else {
-        document.getElementById("laser").classList.remove("scanning");
-        document.getElementById("dz-box").classList.remove("hovered");
-        document.getElementById("pdf-asset").classList.remove("dropping");
+        document.getElementById("laser").classList.remove("active");
+        document.getElementById("dz").classList.remove("hovered");
+        document.getElementById("pdf-doc").classList.remove("dropped");
       }
 
-      // Phase 3: Benefits (Interactive gameplay click & XP explosion)
-      if (phaseIdx === 2) {
-        cursorEl.classList.add("visible");
-        var t3 = currentTime - 19; // 0 to 5s
+      // Phase 3 (Benefits): Cursor tests Option B (trap shake), then clicks Option A -> Green feedback reveals -> XP floats
+      if (phase === 2) {
+        cursor.classList.add("visible");
+        var t3 = curTime - 19;
 
-        var chA = document.getElementById("choice-a");
-        var chB = document.getElementById("choice-b");
-        var bgA = document.getElementById("badge-a");
-        var bgB = document.getElementById("badge-b");
-        var xpToast = document.getElementById("xp-toast");
+        var optA = document.getElementById("opt-a");
+        var optB = document.getElementById("opt-b");
+        var fb = document.getElementById("fb-box");
+        var xp = document.getElementById("xp-chip");
 
-        var chip1 = document.getElementById("chip-1");
-        var chip2 = document.getElementById("chip-2");
-        var chip3 = document.getElementById("chip-3");
+        var tab1 = document.getElementById("tab-1");
+        var tab2 = document.getElementById("tab-2");
+        var tab3 = document.getElementById("tab-3");
 
-        if (t3 < 1.6) {
-          // Hovering trap option
-          cursorEl.style.transform = "translate(480px, 310px)";
-          chB.classList.add("trap-shake");
-          bgB.style.display = "inline-block";
-          chA.classList.remove("active-selection");
-          bgA.style.display = "none";
-          xpToast.classList.remove("show");
-          chip1.classList.add("active");
-          chip2.classList.remove("active");
-          chip3.classList.remove("active");
+        if (t3 < 1.5) {
+          // Hover trap choice B
+          cursor.style.transform = "translate(490px, 335px)";
+          optB.classList.add("no");
+          optA.classList.remove("ok");
+          fb.style.display = "none";
+          xp.classList.remove("show");
+          tab1.classList.add("active");
+          tab2.classList.remove("active");
+          tab3.classList.remove("active");
         } else if (t3 < 3.8) {
-          // Clicking correct choice!
-          cursorEl.style.transform = "translate(460px, 245px)";
-          chB.classList.remove("trap-shake");
-          bgB.style.display = "none";
-          chA.classList.add("active-selection");
-          bgA.style.display = "inline-block";
-          xpToast.classList.add("show");
-          chip1.classList.remove("active");
-          chip2.classList.add("active");
-          chip3.classList.remove("active");
+          // Clicks correct choice A!
+          cursor.style.transform = "translate(470px, 275px)";
+          optB.classList.remove("no");
+          optA.classList.add("ok");
+          fb.style.display = "block";
+          xp.classList.add("show");
+          tab1.classList.remove("active");
+          tab2.classList.add("active");
+          tab3.classList.remove("active");
         } else {
-          chip1.classList.remove("active");
-          chip2.classList.remove("active");
-          chip3.classList.add("active");
+          tab1.classList.remove("active");
+          tab2.classList.remove("active");
+          tab3.classList.add("active");
         }
       }
 
-      // Phase 4: Outro (Cursor hovers over the shiny CTA)
-      if (phaseIdx === 3) {
-        cursorEl.classList.add("visible");
-        cursorEl.style.transform = "translate(500px, 305px)";
+      // Phase 4 (Outro): Cursor hovers metallic CTA button
+      if (phase === 3) {
+        cursor.classList.add("visible");
+        cursor.style.transform = "translate(500px, 315px)";
       }
     }
 
-    function seek(sec) {
-      currentTime = sec;
-      renderState();
+    function jumpTo(sec) {
+      curTime = sec;
+      render();
     }
 
-    // Controls
-    document.getElementById("btn-playpause").onclick = function() {
+    document.getElementById("btn-toggle").onclick = function() {
       isPlaying = !isPlaying;
       this.textContent = isPlaying ? "⏸ Pause" : "▶ Play";
     };
 
-    document.getElementById("btn-restart").onclick = function() {
-      currentTime = 0;
+    document.getElementById("btn-replay").onclick = function() {
+      curTime = 0;
       isPlaying = true;
-      document.getElementById("btn-playpause").textContent = "⏸ Pause";
+      document.getElementById("btn-toggle").textContent = "⏸ Pause";
     };
 
-    // Theme Toggle strictly adhering to Study Arena
-    document.getElementById("btn-theme").onclick = function() {
-      var current = document.documentElement.getAttribute("data-theme") || "dark";
-      var next = current === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", next);
-    };
-
-    // Start Kinetic Loop
-    requestAnimationFrame(tick);
+    // Run animation loop
+    requestAnimationFrame(loop);
   </script>
 </body>
 </html>
