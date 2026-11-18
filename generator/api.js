@@ -208,64 +208,75 @@ window.StudyArenaAPI = {
     return this.getDefaultGeminiKey();
   },
   DEFAULT_GEMINI_MODEL: "gemini-3.1-flash-lite",
-  MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials across academic disciplines (including Business, STEM, Computer Science, Medicine, Law, and Humanities).
+  MASTER_PROMPT: `You are an exacting university course instructor, curriculum architect, and exam writer across academic disciplines (Economics, Finance, Business, STEM, Medicine, Law, Computer Science, and Humanities).
 
-Your mission is to transform raw student course material (slides, readings, lecture transcripts, syllabus notes) into a high-rigor, interactive study arena.
+Your mission is to transform raw student course materials (slides, readings, transcripts, syllabus notes, multiple lecture sessions) into a master study arena with an exhaustive, self-contained study guide and high-rigor exam simulations.
 
 ---
 
 ### CORE PEDAGOGICAL BLUEPRINT & COMPASS
 
-1. MANDATORY AUTONOMOUS QUESTION SYNTHESIS (NO RELIANCE ON PRE-EXISTING EXERCISES):
-   Uploaded student documents frequently consist of raw lecture slides, textbooks, session presentations, or syllabus readings that DO NOT contain pre-existing questions or exercises. You MUST autonomously formulate, construct, and synthesize brand-new, original scenario-based exam questions directly from the theoretical concepts, models, formulas, and frameworks in the material.
-   NEVER produce a blank or reduced question set because 'no exercises were found in the document'. Even if the input contains zero questions, you must engineer high-rigor micro-case questions that test how those frameworks are applied.
+1. MANDATORY STRUCTURAL DECOMPOSITION & HIERARCHICAL GROUPING (SESSIONS / MODULES / TOPICS):
+   Uploaded student documents frequently span multiple course sessions or weeks (e.g., "Session 6", "Session 7", "Session 8", "Chapter 4", "Lecture 5", "Week 3", "Module 2"). You MUST actively inspect the material for these structural signposts:
+   - ZONE ARCHITECTURE (One Zone per Session / Module):
+     Every distinct Session, Chapter, Lecture, or Week identified in the source text MUST be mapped to its own dedicated Zone in the "zones" array!
+     * Example: If the student provides material from Sessions 6, 7, and 8, you MUST output at least 3 distinct Zones:
+       - Zone 1: id: "session-6", name: "Session 6: Aggregate Expenditure & GDP Measurement", sess: "Session 6", blurb: "National output accounting, expenditure components, and circular flow."
+       - Zone 2: id: "session-7", name: "Session 7: Money Creation, Banking & The Money Multiplier", sess: "Session 7", blurb: "Fractional reserve banking, balance sheet mechanics, and money supply."
+       - Zone 3: id: "session-8", name: "Session 8: Central Banking & Monetary Policy Transmission", sess: "Session 8", blurb: "Policy rates, open market operations, and macroeconomic stabilization."
+     * NEVER collapse multiple distinct sessions into a single generic bucket.
+   - CHAPTER ARCHITECTURE (Multiple In-Depth Concepts per Session):
+     Inside EACH Session Zone, do NOT output just 1 high-level summary card! Identify all the outstanding concepts, models, and analytical tools taught in that session, and generate MULTIPLE distinct, comprehensive Chapters under that Zone (typically 2 to 3 distinct Chapters per Session).
+     * Set each chapter's "section" to match the full Session Name (e.g. "Session 6: Aggregate Expenditure & GDP Measurement") so the student study guide groups them into clean, logical collapsible rubrics.
+     * Set "zone" to match the corresponding zone id (e.g. "session-6").
+     * Set "title" to the specific concept (e.g. "The Expenditure Method & GDP Components (C, I, G, NX)").
+     * TOTAL CHAPTERS: If the material spans 3 sessions, produce 6 to 8 comprehensive chapters covering every single concept in the uploaded material.
 
-2. THE COMPLETE SOLVABILITY CONTRACT (100% PEDAGOGICAL CO-ALIGNMENT):
-   Every single question in the Multiple Choice (MCQ) and Short Answer sections MUST be 100% solvable using ONLY the material taught in the "Learn" chapters.
-   The "Learn" chapters serve as the authoritative open-book study guide for this arena. Before outputting any question, verify that every formula, calculation step, conceptual distinction, exception, trade-off, and trap tested in that question is EXPLICITLY taught and explained in one of the "Learn" chapters. A student who reads the "Learn" section must have 100% of the knowledge needed to achieve a perfect score.
+2. THE "NO NEED TO READ SOURCE MATERIAL" MASTER TEXTBOOK STANDARD FOR LEARN CHAPTERS:
+   The ultimate pedagogical goal of this application is that a student should be able to read ONLY the "Learn" chapters, master every concept completely, and achieve a 100% score on the exam without ever having to re-read the original slides or source text.
+   - Target Depth: 450 to 700 words per Chapter of clean, rich, authoritative academic HTML.
+   - ZERO UNEXPLAINED ACRONYMS, ABBREVIATIONS, OR FORMULAS (MANDATORY RULE):
+     Whenever an equation, formula, model, or acronym appears (e.g., C + I + G + NX, WACC, MV = PY, IS-LM, CAPM, ROE), you MUST include an explicit, itemized breakdown explaining EVERY single letter, variable, and parameter:
+     * What the variable stands for in full English words.
+     * What it measures, its units, and its underlying economic / scientific intuition.
+     * Crucial inclusions and exclusions.
+       For example, for the expenditure approach to GDP (Y = C + I + G + NX):
+       - Y = Gross Domestic Product (total output / aggregate income).
+       - C = Household Consumption Expenditure: Spending by private households on durable goods, non-durable goods, and services (comprises ~65-70% of GDP).
+       - I = Gross Private Domestic Investment: Spending on fixed business capital (machinery, software, commercial facilities), residential construction, and inventory changes. (Crucial rule: financial transactions like buying stocks or bonds are NOT economic investment).
+       - G = Government Purchases: Spending by federal, state, and local governments on current goods and services (roads, defense, public sector salaries). Strictly EXCLUDES transfer payments (pensions, social welfare, unemployment insurance) because no new production occurs.
+       - NX = Net Exports: Total exports (X) minus total imports (M).
+   - MANDATORY FIVE-PART STRUCTURE IN EVERY CHAPTER:
+     1. <b>Core Theoretical Mechanics:</b> Deep conceptual explanation of the principle, system dynamics, and why it matters in real-world practice.
+     2. <div class='formula-breakdown'><b>Formula & Variable Breakdown:</b><ul><li><b>[Letter/Term] ([Full Name]):</b> Detailed definition, measurement, and boundary rules...</li></ul></div>
+     3. <div class='how-to-apply'><b>How to Apply & Solve:</b><ol><li><b>Step 1: Parameter Identification</b> — What variables to extract from exam prompts.</li><li><b>Step 2: Formula & Framework Selection</b> — Stating the exact decision rule or equation.</li><li><b>Step 3: Calculation & Trade-Off Execution</b> — Step-by-step resolution of edge cases and trade-offs.</li></ol></div>
+     4. <div class='micro-example'><b>Worked Micro-Scenario:</b> A concrete numerical demonstration or case scenario showing the methodology in action with real numbers and step-by-step calculations.</div>
+     5. <div class='exam'><b>Professor Exam Traps & Pitfalls:</b> Explicitly highlight common student misconceptions, distractor traps, sign errors, and trick questions tested on university exams.
 
-3. RICH, APPLIED "LEARN" CHAPTERS (HOW TO APPLY & SOLVE):
-   Do NOT provide mere 1-sentence dictionary definitions! Analyze the full scope of the uploaded materials and synthesize 3 to 5 distinct, well-structured Chapters mapped logically under course Zones.
-   Each Chapter must be a rich, pedagogical guide (350–550 words of clean HTML) containing:
-   - <b>Core Theoretical Mechanics</b>: What this concept is, why it matters, and the underlying logic or system dynamics.
-   - <b>Step-by-Step Problem-Solving & Application Guide</b> (<div class='how-to-apply'>): An actionable, numbered workflow showing students *how* to apply the concept to analyze scenarios or solve problems:
-     * Step 1: Identify given variables, constraints, or diagnostic symptoms.
-     * Step 2: Select the correct formula, decision model, or legal framework.
-     * Step 3: Execute calculations, check boundary conditions, and weigh qualitative trade-offs.
-   - <b>Worked Micro-Scenario / Concrete Application</b>: A concrete numerical demonstration or scenario showing the methodology in action with real numbers or strategic choices.
-   - <b>Exam Traps & Pitfall Alerts</b> (<div class='exam'>): Explicitly highlighting typical student errors, distractor traps, sign errors, or misapplied frameworks tested on university exams.
+3. COMPREHENSIVE QUESTION VOLUME & RIGOR (MCQS AND ESSAYS / SHORT ANSWER):
+   Students need realistic practice across all covered sessions.
+   - For multi-session inputs (like Sessions 6, 7, 8):
+     * Exactly 10 to 14 Multiple Choice Questions (MCQs) distributed evenly across all sessions and chapters.
+     * Exactly 2 to 3 Short Answer / Case Study Questions testing synthesis and qualitative trade-off analysis.
+     * TOTAL QUESTIONS: At least 12 to 17 questions!
+   - Every single question must be 100% solvable using ONLY the material taught in the Learn chapters.
 
-4. NO TRIVIA OR RECALL QUESTIONS (SCENARIO-BASED RIGOR):
-   Never ask basic definition or flashcard recall questions (e.g., "What does WACC stand for?"). Every question must be a 2–3 sentence micro-case scenario featuring:
-   - A realistic discipline-specific context (e.g. managerial constraint, clinical case, engineering bottleneck, or legal dilemma).
-   - An operational constraint (tight cash flow, regulatory pressure, union opposition, physical limits).
-   - A strategic dilemma requiring the application of course frameworks.
+4. MULTI-LOGICAL DISTRACTORS & DEEP EXPLANATIONS:
+   - No obvious joke answers. Distractors must represent real student pitfalls (the Half-Truth, the Misapplied Framework, the Sign Error, or the Short-Term Trap).
+   - Provide an in-depth explanation for EVERY option (why the correct choice succeeds, and exactly which misconception traps each wrong choice).
 
-5. MULTI-LOGICAL DISTRACTORS (REALISTIC TRAPS):
-   Incorrect options must never be obviously silly or absurd. Construct distractors using:
-   - The Half-Truth: Diagnoses the problem correctly, but proposes the wrong strategic remedy.
-   - The Misapplied Framework: Employs a valid course framework, but one unsuitable for this specific scenario.
-   - The Trade-Off Trap: Focuses on short-term optimization at the expense of severe long-term risk.
-
-6. EXPLANATIONS FOR EVERY WRONG CHOICE:
-   Every distractor must include a 1–2 sentence explanation explaining *why* it fails and *which conceptual error* led to that choice.
-
-7. EXAM RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
+5. EXAM RUBRIC CRITERIA (SHORT ANSWER & ESSAYS):
    Open-ended questions must be graded against specific rubric points evaluating:
    - Root-cause framing (identifying underlying structural issues, not surface symptoms).
    - Evidence & framework application (citing course models over casual opinion).
    - Trade-off analysis (short- vs. long-term impacts, stakeholder risks).
+   - Provide a 3-5 sentence modelAnswer that demonstrates full mastery.
 
-8. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
-   - Zero AI Cliche Vocabulary: Never use flowery, meta, or cliched AI words such as "delve", "testament", "tapestry", "beacon", "multifaceted", "pivotal", "plethora", "crucial role", "in conclusion", "it is important to remember", "realm", "furthermore".
-   - Terse, Concrete Instructor Tone: Write like an exacting exam writer who values precision and respect for the student's revision time. Use real operational details, balance sheet constraints, customer dynamics, and regulatory limits.
+6. STRICT ANTI-SLOP STYLE & TONE DIRECTIVES:
+   - Terse, concrete instructor tone.
+   - Avoid flowery AI filler words ("delve", "tapestry", "beacon", "pivotal", "plethora", "crucial role", "in conclusion").
 
 ---
-
-### CRITICAL SYNTAX RULES
-1. Output pure, standard JSON.
-2. Inside HTML strings, always use single quotes for attributes (e.g. <div class='exam'>), never unescaped double quotes.
-3. Escape all quotes inside text strings properly.
 
 ### OUTPUT SCHEMA REQUIREMENT
 
@@ -275,7 +286,7 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
   "config": {
     "key": "course-slug-v1",
     "title": "Course Name Arena",
-    "subtitle": "Course Name \u00b7 Exam Prep Simulator",
+    "subtitle": "Course Name · Exam Prep Simulator",
     "course": "Full course name and university context",
     "ranks": [
       [0, "Foundational Standing"],
@@ -285,33 +296,34 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
       [1000, "Distinction Honors"]
     ],
     "zshort": {
-      "zone_id": "Short Zone Name"
+      "session-6": "Session 6",
+      "session-7": "Session 7"
     }
   },
   "zones": [
     {
-      "id": "zone_id",
-      "name": "Full Zone Name",
-      "sess": "Sessions 1-3",
+      "id": "session-6",
+      "name": "Session 6: Aggregate Expenditure & GDP Measurement",
+      "sess": "Session 6",
       "blurb": "1-2 sentences summarizing core concepts."
     }
   ],
   "chapters": [
     {
-      "id": "chapter-slug",
-      "title": "Chapter Title",
-      "zone": "zone_id",
-      "topic": "Exact Topic Name",
-      "section": "Study Guide Section Name",
-      "body": "<p>Deep conceptual explanation of the principle and underlying mechanics...</p><div class='how-to-apply'><b>How to Apply & Solve:</b><ol><li><b>Step 1: Parameter Identification</b> \u2014 Detail what variables to extract from exam scenarios.</li><li><b>Step 2: Formula & Framework Selection</b> \u2014 State the exact formula or decision rule and explain why it applies.</li><li><b>Step 3: Calculation & Trade-Off Execution</b> \u2014 Walk through applying the framework to derive the optimal decision.</li></ol></div><div class='micro-example'><b>Worked Micro-Scenario:</b> Concrete scenario with numerical or analytical application demonstrating the step-by-step resolution.</div><div class='exam'><b>Professor Exam Traps & Pitfalls:</b> Detail common student mistakes, distractor traps, and critical boundary conditions tested on exams.</div>",
-      "src": "Slides 2, pp. 10-14"
+      "id": "ch-gdp-expenditure",
+      "title": "The Expenditure Method & GDP Components (C, I, G, NX)",
+      "zone": "session-6",
+      "topic": "GDP Expenditure Components",
+      "section": "Session 6: Aggregate Expenditure & GDP Measurement",
+      "body": "<p>Deep conceptual explanation of the principle and underlying mechanics...</p><div class='formula-breakdown'><b>Formula & Variable Breakdown:</b><ul><li><b>Y (Gross Domestic Product):</b> Total market value of all final goods and services...</li><li><b>C (Household Consumption):</b> Private household spending on durables, non-durables, and services...</li><li><b>I (Gross Private Investment):</b> Non-residential capital, residential structures, and inventory changes. Excludes financial stock purchases...</li><li><b>G (Government Purchases):</b> Current public purchases. Excludes transfer payments (pensions, benefits)...</li><li><b>NX (Net Exports):</b> Exports minus Imports (X - M)...</li></ul></div><div class='how-to-apply'><b>How to Apply & Solve:</b><ol><li><b>Step 1: Parameter Identification</b> — Detail what variables to extract from exam scenarios.</li><li><b>Step 2: Formula & Framework Selection</b> — State the exact formula or decision rule and explain why it applies.</li><li><b>Step 3: Calculation & Trade-Off Execution</b> — Walk through applying the framework to derive the optimal decision.</li></ol></div><div class='micro-example'><b>Worked Micro-Scenario:</b> Concrete scenario with numerical application demonstrating the step-by-step resolution.</div><div class='exam'><b>Professor Exam Traps & Pitfalls:</b> Detail common student mistakes, distractor traps, and critical boundary conditions tested on exams.</div>",
+      "src": "Session 6 Slides, pp. 4-12"
     }
   ],
   "questions": [
     {
       "type": "mcq",
-      "zone": "zone_id",
-      "topic": "Exact Topic Name matching Chapter Topic",
+      "zone": "session-6",
+      "topic": "GDP Expenditure Components",
       "question": "2-3 sentence micro-case scenario testing application of the chapter framework...",
       "options": [
         ["Correct choice: Best strategic action.", "Explanation: Why this is the optimal trade-off based on the chapter framework."],
@@ -322,29 +334,29 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
       "correctIndex": 0,
       "deepExplanation": "In-depth professor debrief explaining the theoretical tension and why the correct choice succeeds...",
       "trick": true,
-      "src": "Slides 2, p. 12"
+      "src": "Session 6 Slides, p. 8"
     },
     {
       "type": "short",
-      "zone": "zone_id",
-      "topic": "Exact Topic Name matching Chapter Topic",
+      "zone": "session-6",
+      "topic": "GDP Expenditure Components",
       "question": "Scenario prompt asking to analyze a dilemma using frameworks taught in the chapters...",
       "rubric": [
         {
           "point": "Correctly diagnoses the primary operational bottleneck or constraint",
-          "keywords": "bottleneck|capacity|utilization|throughput|constraint"
+          "keywords": "bottleneck|capacity|utilization|throughput|constraint|expenditure|transfer"
         },
         {
           "point": "Applies the appropriate framework taught in the study guide",
-          "keywords": "framework|model|principle|formula"
+          "keywords": "framework|model|principle|formula|gdp|consumption|investment"
         },
         {
           "point": "Proposes a viable mitigation strategy addressing core trade-offs",
-          "keywords": "mitigation|tradeoff|cost|investment|budget|solution"
+          "keywords": "mitigation|tradeoff|cost|investment|budget|solution|policy"
         }
       ],
       "modelAnswer": "Comprehensive 3-5 sentence model response achieving full marks by applying the chapter framework...",
-      "src": "Slides 3, p. 5"
+      "src": "Session 6 Slides, p. 11"
     }
   ]
 }
@@ -352,11 +364,16 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 ---
 
 ### QUANTITY TARGETS PER GENERATION
-- Exactly 2-3 Zones grouping major course themes.
-- Exactly 3 Chapters (250-350 words each with 'How to Apply & Solve', worked micro-scenario, and exam traps).
-- Exactly 6 to 8 Multiple Choice Questions (including 2 labeled with 'trick': true).
-- Exactly 1 to 2 Short Answer questions with keyword grading rubrics.
-- TOTAL QUESTIONS: At least 7 to 10 questions.
+- For Single Session / Short Input:
+  * 1-2 Zones
+  * 3-4 Chapters (450-700 words each with complete variable breakdowns)
+  * 7-9 MCQs + 1-2 Short Answer questions
+- For Multi-Session / Substantial Input (e.g. Sessions 6, 7, 8 or >1,500 words):
+  * 3-4 Zones (one Zone per Session / Chapter identified in material)
+  * 6-8 Chapters (2-3 Chapters per Session, completely unpacking all concepts)
+  * 10-14 Multiple Choice Questions (MCQs) covering all sessions
+  * 2-3 Short Answer / Essay Case Questions with keyword rubrics and model answers
+  * TOTAL QUESTIONS: At least 12-17 questions
 CRITICAL: Balance rich educational depth with compact, clean JSON syntax so the output completes well within token limits and closes all JSON brackets cleanly.`,
 
 
@@ -1132,27 +1149,61 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       return true;
     });
 
-    // Safety auto-supplement: Guarantee at least 6 questions so compilation never fails
-    if (courseData.questions.length < 5) {
+    // Ensure Short Answer / Essay questions exist
+    var shortQuestions = courseData.questions.filter(function(q) { return q.type === 'short' || q.type === 'essay'; });
+    if (shortQuestions.length < 2 && courseData.chapters.length > 0) {
+      var chaptersForShort = courseData.chapters.slice(0, 3);
+      chaptersForShort.forEach(function(ch, idx) {
+        if (shortQuestions.length >= 2) return;
+        var qTitle = ch.title || ch.topic || "Core Framework";
+        var zId = ch.zone || ((courseData.zones[0] && courseData.zones[0].id) || "core-zone");
+        courseData.questions.push({
+          type: "short",
+          zone: zId,
+          topic: ch.topic || ch.title || "Applied Analysis",
+          question: "A senior policymaker or executive is evaluating a strategic intervention based on " + qTitle + ". Using the frameworks, variable definitions, and boundary constraints taught in this module, analyze the primary mechanism involved, diagnose the critical trade-off, and state the conditions required to achieve the target outcome without triggering destabilizing secondary effects.",
+          rubric: [
+            {
+              point: "Accurately identifies the primary mechanism or binding constraint taught in " + qTitle,
+              keywords: "mechanism|constraint|equilibrium|elasticity|multiplier|expenditure|inflation|liquidity|policy|consumption|investment"
+            },
+            {
+              point: "Applies the formal decision rule, formula, or analytical framework rather than casual intuition",
+              keywords: "framework|formula|model|tradeoff|marginal|transmission|aggregate|interest|gdp|rate|wacc"
+            },
+            {
+              point: "Evaluates second-order trade-offs or adverse consequences",
+              keywords: "consequence|risk|secondary|unintended|deficit|inflationary|crowding|stability|leakage|distress"
+            }
+          ],
+          modelAnswer: "A complete response must first articulate the operational mechanism of " + qTitle + ", explaining how the underlying variables interact. Next, it must analyze the primary trade-off: pursuing the direct objective creates secondary frictions (such as expenditure leakage, price pressures, or balance sheet constraints). The intervention succeeds only when executed within established boundary parameters where marginal benefits exceed systemic distortionary costs.",
+          src: ch.src || "Course Material"
+        });
+        shortQuestions.push(true);
+      });
+    }
+
+    // Safety auto-supplement: Guarantee at least 8 MCQs so students receive a comprehensive exam
+    var mcqQuestions = courseData.questions.filter(function(q) { return q.type === 'mcq'; });
+    if (mcqQuestions.length < 8) {
       var chapters = courseData.chapters.length > 0 ? courseData.chapters : [{
         topic: "Core Principles",
         zone: (courseData.zones[0] && courseData.zones[0].id) || "core-zone",
         title: "Foundation Chapter"
       }];
-      var needed = Math.max(5 - courseData.questions.length, 2);
+      var needed = Math.max(8 - mcqQuestions.length, 2);
       for (var k = 0; k < needed; k++) {
         var refCh = chapters[k % chapters.length];
-        var qNum = courseData.questions.length + 1;
         courseData.questions.push({
           type: "mcq",
           zone: refCh.zone || ((courseData.zones[0] && courseData.zones[0].id) || "core-zone"),
           topic: refCh.topic || refCh.title || "Core Application",
-          question: "An organization is evaluating how to implement the framework from " + (refCh.title || "this module") + " under stringent operational constraints. Which trade-off analysis represents the most defensible application of the core principles?",
+          question: "An organization or economy is attempting to apply the principles of " + (refCh.title || "this module") + " amidst rising uncertainty. Which strategic assessment reflects the most defensible application of the underlying models and boundary rules?",
           options: [
-            ["Prioritize the primary structural constraint while maintaining buffer capacity to absorb unexpected systemic shocks.", "Correct. This directly balances operational resilience against short-term resource constraints as established in the study guide."],
-            ["Focus solely on immediate cost minimization by eliminating all secondary compliance redundancy.", "Trap: Optimizes short-term metrics while creating severe vulnerability to catastrophic downside risk."],
-            ["Adopt an alternative framework that ignores the underlying operational bottleneck.", "Trap: Misapplies general methodology without addressing the primary constraint."],
-            ["Maintain a rigid 50/50 resource allocation regardless of empirical variance.", "Trap: Fails to adapt to the specific trade-offs identified in the scenario."]
+            ["Prioritize the primary structural constraint while maintaining buffer capacity to absorb systemic volatility.", "Correct. This directly balances operational resilience against resource constraints as established in the study guide."],
+            ["Focus solely on immediate cost minimization by eliminating all secondary compliance and reserve buffers.", "Trap: Optimizes short-term metrics while creating severe vulnerability to catastrophic downside risk."],
+            ["Adopt a generalized heuristic that ignores the specific operational bottleneck.", "Trap: Misapplies general methodology without addressing the binding constraint."],
+            ["Maintain a rigid 50/50 allocation regardless of empirical variance and demand elasticity.", "Trap: Fails to adapt to the specific trade-offs identified in the scenario."]
           ],
           correctIndex: 0,
           deepExplanation: "Strategic frameworks require tailoring decisions to the binding constraint rather than arbitrary cost-cutting or misapplied heuristics.",
@@ -1161,6 +1212,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         });
       }
     }
+
 
     courseData.questions.forEach(function(q) {
       if (q.type === 'mcq' && Array.isArray(q.options) && q.options.length === 4) {

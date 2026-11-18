@@ -175,13 +175,24 @@ window.StudyArenaCompiler = {
     // 5. learn.js
     var learnLines = [];
     chapters.forEach(function(ch) {
+      var secName = ch.section;
+      if (!secName || secName === "Study Guide" || secName === "Core" || secName === "Foundations") {
+        var matchingZone = zones.find(function(z) { return z.id === ch.zone; });
+        if (matchingZone && matchingZone.name) {
+          secName = matchingZone.name;
+        } else if (matchingZone && matchingZone.sess) {
+          secName = matchingZone.sess;
+        } else {
+          secName = "Core Study Guide";
+        }
+      }
       var extras = safeJson({
         z: ch.zone,
         tp: ch.topic,
         body: ch.body,
         src: ch.src || "Course Slides"
       });
-      learnLines.push("L(" + JSON.stringify(ch.section || "Study Guide") + ", " + JSON.stringify(ch.id) + ", " + JSON.stringify(ch.title) + ", " + extras + ");");
+      learnLines.push("L(" + JSON.stringify(secName) + ", " + JSON.stringify(ch.id) + ", " + JSON.stringify(ch.title) + ", " + extras + ");");
     });
     var learnJs = learnLines.join("\n") + "\n";
 
