@@ -339,11 +339,11 @@ You must output PURE, VALID JSON with no markdown wrapping and no code fences, m
 
 ### QUANTITY TARGETS PER GENERATION
 - Exactly 2-3 Zones grouping major course themes.
-- Exactly 3 to 5 Comprehensive Chapters (350-550 words each with 'How to Apply & Solve', worked micro-scenario, and exam traps).
-- Exactly 8 to 12 Multiple Choice Questions (including 2-3 labeled with 'trick': true).
-- Exactly 2 Short Answer questions with keyword grading rubrics.
-- TOTAL QUESTIONS: At least 10 to 14 questions. NEVER output fewer than 8 questions under any circumstances.
-CRITICAL: Balance rich educational depth with clean JSON syntax. Ensure all JSON schema quotes, brackets, and braces close cleanly.`,
+- Exactly 3 Chapters (250-350 words each with 'How to Apply & Solve', worked micro-scenario, and exam traps).
+- Exactly 6 to 8 Multiple Choice Questions (including 2 labeled with 'trick': true).
+- Exactly 1 to 2 Short Answer questions with keyword grading rubrics.
+- TOTAL QUESTIONS: At least 7 to 10 questions.
+CRITICAL: Balance rich educational depth with compact, clean JSON syntax so the output completes well within token limits and closes all JSON brackets cleanly.`,Target:
 
 
   PROFESSOR_ESSAY_PROMPT: `You are an academic essay and research paper evaluator. Your task is to provide direct, rigorous, and objective analytical evaluation on submitted drafts.
@@ -519,7 +519,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
       console.warn("Direct JSON.parse failed, attempting auto-repair:", initialErr.message);
     }
 
-    // Step 3: Auto-repair for truncated JSON: walk backwards to find a valid cut point and close open braces
+    // Step 3: Resilient Stack-Based Auto-Repair for truncated JSON
     var maxLookback = Math.min(text.length, 6000);
     for (var i = text.length; i >= text.length - maxLookback; i--) {
       var candidate = text.substring(0, i).trimEnd();
@@ -527,10 +527,10 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         candidate = candidate.slice(0, -1).trimEnd();
       }
 
-      var openBraces = 0;
-      var openBrackets = 0;
+      var stack = [];
       var inString = false;
       var escape = false;
+      var valid = true;
 
       for (var j = 0; j < candidate.length; j++) {
         var ch = candidate[j];
@@ -547,17 +547,26 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
           continue;
         }
         if (!inString) {
-          if (ch === '{') openBraces++;
-          else if (ch === '}') openBraces--;
-          else if (ch === '[') openBrackets++;
-          else if (ch === ']') openBrackets--;
+          if (ch === '{') {
+            stack.push('}');
+          } else if (ch === '[') {
+            stack.push(']');
+          } else if (ch === '}' || ch === ']') {
+            if (stack.length === 0 || stack[stack.length - 1] !== ch) {
+              valid = false;
+              break;
+            }
+            stack.pop();
+          }
         }
       }
 
-      if (!inString && openBraces >= 0 && openBrackets >= 0) {
+      if (valid && !inString && stack.length > 0) {
         var repaired = candidate;
-        for (var b = 0; b < openBrackets; b++) repaired += "]";
-        for (var r = 0; r < openBraces; r++) repaired += "}";
+        // Close all unclosed scopes in exact reverse order
+        for (var s = stack.length - 1; s >= 0; s--) {
+          repaired += stack[s];
+        }
         try {
           var parsed = JSON.parse(repaired);
           console.log("JSON auto-repaired successfully! Rescued by trimming " + (text.length - i) + " chars.");
@@ -1099,6 +1108,15 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         blurb: "Key analytical frameworks and application principles."
       }];
     }
+
+    // Filter out any incomplete question (e.g. truncated MCQ with < 4 options or missing fields)
+    courseData.questions = courseData.questions.filter(function(q) {
+      if (!q || !q.question) return false;
+      if (q.type === 'mcq') {
+        return Array.isArray(q.options) && q.options.length === 4;
+      }
+      return true;
+    });
 
     // Safety auto-supplement: Guarantee at least 6 questions so compilation never fails
     if (courseData.questions.length < 5) {
