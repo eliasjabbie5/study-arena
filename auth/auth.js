@@ -102,6 +102,20 @@
         }
 
         this.logTelemetry('USER_SIGN_IN', { email: user.email, provider: user.provider, role: user.role });
+
+        // Trigger cross-browser cloud sync whenever user logs in
+        if (window.StudyArenaSync && typeof window.StudyArenaSync.sync === 'function') {
+          window.StudyArenaSync.sync({
+            onUpdate: function() {
+              if (typeof window.renderSavedArenasList === 'function') {
+                window.renderSavedArenasList();
+              }
+              if (typeof window.renderSidebarCourses === 'function') {
+                window.renderSidebarCourses();
+              }
+            }
+          });
+        }
       } else {
         localStorage.removeItem(STORAGE_KEY);
       }

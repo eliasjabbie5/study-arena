@@ -21,10 +21,11 @@
       return JSON.stringify(obj).replace(/<\//g, '<\\/');
     };
   </script>
-  <script src="generator/engine_bundle.js?v=5.1.4"></script>
-  <script src="generator/compiler.js?v=5.1.4"></script>
-  <script src="generator/api.js?v=5.1.4"></script>
-  <script src="auth/auth.js?v=5.1.4"></script>
+  <script src="generator/engine_bundle.js?v=5.1.5"></script>
+  <script src="generator/compiler.js?v=5.1.5"></script>
+  <script src="generator/api.js?v=5.1.5"></script>
+  <script src="auth/auth.js?v=5.1.5"></script>
+  <script src="auth/sync.js?v=5.1.5"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -3253,13 +3254,19 @@
         <div class="saved-header">
           <div>
             <h2>Saved Practice Exams</h2>
-            <p>All previously generated exams stored locally on this device.</p>
+            <p>Your custom study arenas synced automatically across all your devices and browsers.</p>
           </div>
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" id="cloud-sync-btn" style="padding:8px 14px; font-size:13px; display:inline-flex; align-items:center; gap:6px;" onclick="triggerManualSync()">
+              <span id="cloud-sync-icon">☁️</span> <span id="cloud-sync-text">Cloud Sync</span>
+            </button>
             <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
               &uarr; Import Shared Arena
             </button>
             <input type="file" id="import-arena-file" accept=".json,.html" style="display:none" onchange="handleImportArenaFile(event)">
+            <button type="button" class="btn-ghost" style="padding:8px 14px; font-size:13px;" onclick="exportAllArenasJson()">
+              &darr; Export All (.json)
+            </button>
             <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="workspaceNavigate('generator')">
               + Create New Arena
             </button>
@@ -3987,6 +3994,9 @@
           }
         }
         updateSavedBadge();
+        if (window.StudyArenaSync && typeof window.StudyArenaSync.pushBackground === 'function') {
+          window.StudyArenaSync.pushBackground();
+        }
         return entry;
       } catch (e) {
         console.warn("Could not persist arena to localStorage:", e);
@@ -4204,6 +4214,9 @@
       } catch (e) {}
       updateSavedBadge();
       renderSavedArenasList();
+      if (window.StudyArenaSync && typeof window.StudyArenaSync.pushBackground === 'function') {
+        window.StudyArenaSync.pushBackground();
+      }
     }
 
     function hydrateLastSavedArena() {
@@ -4664,15 +4677,39 @@
       if (!file) return;
       try {
         var text = await file.text();
-        var courseData = null;
+        var parsed = null;
         if (file.name.endsWith(".json")) {
-          courseData = JSON.parse(text);
+          parsed = JSON.parse(text);
         } else if (file.name.endsWith(".html")) {
           var m = text.match(/var\s+CONFIG\s*=\s*(\{[\s\S]*?\});/);
           if (m) {
-            courseData = { config: JSON.parse(m[1]), zones: [], chapters: [], questions: [], exams: [] };
+            parsed = { config: JSON.parse(m[1]), zones: [], chapters: [], questions: [], exams: [] };
           }
         }
+
+        // Handle full library package ({ arenas: [...] } or array of arenas)
+        var arenaList = Array.isArray(parsed) ? parsed : (parsed && Array.isArray(parsed.arenas) ? parsed.arenas : null);
+        if (arenaList && arenaList.length > 0) {
+          var importedCount = 0;
+          for (var i = 0; i < arenaList.length; i++) {
+            var item = arenaList[i];
+            var cData = item.courseData || item;
+            if (cData && cData.config) {
+              var compiledHtml = item.compiledHtml || (window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(cData) : "");
+              saveArenaToHistory(cData, compiledHtml);
+              importedCount++;
+            }
+          }
+          renderSavedArenasList();
+          updateSavedBadge();
+          showToast("✓ Successfully imported " + importedCount + " arenas to your library!");
+          switchMainView("saved");
+          event.target.value = "";
+          return;
+        }
+
+        // Handle single arena
+        var courseData = parsed;
         if (courseData && courseData.config) {
           var compiled = window.StudyArenaCompiler ? window.StudyArenaCompiler.compile(courseData) : "";
           saveArenaToHistory(courseData, compiled);
@@ -4687,6 +4724,91 @@
         showToast("Import failed: " + err.message);
       }
       event.target.value = "";
+    }
+
+    async function triggerManualSync() {
+      if (!window.StudyArenaAuth || !window.StudyArenaAuth.isLoggedIn()) {
+        showToast("Please sign in to sync your arenas across browsers.");
+        if (window.StudyArenaAuth && typeof window.StudyArenaAuth.openModal === 'function') {
+          window.StudyArenaAuth.openModal();
+        }
+        return;
+      }
+      var icon = document.getElementById("cloud-sync-icon");
+      var text = document.getElementById("cloud-sync-text");
+      if (icon) icon.textContent = "⏳";
+      if (text) text.textContent = "Syncing...";
+      showToast("Syncing your saved arenas with cloud storage...");
+
+      if (window.StudyArenaSync) {
+        var res = await window.StudyArenaSync.sync({
+          onUpdate: function() {
+            renderSavedArenasList();
+            if (typeof renderSidebarCourses === 'function') renderSidebarCourses();
+          }
+        });
+        if (icon) icon.textContent = "☁️";
+        if (text) text.textContent = "Cloud Synced";
+        if (res && res.ok) {
+          renderSavedArenasList();
+          if (typeof renderSidebarCourses === 'function') renderSidebarCourses();
+          showToast("✓ Cloud Sync Complete! " + (res.count || 0) + " arenas synced across all your browsers.");
+        } else {
+          showToast("Cloud sync note: " + ((res && res.error) || "catalog up to date."));
+        }
+      }
+    }
+
+    function exportAllArenasJson() {
+      var list = getSavedArenas();
+      if (!list || list.length === 0) {
+        showToast("No saved arenas to export.");
+        return;
+      }
+      var payload = {
+        exportedAt: new Date().toISOString(),
+        version: "1.0",
+        count: list.length,
+        arenas: list
+      };
+      var blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.href = url;
+      a.download = "study-arena-library-" + Date.now() + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast("✓ Exported all " + list.length + " arenas as JSON!");
+    }
+
+    function exportDeveloperDataJSON() {
+      var users = (window.StudyArenaAuth && typeof window.StudyArenaAuth.getAllUsers === 'function')
+        ? window.StudyArenaAuth.getAllUsers() : [];
+      var telemetry = [];
+      try {
+        var raw = localStorage.getItem('sa_telemetry_events_v1');
+        telemetry = raw ? JSON.parse(raw) : [];
+      } catch (e) {}
+      var arenas = getSavedArenas();
+      var exportData = {
+        exportedAt: new Date().toISOString(),
+        registeredAccounts: users,
+        savedArenasCount: arenas.length,
+        savedArenas: arenas.map(function(a) { return { id: a.id, title: a.title, createdAt: a.createdAt }; }),
+        telemetryEvents: telemetry
+      };
+      var blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = 'study-arena-admin-telemetry-' + Date.now() + '.json';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+      showToast('Exported developer console telemetry and registered accounts.');
     }
 
     async function checkSharedArenaHash() {
@@ -6523,6 +6645,16 @@ function revealTrap(btn, isCorrect, debriefText) {
             switchMainView("landing");
           }
         })();
+
+        // Trigger background cross-browser sync on boot if logged in
+        if (window.StudyArenaSync && window.StudyArenaAuth && window.StudyArenaAuth.isLoggedIn()) {
+          window.StudyArenaSync.sync({
+            onUpdate: function() {
+              if (typeof renderSavedArenasList === 'function') renderSavedArenasList();
+              if (typeof renderSidebarCourses === 'function') renderSidebarCourses();
+            }
+          });
+        }
 </script>
 
   <!-- MODAL: UPDATE SAVED ARENA WITH NEW MATERIAL -->
