@@ -18,7 +18,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
   <script src="generator/engine_bundle.js?v=3.6.0"></script>
   <script src="generator/compiler.js?v=3.6.0"></script>
-  <script src="generator/api.js?v=4.0.0"></script>
+  <script src="generator/api.js?v=4.1.0"></script>
   <script src="auth/auth.js?v=2.1.0"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -3780,7 +3780,7 @@
                     '</svg>' +
                   '</button>' +
                   '<div class="arena-settings-dropdown" id="arena-settings-dropdown-' + escapeHtml(item.id) + '">' +
-                    '<button type="button" class="settings-menu-item" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
+                    '<button type="button" class="settings-menu-item" onclick="openUpdateArenaModal(\'' + escapeHtml(item.id) + '\')"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/></svg><span>Add New Notes</span></button>\n                    <button type="button" class="settings-menu-item" onclick="downloadSavedArenaById(\'' + escapeHtml(item.id) + '\')">' +
                       '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>' +
                       '<span>Download (.html)</span>' +
                     '</button>' +
@@ -3805,7 +3805,7 @@
             '<span>' + Number(item.chaptersCount || 0) + ' study chapters</span>' +
           '</div>' +
           '<div class="arena-actions">' +
-            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena &rarr;</button>' +
+            '<button type="button" class="btn-play" onclick="playSavedArenaById(\'' + escapeHtml(item.id) + '\')">Play Arena &rarr;</button>\n            <button type="button" class="btn-ghost" style="padding:6px 12px; font-size:12.5px; display:inline-flex; align-items:center; gap:5px;" onclick="openUpdateArenaModal(\'' + escapeHtml(item.id) + '\')"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg><span>Add Material</span></button>' +
             '<button type="button" class="btn-share" onclick="shareArenaLink(\'' + escapeHtml(item.id) + '\')">' +
               '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>' +
               '<span>Share Link</span>' +
@@ -5609,6 +5609,238 @@ function revealTrap(btn, isCorrect, debriefText) {
       });
     }
 
-</script>
+
+    // ==========================================
+    // ARENA UPDATE & MATERIAL EXPANSION
+    // ==========================================
+    var currentUpdateArenaId = null;
+    var updateUploadedFileText = "";
+
+    function openUpdateArenaModal(arenaId) {
+      currentUpdateArenaId = arenaId;
+      updateUploadedFileText = "";
+
+      var list = getSavedArenas();
+      var arena = list.find(function(a) { return a.id === arenaId; });
+      if (!arena) {
+        showToast("Arena not found.");
+        return;
+      }
+
+      var modal = document.getElementById("update-arena-modal");
+      var titleEl = document.getElementById("update-arena-title");
+      var statsChip = document.getElementById("update-arena-stats-chip");
+      var notesInp = document.getElementById("update-notes-input");
+      var fileStatus = document.getElementById("update-pdf-status");
+      var uploadBtnText = document.getElementById("update-upload-btn-text");
+      var progBox = document.getElementById("update-progress-container");
+      var errBox = document.getElementById("update-error-box");
+      var submitBtn = document.getElementById("update-submit-btn");
+
+      if (titleEl) titleEl.textContent = "Update: " + (arena.title || "Study Arena");
+      if (statsChip) statsChip.textContent = "Current: " + (arena.questionsCount || 0) + " questions · " + (arena.chaptersCount || 0) + " chapters";
+      if (notesInp) notesInp.value = "";
+      if (fileStatus) fileStatus.textContent = "No file selected";
+      if (uploadBtnText) uploadBtnText.textContent = "+ Select New PDF or Lecture Notes";
+      if (progBox) progBox.style.display = "none";
+      if (errBox) errBox.style.display = "none";
+      if (submitBtn) submitBtn.disabled = false;
+
+      if (modal) {
+        modal.style.display = "flex";
+        document.body.style.overflow = "hidden";
+      }
+    }
+
+    function closeUpdateArenaModal() {
+      var modal = document.getElementById("update-arena-modal");
+      if (modal) {
+        modal.style.display = "none";
+        document.body.style.overflow = "";
+      }
+      currentUpdateArenaId = null;
+      updateUploadedFileText = "";
+    }
+
+    async function handleUpdateFileUpload(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+
+      var fileStatus = document.getElementById("update-pdf-status");
+      var uploadBtnText = document.getElementById("update-upload-btn-text");
+      if (fileStatus) fileStatus.textContent = "Extracting text from " + file.name + "...";
+
+      try {
+        var text = "";
+        if (file.name.toLowerCase().endsWith(".pdf")) {
+          var arrayBuffer = await file.arrayBuffer();
+          var pdf = await pdfjsLib.getDocument({ data: arrayBuffer }).promise;
+          var fullText = "";
+          for (var p = 1; p <= pdf.numPages; p++) {
+            var page = await pdf.getPage(p);
+            var content = await page.getTextContent();
+            var pageText = content.items.map(function(item) { return item.str; }).join(" ");
+            fullText += "\n--- Page " + p + " ---\n" + pageText;
+          }
+          text = fullText;
+        } else {
+          text = await file.text();
+        }
+
+        updateUploadedFileText = text.trim();
+        var wordCount = (updateUploadedFileText.match(/\S+/g) || []).length;
+        if (fileStatus) fileStatus.textContent = file.name + " (" + wordCount + " words)";
+        if (uploadBtnText) uploadBtnText.textContent = "✓ " + file.name;
+        showToast("Extracted " + wordCount + " words from " + file.name);
+      } catch (err) {
+        console.error("Failed to parse update file:", err);
+        if (fileStatus) fileStatus.textContent = "Could not parse file: " + err.message;
+      }
+    }
+
+    async function submitArenaUpdate() {
+      if (!currentUpdateArenaId) return;
+
+      var list = getSavedArenas();
+      var arena = list.find(function(a) { return a.id === currentUpdateArenaId; });
+      if (!arena || !arena.courseData) {
+        showToast("Could not find arena data to update.");
+        return;
+      }
+
+      var notesInp = document.getElementById("update-notes-input");
+      var newPastedNotes = notesInp ? notesInp.value.trim() : "";
+      var combinedNewMaterial = (updateUploadedFileText + "\n\n" + newPastedNotes).trim();
+
+      if (!combinedNewMaterial || combinedNewMaterial.length < 20) {
+        var errBox = document.getElementById("update-error-box");
+        if (errBox) {
+          errBox.textContent = "Please attach a new PDF or paste lecture notes to update this arena.";
+          errBox.style.display = "block";
+        }
+        return;
+      }
+
+      var progBox = document.getElementById("update-progress-container");
+      var progMsg = document.getElementById("update-progress-msg");
+      var progPct = document.getElementById("update-progress-pct");
+      var progBar = document.getElementById("update-progress-bar");
+      var errBox = document.getElementById("update-error-box");
+      var submitBtn = document.getElementById("update-submit-btn");
+
+      if (progBox) progBox.style.display = "block";
+      if (errBox) errBox.style.display = "none";
+      if (submitBtn) submitBtn.disabled = true;
+
+      try {
+        var result = await window.StudyArenaAPI.updateArena(
+          arena.courseData,
+          combinedNewMaterial,
+          "",
+          function(msg, pct) {
+            if (progMsg) progMsg.textContent = msg;
+            if (progPct) progPct.textContent = pct + "%";
+            if (progBar) progBar.style.width = pct + "%";
+          }
+        );
+
+        // Update entry in saved arenas
+        updateSavedArenaInHistory(currentUpdateArenaId, result.courseData, result.compiledHtml);
+
+        showToast("Updated '" + (result.courseData.config.title || arena.title) + "' with " + result.addedQuestionsCount + " new questions!");
+        closeUpdateArenaModal();
+
+        // Immediately open player to show the updated arena
+        playSavedArenaById(currentUpdateArenaId);
+      } catch (err) {
+        console.error("Arena update failed:", err);
+        if (errBox) {
+          errBox.textContent = err.message || "Failed to update arena. Please check API settings.";
+          errBox.style.display = "block";
+        }
+        if (submitBtn) submitBtn.disabled = false;
+      }
+    }
+
+    function updateSavedArenaInHistory(arenaId, updatedCourseData, updatedHtml) {
+      try {
+        var list = getSavedArenas();
+        for (var i = 0; i < list.length; i++) {
+          if (list[i].id === arenaId) {
+            list[i].courseData = updatedCourseData;
+            list[i].compiledHtml = updatedHtml;
+            list[i].questionsCount = (updatedCourseData.questions || []).length;
+            list[i].chaptersCount = (updatedCourseData.chapters || []).length;
+            list[i].zonesCount = (updatedCourseData.zones || []).length;
+            list[i].updatedAt = new Date().toISOString();
+            break;
+          }
+        }
+        localStorage.setItem(SAVED_ARENAS_KEY, JSON.stringify(list));
+        renderSavedArenasList();
+        updateSavedBadge();
+        return true;
+      } catch (e) {
+        console.warn("Could not save updated arena:", e);
+        return false;
+      }
+    }
+
+  </script>
+
+  <!-- MODAL: UPDATE SAVED ARENA WITH NEW MATERIAL -->
+  <div class="auth-modal-backdrop" id="update-arena-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);" onclick="if(event.target===this)closeUpdateArenaModal()">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); width:92%; max-width:580px; padding:28px; box-shadow:var(--shadow-lg); position:relative; max-height:90vh; overflow-y:auto;">
+      <button type="button" onclick="closeUpdateArenaModal()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:var(--text-muted); cursor:pointer; font-size:20px; line-height:1;">&times;</button>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+        <span style="font-size:11px; font-weight:700; color:#059669; background:rgba(16,185,129,0.12); padding:2px 8px; border-radius:12px; letter-spacing:0.04em;">ARENA UPGRADE</span>
+        <span class="mono" style="font-size:12px; color:var(--text-muted);" id="update-arena-stats-chip">Current: 0 questions</span>
+      </div>
+
+      <h3 style="font-family:var(--f-serif); font-size:22px; margin:0 0 6px; color:var(--text-ink);" id="update-arena-title">Update Study Arena</h3>
+      <p style="margin:0 0 20px; font-size:13.5px; color:var(--text-muted); line-height:1.5;">Ingest new lecture slides, weekly chapters, or exam hints. The AI will synthesize new micro-case questions and append them directly to this arena.</p>
+
+      <!-- ATTACH PDF / SLIDES -->
+      <div style="margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <label style="font-size:12.5px; font-weight:600; color:var(--text-ink);">Attach New Lecture Slides / PDF</label>
+          <span style="font-size:11px; color:var(--text-muted);" id="update-pdf-status">No file selected</span>
+        </div>
+        <input type="file" id="update-file-input" accept=".pdf,.txt,.md" style="display:none" onchange="handleUpdateFileUpload(event)">
+        <button type="button" class="btn-ghost" style="width:100%; padding:10px; border:1px dashed var(--line); font-size:13px; text-align:center;" onclick="document.getElementById('update-file-input').click()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:6px; vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+          <span id="update-upload-btn-text">+ Select New PDF or Lecture Notes</span>
+        </button>
+      </div>
+
+      <!-- PASTE NOTES -->
+      <div style="margin-bottom:16px;">
+        <label style="display:block; font-size:12.5px; font-weight:600; color:var(--text-ink); margin-bottom:6px;">Paste New Notes, Transcripts or Professor Hints</label>
+        <textarea id="update-notes-input" style="width:100%; min-height:110px; padding:10px 12px; font-size:13px; border:1px solid var(--line); border-radius:6px; background:var(--surface-2); color:var(--text-ink); resize:vertical; font-family:inherit; box-sizing:border-box;" placeholder="Paste new topics, formula updates, past exam problems, or focus areas..."></textarea>
+      </div>
+
+      <!-- PROGRESS & ERROR INDICATOR -->
+      <div id="update-progress-container" style="display:none; margin-bottom:18px; padding:14px; background:var(--surface-2); border:1px solid var(--line); border-radius:6px;">
+        <div style="display:flex; justify-content:space-between; font-size:12px; color:var(--text-ink); margin-bottom:6px;">
+          <span id="update-progress-msg">Analyzing new materials...</span>
+          <span id="update-progress-pct" style="font-weight:600;">20%</span>
+        </div>
+        <div style="width:100%; height:6px; background:var(--surface-3); border-radius:3px; overflow:hidden;">
+          <div id="update-progress-bar" style="width:20%; height:100%; background:var(--accent-cta); transition:width 0.3s ease;"></div>
+        </div>
+      </div>
+      <div id="update-error-box" style="display:none; margin-bottom:16px; padding:10px 12px; border-radius:6px; background:rgba(239,68,68,0.08); border:1px solid rgba(239,68,68,0.25); color:#ef4444; font-size:12.5px;"></div>
+
+      <!-- BUTTONS -->
+      <div style="display:flex; justify-content:flex-end; gap:10px; align-items:center;">
+        <button type="button" class="btn-ghost" onclick="closeUpdateArenaModal()" style="padding:8px 16px; font-size:13px;" id="update-cancel-btn">Cancel</button>
+        <button type="button" class="btn-primary" onclick="submitArenaUpdate()" style="padding:8px 20px; font-size:13px;" id="update-submit-btn">
+          Synthesize &amp; Update Arena &rarr;
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>

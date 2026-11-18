@@ -527,6 +527,191 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     }
   },
 
+    updateArena: async function(existingCourseData, newMaterialText, newTeacherNotes, onProgress) {
+    this.abort();
+    this.currentController = new AbortController();
+    var signal = this.currentController.signal;
+
+    var provider = localStorage.getItem("sa_ai_provider") || "gemini";
+    var apiKey = localStorage.getItem("sa_api_key_" + provider) || "";
+    if (!apiKey && provider === "gemini") {
+      apiKey = this.DEFAULT_GEMINI_KEY;
+    }
+    if (!apiKey) {
+      apiKey = localStorage.getItem("sa_api_key_gemini") || this.DEFAULT_GEMINI_KEY;
+      if (apiKey) provider = "gemini";
+    }
+
+    onProgress("Analyzing existing arena and new course materials...", 20);
+
+    var existingSummary = "EXISTING COURSE: " + ((existingCourseData.config && existingCourseData.config.title) || "Custom Arena") + "\n" +
+      "CURRENT CHAPTERS: " + (existingCourseData.chapters || []).map(function(c) { return c.title + " (" + (c.topic || "") + ")"; }).join(", ") + "\n" +
+      "CURRENT QUESTION COUNT: " + (existingCourseData.questions || []).length;
+
+    var updatePrompt = `You are an exacting university exam architect updating an existing study arena with NEW lecture materials.
+
+### CONTEXT & RULES:
+1. Review the existing arena structure to avoid duplicate questions or redundant concepts.
+2. Synthesize the NEW lecture material into additional high-rigor micro-case scenario questions and study chapters.
+3. Every new question must follow the multi-logical distractor blueprint (realistic traps, detailed explanation, no trivia recall).
+4. Return ONLY a valid parseable JSON object matching this schema:
+{
+  "zones": [
+    { "id": "string", "name": "string", "sess": "string", "blurb": "string" }
+  ],
+  "chapters": [
+    { "id": "string", "title": "string", "zone": "string", "topic": "string", "body": "<p>Content</p>", "src": "string" }
+  ],
+  "questions": [
+    {
+      "type": "mcq",
+      "zone": "string",
+      "topic": "string",
+      "question": "Scenario question text",
+      "options": [
+        ["Correct option statement.", "Detailed explanation of why correct."],
+        ["Tempting distractor 1.", "Diagnostic trap explanation."],
+        ["Tempting distractor 2.", "Diagnostic trap explanation."],
+        ["Tempting distractor 3.", "Diagnostic trap explanation."]
+      ],
+      "correctIndex": 0,
+      "deepExplanation": "Theoretical warrant explaining the core principle.",
+      "trick": false,
+      "src": "Slide/Chapter"
+    }
+  ]
+}`;
+
+    var userContent = existingSummary + "\n\nNEW COURSE MATERIAL TO INGEST & ADD TO ARENA:\n\n" + newMaterialText;
+    if (newTeacherNotes && newTeacherNotes.trim()) {
+      userContent += "\n\nNEW TEACHER NOTES / PROFESSOR HINTS:\n\n" + newTeacherNotes;
+    }
+
+    var rawResponse = "";
+
+    if (provider === "claude") {
+      onProgress("Contacting Claude for new material synthesis...", 35);
+      var candidateModels = [
+        "claude-3-7-sonnet-20250219",
+        "claude-3-5-sonnet-20241022",
+        "claude-3-5-haiku-20241022",
+        "claude-3-haiku-20240307"
+      ];
+      var savedModel = localStorage.getItem("sa_model_claude");
+      if (savedModel && !candidateModels.includes(savedModel)) candidateModels.unshift(savedModel);
+
+      var lastError = null;
+      for (var ci = 0; ci < candidateModels.length; ci++) {
+        var mToTry = candidateModels[ci];
+        try {
+          var res = await fetch("https://api.anthropic.com/v1/messages", {
+            signal: signal,
+            method: "POST",
+            headers: {
+              "x-api-key": apiKey,
+              "anthropic-version": "2023-06-01",
+              "content-type": "application/json",
+              "anthropic-dangerous-direct-browser-access": "true"
+            },
+            body: JSON.stringify({
+              model: mToTry,
+              max_tokens: 4096,
+              system: updatePrompt,
+              messages: [{ role: "user", content: userContent }]
+            })
+          });
+
+          if (!res.ok) {
+            var errB = await res.text();
+            lastError = errB;
+            if (res.status === 404 || res.status === 400) continue;
+            throw new Error("Claude API error (" + res.status + "): " + errB);
+          }
+
+          var cJson = await res.json();
+          var tBlocks = (cJson.content || []).filter(function(b) { return b.type === "text" || b.text; });
+          rawResponse = tBlocks.map(function(b) { return b.text; }).join("\n");
+          if (rawResponse) break;
+        } catch (fErr) {
+          if (fErr.name === "AbortError") throw fErr;
+          lastError = fErr.message;
+        }
+      }
+      if (!rawResponse) throw new Error("Claude update failed: " + (lastError || "all models unavailable"));
+
+    } else if (provider === "openai") {
+      onProgress("Synthesizing new material with OpenAI...", 40);
+      var modelName = localStorage.getItem("sa_model_openai") || "gpt-4o";
+      var res = await fetch("https://api.openai.com/v1/chat/completions", {
+        signal: signal,
+        method: "POST",
+        headers: { "Authorization": "Bearer " + apiKey, "Content-Type": "application/json" },
+        body: JSON.stringify({
+          model: modelName,
+          response_format: { type: "json_object" },
+          messages: [
+            { role: "system", content: updatePrompt },
+            { role: "user", content: userContent }
+          ]
+        })
+      });
+      if (!res.ok) throw new Error("OpenAI error (" + res.status + "): " + (await res.text()));
+      var jRes = await res.json();
+      rawResponse = jRes.choices[0].message.content;
+
+    } else if (provider === "gemini") {
+      onProgress("Creating additional questions & distractors...", 45);
+      rawResponse = await this.callGeminiWithFallback(apiKey, updatePrompt, userContent, signal, onProgress);
+    }
+
+    onProgress("Merging new material into study arena...", 80);
+    var newPatchData = this.cleanJsonResponse(rawResponse);
+
+    // Merge into existingCourseData
+    var merged = JSON.parse(JSON.stringify(existingCourseData));
+
+    // Merge zones
+    var existingZoneIds = (merged.zones || []).map(function(z) { return z.id; });
+    (newPatchData.zones || []).forEach(function(nz) {
+      if (nz && nz.id && !existingZoneIds.includes(nz.id)) {
+        merged.zones.push(nz);
+        existingZoneIds.push(nz.id);
+      }
+    });
+
+    // Merge chapters
+    var existingChapterTitles = (merged.chapters || []).map(function(c) { return (c.title || "").toLowerCase(); });
+    (newPatchData.chapters || []).forEach(function(nc) {
+      if (nc && nc.title && !existingChapterTitles.includes(nc.title.toLowerCase())) {
+        merged.chapters.push(nc);
+      }
+    });
+
+    // Merge questions
+    var existingQTexts = (merged.questions || []).map(function(q) { return (q.question || "").toLowerCase().slice(0, 40); });
+    var addedCount = 0;
+    (newPatchData.questions || []).forEach(function(nq) {
+      if (nq && nq.question) {
+        var snippet = nq.question.toLowerCase().slice(0, 40);
+        if (!existingQTexts.includes(snippet)) {
+          merged.questions.push(nq);
+          addedCount++;
+        }
+      }
+    });
+
+    onProgress("Compiling updated Study Arena...", 92);
+    var compiledHtml = window.StudyArenaCompiler.compile(merged);
+
+    onProgress("Arena successfully updated!", 100);
+    return {
+      courseData: merged,
+      compiledHtml: compiledHtml,
+      addedQuestionsCount: addedCount,
+      newChaptersCount: (newPatchData.chapters || []).length
+    };
+  },
+
   generate: async function(courseText, teacherNotes, onProgress) {
     this.abort();
     this.currentController = new AbortController();
