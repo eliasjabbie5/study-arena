@@ -99,6 +99,44 @@ var SAMPLE_MOCK_ESSAY_REVIEW = {
 };
 
 window.StudyArenaAPI = {
+  gradeShortAnswer: async function(questionText, rubricPoints, studentAnswer) {
+    var provider = localStorage.getItem("sa_ai_provider") || "gemini";
+    var apiKey = localStorage.getItem("sa_api_key_" + provider) || this.DEFAULT_GEMINI_KEY;
+    if (!apiKey) apiKey = this.DEFAULT_GEMINI_KEY;
+
+    var rubricDesc = (rubricPoints || []).map(function(r, i) {
+      return (i + 1) + ". " + (r.p || r.point || "");
+    }).join("\n");
+
+    var prompt = "You are an academic examiner grading a student short answer against an exam rubric.\n" +
+      "Evaluate whether each rubric point is satisfied. Accept valid conceptual paraphrases.\n" +
+      "Provide hits (array of booleans), score (0-10), feedback (2-3 sentences), and socraticHint (1-2 sentences guiding the student if any points were missed, or congratulating if full marks).\n" +
+      "Return strictly pure JSON with keys: hits, score, feedback, socraticHint.";
+
+    var userContent = "QUESTION: " + questionText + "\n\nRUBRIC:\n" + rubricDesc + "\n\nSTUDENT ANSWER:\n" + studentAnswer;
+
+    try {
+      var raw = await this.callGeminiWithFallback(apiKey, prompt, userContent, null);
+      var parsed = this.cleanJsonResponse(raw);
+      return parsed;
+    } catch (e) {
+      console.warn("AI short answer grading failed, using heuristic:", e);
+      var hits = (rubricPoints || []).map(function(r) {
+        var kw = (r.k || r.keywords || "").split("|");
+        var lower = (studentAnswer || "").toLowerCase();
+        return kw.some(function(k) { return k.trim() && lower.includes(k.trim().toLowerCase()); });
+      });
+      var hitCount = hits.filter(Boolean).length;
+      var total = (rubricPoints && rubricPoints.length) ? rubricPoints.length : 1;
+      return {
+        hits: hits,
+        score: Math.round((hitCount / total) * 10 * 10) / 10,
+        feedback: hitCount === total ? "Excellent answer addressing all core rubric criteria." : "Review the specific constraints required in the rubric.",
+        socraticHint: hitCount < total ? "Consider how the underlying constraints directly impact the outcome." : "Mastery confirmed."
+      };
+    }
+  },
+
   callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
     var candidateModels = [
       "gemini-3.1-flash-lite",
@@ -152,7 +190,7 @@ window.StudyArenaAPI = {
 
   DEFAULT_GEMINI_KEY: "AQ.Ab8RN6JCOQNgo0Rf8CphejiVWEhrLJDY0FTdph9IUCdhzyPboQ",
   DEFAULT_GEMINI_MODEL: "gemini-3.1-flash-lite",
-  MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials for business and economics students.
+  MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials across academic disciplines (including Business, STEM, Computer Science, Medicine, Law, and Humanities).
 
 Your mission is to transform raw student course material (slides, readings, lecture transcripts) into a high-rigor, interactive study arena.
 
@@ -162,7 +200,7 @@ Your mission is to transform raw student course material (slides, readings, lect
 
 1. NO TRIVIA OR RECALL QUESTIONS:
    Never ask basic definition questions (e.g., "What does WACC stand for?"). Every question must be a 2\u20133 sentence micro-case scenario featuring:
-   - A realistic company/manager context.
+   - A realistic discipline-specific context (e.g. managerial constraint, clinical case, engineering bottleneck, or legal dilemma).
    - An operational constraint (tight cash flow, regulatory pressure, union opposition).
    - A strategic dilemma requiring the application of course frameworks.
 
@@ -1008,6 +1046,21 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     onProgress("Checking questions and explanations...", 78);
     var courseData = this.cleanJsonResponse(rawResponse);
+    if (courseData && Array.isArray(courseData.questions)) {
+      courseData.questions.forEach(function(q) {
+        if (q.type === 'mcq' && Array.isArray(q.options) && q.options.length === 4) {
+          var origIdx = (typeof q.correctIndex === 'number') ? q.correctIndex : 0;
+          var correctOpt = q.options[origIdx] || q.options[0];
+          var targetIdx = Math.floor(Math.random() * 4);
+          if (targetIdx !== origIdx) {
+            var temp = q.options[targetIdx];
+            q.options[targetIdx] = correctOpt;
+            q.options[origIdx] = temp;
+            q.correctIndex = targetIdx;
+          }
+        }
+      });
+    }
 
     onProgress("Compiling offline Study Arena...", 92);
     var compiledHtml = window.StudyArenaCompiler.compile(courseData);

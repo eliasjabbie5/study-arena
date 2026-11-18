@@ -39,15 +39,19 @@ window.StudyArenaCompiler = {
     }
 
     var config = data.config;
-    if (!config.ranks || !Array.isArray(config.ranks) || config.ranks.length === 0 || config.ranks[0][1] === "Intern" || config.ranks[0][1] === "Rookie" || config.ranks[0][1] === "Novice") {
-      config.ranks = [
-        [0, "Foundational Standing"],
-        [150, "Proficiency Standing"],
-        [350, "Advanced Practice"],
-        [650, "Executive Mastery"],
-        [1000, "Distinction Honors"]
-      ];
-    }
+    // Dynamic Rank Calibration based on total achievable XP in this specific arena
+    var totalXpPossible = (questions || []).reduce(function(sum, q) {
+      return sum + (q.type === 'essay' ? 50 : (q.type === 'short' ? 20 : 10));
+    }, 0) + ((questions || []).length * 2);
+    if (!totalXpPossible || totalXpPossible < 40) totalXpPossible = 40;
+
+    config.ranks = [
+      [0, "Foundational Standing"],
+      [Math.round(totalXpPossible * 0.35), "Proficiency Standing"],
+      [Math.round(totalXpPossible * 0.60), "Advanced Practice"],
+      [Math.round(totalXpPossible * 0.85), "Executive Mastery"],
+      [totalXpPossible, "Distinction Honors"]
+    ];
     config.examName = config.examName || config.title || "Course Final Examination";
     config.examFormat = config.examFormat || "University Academic Examination Standards";
     config.examTotal = config.examTotal || 20;
@@ -104,8 +108,8 @@ window.StudyArenaCompiler = {
     var qLines = [];
     questions.forEach(function(q) {
       if (q.type === 'mcq') {
-        var opts = JSON.stringify(q.options);
-        var deep = JSON.stringify(q.deepExplanation || "");
+        var opts = safeJson(q.options);
+        var deep = safeJson(q.deepExplanation || "");
         var extras = JSON.stringify({
           topic: q.topic || "Core Frameworks",
           trick: !!q.trick,
@@ -142,7 +146,7 @@ window.StudyArenaCompiler = {
     var learnJs = learnLines.join("\n") + "\n";
 
     // 6. exams.js
-    var examsJs = "var EXAMS = " + JSON.stringify(exams) + ";\n";
+    var examsJs = "var EXAMS = " + safeJson(exams) + ";\n";
 
     // Stitch together using ENGINE_BUNDLE
     var b = window.ENGINE_BUNDLE;

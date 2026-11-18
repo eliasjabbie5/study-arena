@@ -16,10 +16,10 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
   <script>pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';</script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-  <script src="generator/engine_bundle.js?v=3.6.0"></script>
-  <script src="generator/compiler.js?v=3.6.0"></script>
-  <script src="generator/api.js?v=4.2.0"></script>
-  <script src="auth/auth.js?v=2.1.0"></script>
+  <script src="generator/engine_bundle.js?v=5.0.0"></script>
+  <script src="generator/compiler.js?v=5.0.0"></script>
+  <script src="generator/api.js?v=5.0.0"></script>
+  <script src="auth/auth.js?v=5.0.0"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -2484,6 +2484,155 @@
       line-height: 1.45;
     }
 
+
+    /* ============================================================ */
+    /* UI FIXES: MOBILE PLAYER, Z-INDEX, RUBRIC GRID & HIGHLIGHTS */
+    /* ============================================================ */
+    .modal-overlay {
+      z-index: 2500 !important; /* Above editorial-nav 1000 */
+    }
+    .annals-content.open {
+      display: block !important;
+    }
+    .carousel-track {
+      align-items: start !important;
+    }
+    #overview, #how-it-works, #interactive-demo, #product-features {
+      scroll-margin-top: 80px !important;
+    }
+    .rubric-grid {
+      display: grid !important;
+      grid-template-columns: repeat(2, 1fr) !important;
+      gap: 16px !important;
+    }
+    .rubric-card-score {
+      white-space: nowrap !important;
+    }
+    .arena-actions {
+      display: flex !important;
+      flex-wrap: wrap !important;
+      gap: 8px !important;
+      align-items: center !important;
+    }
+    .arena-actions .btn-play,
+    .arena-actions .btn-share,
+    .arena-actions .btn-ghost {
+      white-space: nowrap !important;
+    }
+    .arena-stats span {
+      white-space: nowrap !important;
+    }
+    .ann-highlight {
+      cursor: pointer;
+      transition: opacity 0.2s ease, filter 0.2s ease, background 0.2s ease;
+    }
+    .ann-highlight.dimmed {
+      opacity: 0.22 !important;
+      filter: grayscale(0.85) !important;
+    }
+    .ann-highlight.redline-applied {
+      background: rgba(16, 185, 129, 0.2) !important;
+      border-bottom: 2px solid #10b981 !important;
+      color: var(--text-ink) !important;
+    }
+
+    /* Viewing Landing State for Logged-In Users (Prevents Mixed Chrome) */
+    body.viewing-landing #workspace-top-bar,
+    body.viewing-landing .ai-sidebar {
+      display: none !important;
+    }
+    body.viewing-landing #public-nav {
+      display: block !important;
+    }
+    body.viewing-landing #app-main {
+      margin-left: 0 !important;
+      padding-top: 48px !important;
+    }
+    body:not(.viewing-landing).is-authenticated #public-nav {
+      display: none !important;
+    }
+
+    @media (max-width: 768px) {
+      #arena-player-modal {
+        padding: 0 !important;
+      }
+      .player-modal-box {
+        width: 100vw !important;
+        height: 100vh !important;
+        max-width: 100vw !important;
+        max-height: 100vh !important;
+        margin: 0 !important;
+        border-radius: 0 !important;
+        border: none !important;
+      }
+      .rubric-grid {
+        grid-template-columns: 1fr !important;
+      }
+    }
+
+    /* ============================================================ */
+    /* DEVELOPER FEATURE LAB SWITCHER & LAB COMPONENTS */
+    /* ============================================================ */
+    .btn-dev-lab {
+      display: none;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: linear-gradient(135deg, rgba(16, 185, 129, 0.15), rgba(99, 102, 241, 0.15));
+      border: 1px solid rgba(16, 185, 129, 0.4);
+      color: var(--text-ink);
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      position: relative;
+      box-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+    }
+    .btn-dev-lab:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 0 16px rgba(16, 185, 129, 0.35);
+      border-color: var(--accent-cta);
+    }
+    .dev-lab-glow {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: devPulse 2s infinite;
+    }
+    @keyframes devPulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.5; transform: scale(0.85); }
+    }
+    .dev-active-badge {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      padding: 1px 6px;
+      border-radius: 4px;
+      color: var(--accent-cta);
+    }
+
+    /* Floating Redline Popover (Feature 3) */
+    .redline-popover {
+      position: absolute;
+      z-index: 3000;
+      width: 320px;
+      max-width: 90vw;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      padding: 16px;
+      box-shadow: var(--shadow-float);
+      animation: popoverFadeIn 0.18s ease-out;
+    }
+    @keyframes popoverFadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
 </style>
 </head>
 <body>
@@ -2588,7 +2737,7 @@
       <!-- POPUP MENU -->
       <div class="sidebar-user-menu" id="sidebar-user-menu" style="display:none;">
                 <button type="button" class="user-menu-item" id="user-menu-dev-dashboard" onclick="workspaceNavigate('dev-dashboard')" style="display:none;">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
           <span>Developer Console</span>
         </button>
 <button type="button" class="user-menu-item" onclick="openSettingsModal()">
@@ -2617,6 +2766,12 @@
       <span class="workspace-view-heading" id="workspace-view-heading">My Arenas</span>
     </div>
     <div style="display:flex; align-items:center; gap:10px;">
+      <!-- DEV FEATURE LAB BUTTON (GATED TO DEVELOPER) -->
+      <button type="button" class="btn-dev-lab" id="dev-lab-trigger-btn" onclick="openDevLabModal()" title="Developer Feature Lab (Elias Jabbie Only)">
+        <span class="dev-lab-glow"></span>
+        <span class="mono">⚡ Dev Feature Lab</span>
+        <span class="dev-active-badge" id="dev-active-feature-badge">All 5 ON</span>
+      </button>
       <button type="button" class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="workspaceNavigate('generator')">
         + Create Arena
       </button>
@@ -2889,6 +3044,67 @@
         </div>
 
         <section class="console-section" id="generator-console">
+
+        <!-- DEVELOPER FEATURE 1: PROFESSOR TRAP RADAR & DISCIPLINE SELECTOR (Gated) -->
+        <div id="dev-feature-trap-radar" style="display:none; margin-bottom:18px; padding:18px 20px; background:var(--surface-2); border:1px solid rgba(16,185,129,0.35); border-radius:var(--radius-card); box-shadow:0 2px 8px rgba(16,185,129,0.06);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="dev-lab-glow"></span>
+              <span class="mono" style="font-size:11px; font-weight:700; color:#059669; letter-spacing:0.04em;">DEV FEATURE 1 &middot; PROFESSOR TRAP RADAR</span>
+            </div>
+            <span class="dev-active-badge" style="color:#059669;">Active in Generator</span>
+          </div>
+          <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap:16px;">
+            <div>
+              <label style="font-size:11.5px; font-weight:600; text-transform:uppercase; color:var(--text-steel); display:block; margin-bottom:6px;">Academic Discipline Preset</label>
+              <div class="chips" id="dev-discipline-chips" style="gap:6px;">
+                <button type="button" class="chipbtn on" data-discipline="Auto-Detect" onclick="selectDevDiscipline(this, 'Auto-Detect')">Auto-Detect</button>
+                <button type="button" class="chipbtn" data-discipline="Business & Finance" onclick="selectDevDiscipline(this, 'Business & Finance')">Business</button>
+                <button type="button" class="chipbtn" data-discipline="STEM & Engineering" onclick="selectDevDiscipline(this, 'STEM & Engineering')">STEM</button>
+                <button type="button" class="chipbtn" data-discipline="Medicine & Health" onclick="selectDevDiscipline(this, 'Medicine & Health')">Medicine</button>
+                <button type="button" class="chipbtn" data-discipline="Law & Policy" onclick="selectDevDiscipline(this, 'Law & Policy')">Law</button>
+              </div>
+            </div>
+            <div>
+              <label style="font-size:11.5px; font-weight:600; text-transform:uppercase; color:var(--text-steel); display:block; margin-bottom:6px;">Target Exam Trap Filter</label>
+              <div class="chips" id="dev-trap-focus-chips" style="gap:6px;">
+                <button type="button" class="chipbtn on" data-trap="Multi-Logical Traps" onclick="selectDevTrap(this, 'Multi-Logical Traps')">Multi-Logical Traps</button>
+                <button type="button" class="chipbtn" data-trap="Edge Cases & Exceptions" onclick="selectDevTrap(this, 'Edge Cases & Exceptions')">Edge Cases</button>
+                <button type="button" class="chipbtn" data-trap="Formula & Sign Traps" onclick="selectDevTrap(this, 'Formula & Sign Traps')">Formula / Sign Traps</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- DEVELOPER FEATURE 2: PDF SLIDE-RANGE SELECTOR & 15-MIN EMERGENCY TRIAGE (Gated) -->
+        <div id="dev-feature-slide-range" style="display:none; margin-bottom:18px; padding:18px 20px; background:var(--surface-2); border:1px solid rgba(99,102,241,0.35); border-radius:var(--radius-card); box-shadow:0 2px 8px rgba(99,102,241,0.06);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="width:7px; height:7px; border-radius:50%; background:#6366f1; box-shadow:0 0 8px #6366f1;"></span>
+              <span class="mono" style="font-size:11px; font-weight:700; color:#6366f1; letter-spacing:0.04em;">DEV FEATURE 2 &middot; SLIDE-RANGE CRAMMER &amp; 15-MIN TRIAGE</span>
+            </div>
+            <span class="dev-active-badge" style="color:#6366f1;">Active</span>
+          </div>
+          <div style="display:flex; flex-wrap:wrap; gap:18px; align-items:center;">
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span style="font-size:12px; font-weight:600; color:var(--text-ink);">Ingest Range:</span>
+              <span style="font-size:11.5px; color:var(--text-steel);">From Slide</span>
+              <input type="number" id="dev-range-start" min="1" value="1" style="width:58px; padding:5px 8px; border:1px solid var(--line); border-radius:6px; font-size:12px; background:var(--surface); color:var(--text-ink);" onchange="updateSlideRangeFilter()">
+              <span style="font-size:11.5px; color:var(--text-steel);">to</span>
+              <input type="number" id="dev-range-end" min="1" value="30" style="width:58px; padding:5px 8px; border:1px solid var(--line); border-radius:6px; font-size:12px; background:var(--surface); color:var(--text-ink);" onchange="updateSlideRangeFilter()">
+              <span style="font-size:11.5px; color:var(--text-steel);" id="dev-range-stats-chip">(All slides)</span>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px; margin-left:auto; flex-wrap:wrap;">
+              <span style="font-size:12px; font-weight:600; color:var(--text-ink);">Arena Mode:</span>
+              <div class="chips" id="dev-arena-mode-chips" style="gap:6px;">
+                <button type="button" class="chipbtn on" data-mode="standard" onclick="selectDevArenaMode(this, 'standard')">Standard Mastery (8 Qs)</button>
+                <button type="button" class="chipbtn" data-mode="simulation" onclick="selectDevArenaMode(this, 'simulation')">Timed Midterm (15 Qs)</button>
+                <button type="button" class="chipbtn" data-mode="triage" onclick="selectDevArenaMode(this, 'triage')">⚡ 15-Min Triage (Top 5 Traps)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
           <div class="console-header">
             <div class="console-title-group">
               <h2>Arena Generator</h2>
@@ -3129,7 +3345,13 @@
             <div style="margin-top:18px;">
               <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--accent-cta); font-weight:600; margin-bottom:6px;">Grade Summary &amp; Explanation</div>
               <p id="res-grade-summary" style="font-size:14px; line-height:1.55; color:var(--text-ink); margin:0;"></p>
-            </div>
+            
+              <!-- DEVELOPER FEATURE 3: LIVE REDLINE GRADE DELTA (Gated) -->
+              <div id="dev-projected-grade-box" style="display:none; align-items:center; gap:10px; padding:6px 14px; background:rgba(16,185,129,0.08); border:1px solid rgba(16,185,129,0.3); border-radius:var(--radius-pill);">
+                <span class="mono" style="font-size:10.5px; font-weight:700; color:#059669; letter-spacing:0.04em;">⚡ PROJECTED GRADE:</span>
+                <span id="dev-projected-grade-val" style="font-size:13px; font-weight:700; color:#059669;">16.5 &rarr; 18.2 / 20 (A)</span>
+                <button type="button" class="btn-ghost" style="padding:3px 10px; font-size:11px;" onclick="copyRevisedEssayText()">Copy Revised Paper</button>
+              </div></div>
 
             <!-- RUBRIC 4-DIMENSION BREAKDOWN -->
             <div class="rubric-grid" id="res-rubric-grid">
@@ -3166,7 +3388,7 @@
             <!-- COUNTERARGUMENTS TO ADD -->
             <div>
               <div style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
                 Counterarguments to Strengthen Your Paper
               </div>
               <div id="res-counterarguments-container"></div>
@@ -3600,6 +3822,11 @@
 
     /* ---------- GSAP CHOREOGRAPHED MULTI-SCREEN TRANSITIONS ---------- */
     function switchMainView(viewName) {
+      if (viewName === "landing") {
+        document.body.classList.add("viewing-landing");
+      } else {
+        document.body.classList.remove("viewing-landing");
+      }
       if (typeof closeMobileSidebar === "function") closeMobileSidebar();
       window.scrollTo(0, 0);
       if (viewName === "create") viewName = "generator";
@@ -4816,11 +5043,13 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
     }
 
+    var pendingAuthTarget = "generator";
     function handleProtectedAction(targetView) {
+      pendingAuthTarget = targetView || "generator";
       if (window.StudyArenaAuth && window.StudyArenaAuth.isLoggedIn()) {
-        workspaceNavigate(targetView);
+        workspaceNavigate(pendingAuthTarget);
       } else {
-        openAuthModal(targetView);
+        openAuthModal(pendingAuthTarget);
       }
     }
 
@@ -4883,6 +5112,8 @@ function revealTrap(btn, isCorrect, debriefText) {
       if (!window.StudyArenaAuth) return;
       window.StudyArenaAuth.signInAsGuest().then(function(user) {
         closeAuthModal();
+        workspaceNavigate(pendingAuthTarget || "generator");
+        showToast("Welcome! Signed in as Guest Student.");
       });
     }
 
@@ -5052,20 +5283,34 @@ function revealTrap(btn, isCorrect, debriefText) {
 
     function loadPreloadedMock() {
       switchMainView("generator");
-      inMemoryMock = true;
+      inMemoryMock = false;
       var notes = document.getElementById("notes-input");
       if (notes) {
-        notes.value = "Corporate Finance: Capital Structure & WACC\nLecture 4: Trade-Off Theory, Financial Distress Costs, and Pecking Order Hierarchy.\nOptimal leverage balances tax shields against distress costs.";
+        notes.value = "CORPORATE FINANCE: CAPITAL STRUCTURE & COST OF CAPITAL\n\n" +
+          "Topic 1: Weighted Average Cost of Capital (WACC)\n" +
+          "- WACC blends after-tax cost of debt and cost of equity: WACC = (E/V * Re) + (D/V * Rd * (1 - Tc))\n" +
+          "- Exam Trap: Only interest on debt is tax-deductible. Never apply the (1 - Tc) tax shield to equity returns.\n" +
+          "- CAPM Formula: Re = Rf + Beta * (Rm - Rf). The market risk premium is (Rm - Rf), not Rm alone.\n\n" +
+          "Topic 2: Modigliani-Miller & Pecking Order Hierarchy\n" +
+          "- MM Proposition I (No Taxes): Total firm value is independent of leverage; arbitrage eliminates price discrepancies.\n" +
+          "- MM Proposition I (With Taxes): Value of levered firm VL = VU + (Tc * D). Debt tax shield increases firm value.\n" +
+          "- Static Trade-Off Theory: Balances marginal tax shield benefit against marginal expected financial distress costs.\n" +
+          "- Pecking Order Theory: Asymmetric information creates a strict financing hierarchy: 1) Internal cash, 2) Debt, 3) Equity last.";
         var wordCountEl = document.getElementById("notes-word-count");
         if (wordCountEl) {
           var wc = (notes.value.trim().match(/\S+/g) || []).length;
           wordCountEl.textContent = wc.toLocaleString() + " words";
         }
       }
-      var url = new URL(window.location.href);
-      url.searchParams.set("mock", "ok");
-      window.history.replaceState({}, "", url.toString());
-      startGeneration();
+      var annalsInput = document.getElementById("annals-input");
+      var annalsBox = document.getElementById("annals-box");
+      var annalsArr = document.getElementById("annals-arrow");
+      if (annalsInput) {
+        annalsInput.value = "PROFESSOR EXAM ANGLE:\n- Heavily test debt tax shields vs equity returns.\n- Multiple-choice questions will feature distractors that confuse Static Trade-Off with Pecking Order signaling.";
+      }
+      if (annalsBox) annalsBox.classList.add("open");
+      if (annalsArr) annalsArr.innerHTML = "&uarr;";
+      showToast("Loaded sample Corporate Finance lecture notes & professor hints!");
     }
 
     // Carousel navigation with touch snap & dots
@@ -5194,70 +5439,23 @@ function revealTrap(btn, isCorrect, debriefText) {
 
 
 
-        (function() {
-          var params = new URLSearchParams(window.location.search);
-          if (params.get("view") === "saved" || window.location.hash === "#saved") {
-            switchMainView("saved");
-          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
-            switchMainView("generator");
-          } else {
-            switchMainView("landing");
-          }
-        })();
+
         
   
 
-        (function() {
-          var params = new URLSearchParams(window.location.search);
-          if (params.get("view") === "saved" || window.location.hash === "#saved") {
-            switchMainView("saved");
-          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
-            switchMainView("generator");
-          } else {
-            switchMainView("landing");
-          }
-        })();
+
         
   
 
-        (function() {
-          var params = new URLSearchParams(window.location.search);
-          if (params.get("view") === "saved" || window.location.hash === "#saved") {
-            switchMainView("saved");
-          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
-            switchMainView("generator");
-          } else {
-            switchMainView("landing");
-          }
-        })();
+
         
   
 
-        (function() {
-          var params = new URLSearchParams(window.location.search);
-          if (params.get("view") === "saved" || window.location.hash === "#saved") {
-            switchMainView("saved");
-          } else if (params.get("view") === "generator" || params.get("mock") === "ok") {
-            switchMainView("generator");
-          } else {
-            switchMainView("landing");
-          }
-        })();
+
         
   
 
-        (function() {
-          var params = new URLSearchParams(window.location.search);
-          if (params.get("view") === "saved" || window.location.hash === "#saved") {
-            switchMainView("saved");
-          } else if (params.get("view") === "essay" || window.location.hash === "#essay") {
-            switchMainView("essay");
-          } else if (params.get("view") === "generator" || params.get("mock") === "ok" || window.location.hash === "#generator" || window.location.hash === "#create") {
-            switchMainView("generator");
-          } else {
-            switchMainView("landing");
-          }
-        })();
+        
         
   
 
@@ -5469,6 +5667,14 @@ function revealTrap(btn, isCorrect, debriefText) {
       renderAnnotationCards(data.inline_annotations || []);
     }
 
+    
+    function parseSimpleMarkdown(str) {
+      if (!str) return '';
+      return escapeHtml(str)
+        .replace(/\*([^\*]+)\*/g, '<em>$1</em>')
+        .replace(/_([^_]+)_/g, '<em>$1</em>');
+    }
+
     function renderAnnotatedSpans(text, annotations) {
       var container = document.getElementById("res-annotated-text");
       if (!container) return;
@@ -5513,7 +5719,7 @@ function revealTrap(btn, isCorrect, debriefText) {
         else if (ann.category === "RHETORICAL_STRENGTH") catClass = "ann-hl-rhetoric";
         else if (ann.category === "ARGUMENT_EXPANSION") catClass = "ann-hl-argument";
 
-        var span = '<span class="ann-highlight ' + catClass + '" id="hl-' + (ann.id || idx) + '" data-ann-id="' + (ann.id || idx) + '" onclick="focusAnnotationCard(this.dataset.annId)">' + ann.original_text + '</span>';
+        var span = '<span class="ann-highlight ' + catClass + '" id="hl-' + (ann.id || idx) + '" data-ann-id="' + (ann.id || idx) + '" data-category="' + (ann.category || "") + '" onclick="focusAnnotationCard(this.dataset.annId)">' + escapeHtml(ann.original_text) + '</span>';
         safeText = safeText.replace(ann.original_text, span);
       });
 
@@ -5530,7 +5736,7 @@ function revealTrap(btn, isCorrect, debriefText) {
         filtered = annotations.filter(function(a) { return a.category === filterCategory; });
       }
 
-      if (countBadge) countBadge.textContent = filtered.length;
+      if (countBadge) countBadge.textContent = filtered.length + (filtered.length === 1 ? " item" : " items");
 
       if (filtered.length === 0) {
         container.innerHTML = '<div style="padding:24px; text-align:center; color:var(--text-steel); font-size:13px;">No annotations in this category.</div>';
@@ -5551,7 +5757,7 @@ function revealTrap(btn, isCorrect, debriefText) {
             '<span style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:0.04em; color:' + catColor + '; display:flex; align-items:center; gap:6px;">' +
               '<span style="width:7px; height:7px; border-radius:50%; background:' + catColor + ';"></span>' + catLabel +
             '</span>' +
-            '<span class="mono" style="font-size:11px; color:var(--text-steel);">' + cardId + '</span>' +
+            '<span class="mono" style="font-size:11px; color:var(--text-steel);">#' + (idx + 1) + '</span>' +
           '</div>' +
 
           '<div style="background:var(--surface-2); border-left:3px solid ' + catColor + '; padding:8px 12px; margin-bottom:10px; font-family:var(--f-serif); font-size:13.5px; color:var(--text-ink);">' +
@@ -5559,7 +5765,7 @@ function revealTrap(btn, isCorrect, debriefText) {
           '</div>' +
 
           '<div style="font-size:12.5px; color:var(--text-graphite); line-height:1.45; margin-bottom:8px;">' +
-            '<strong>Why this needs work:</strong> ' + ann.issue_diagnosis +
+            '<strong>Why this needs work:</strong> ' + parseSimpleMarkdown(ann.issue_diagnosis) +
           '</div>' +
 
           (ann.professor_tip ? (
@@ -5588,6 +5794,16 @@ function revealTrap(btn, isCorrect, debriefText) {
       pills.forEach(function(p) { p.classList.remove("active"); });
       if (btn) btn.classList.add("active");
 
+      var highlights = document.querySelectorAll(".ann-highlight");
+      highlights.forEach(function(hl) {
+        if (!category || category === "ALL") {
+          hl.classList.remove("dimmed");
+        } else {
+          var hlCat = hl.dataset.category;
+          hl.classList.toggle("dimmed", hlCat !== category);
+        }
+      });
+
       if (currentEssayData && currentEssayData.inline_annotations) {
         renderAnnotationCards(currentEssayData.inline_annotations, category);
       }
@@ -5600,7 +5816,52 @@ function revealTrap(btn, isCorrect, debriefText) {
         card.classList.add("active-target");
         card.scrollIntoView({ behavior: "smooth", block: "nearest" });
       }
+
+      var devFeatures = getDevFeatures();
+      if (devFeatures.surgicalRedline || isDevActive()) {
+        showRedlinePopover(id);
+      }
     }
+
+    function showRedlinePopover(annId) {
+      var existing = document.getElementById("redline-popover-card");
+      if (existing) existing.remove();
+
+      var span = document.getElementById("hl-" + annId);
+      var ann = (currentEssayData && currentEssayData.inline_annotations) ? currentEssayData.inline_annotations.find(function(a) { return (a.id || "") === annId; }) : null;
+      if (!span || !ann) return;
+
+      var rect = span.getBoundingClientRect();
+      var pop = document.createElement("div");
+      pop.id = "redline-popover-card";
+      pop.className = "redline-popover";
+      pop.style.top = (window.scrollY + rect.bottom + 8) + "px";
+      pop.style.left = Math.max(16, Math.min(window.innerWidth - 340, window.scrollX + rect.left)) + "px";
+
+      pop.innerHTML = '<div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">' +
+        '<span style="font-size:10.5px; font-weight:700; text-transform:uppercase; color:#059669; letter-spacing:0.04em;">✨ Surgical Academic Redline</span>' +
+        '<button type="button" onclick="document.getElementById(\'redline-popover-card\').remove()" style="background:none; border:none; color:var(--text-steel); cursor:pointer; font-size:18px; line-height:1;">&times;</button>' +
+      '</div>' +
+      '<div style="font-size:12px; color:var(--text-graphite); margin-bottom:10px; line-height:1.4;">' +
+        '<strong>Diagnosis:</strong> ' + parseSimpleMarkdown(ann.issue_diagnosis) +
+      '</div>' +
+      '<div style="background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.3); border-radius:6px; padding:10px 12px; margin-bottom:12px; font-family:var(--f-serif); font-size:13px; color:var(--text-ink); line-height:1.45;">' +
+        '&ldquo;' + escapeHtml(ann.suggested_rewrite) + '&rdquo;' +
+      '</div>' +
+      '<div style="display:flex; justify-content:flex-end; gap:8px;">' +
+        '<button type="button" class="btn-ghost" style="padding:4px 10px; font-size:11.5px;" onclick="document.getElementById(\'redline-popover-card\').remove()">Dismiss</button>' +
+        '<button type="button" class="btn-primary" style="padding:4px 14px; font-size:11.5px;" onclick="applySurgicalRedline(\'' + escapeHtml(annId) + '\')">Apply Rewrite &rarr;</button>' +
+      '</div>';
+
+      document.body.appendChild(pop);
+    }
+
+    document.addEventListener("click", function(e) {
+      var pop = document.getElementById("redline-popover-card");
+      if (pop && !pop.contains(e.target) && !e.target.classList.contains("ann-highlight")) {
+        pop.remove();
+      }
+    });
 
     function copyRewriteText(btn, id) {
       var elem = document.getElementById("rewrite-text-" + id);
@@ -5813,7 +6074,350 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
     }
 
-  </script>
+  
+    /* ============================================================ */
+    /* DEVELOPER FEATURE LAB ENGINE (ELIAS JABBIE ONLY)             */
+    /* ============================================================ */
+    var DEV_FEATURES_STORAGE_KEY = "sa_dev_features_v1";
+    var defaultDevFeatures = {
+      trapRadar: true,
+      slideRange: true,
+      surgicalRedline: true,
+      semanticGrader: true,
+      shareableLinks: true,
+      selectedDiscipline: "Auto-Detect",
+      selectedTrap: "Multi-Logical Traps",
+      selectedArenaMode: "standard"
+    };
+
+    function getDevFeatures() {
+      try {
+        var raw = localStorage.getItem(DEV_FEATURES_STORAGE_KEY);
+        if (!raw) return Object.assign({}, defaultDevFeatures);
+        return Object.assign({}, defaultDevFeatures, JSON.parse(raw));
+      } catch (e) {
+        return Object.assign({}, defaultDevFeatures);
+      }
+    }
+
+    function saveDevFeatures(features) {
+      try {
+        localStorage.setItem(DEV_FEATURES_STORAGE_KEY, JSON.stringify(features));
+      } catch (e) {}
+      updateDevLabUI();
+    }
+
+    function isDevActive() {
+      return window.StudyArenaAuth && window.StudyArenaAuth.isDeveloper();
+    }
+
+    function updateDevLabUI() {
+      var isDev = isDevActive();
+      var triggerBtn = document.getElementById("dev-lab-trigger-btn");
+      if (triggerBtn) triggerBtn.style.display = isDev ? "inline-flex" : "none";
+
+      if (!isDev) {
+        // Force hide all dev-only UI for regular students
+        var el1 = document.getElementById("dev-feature-trap-radar");
+        var el2 = document.getElementById("dev-feature-slide-range");
+        var el3 = document.getElementById("dev-projected-grade-box");
+        if (el1) el1.style.display = "none";
+        if (el2) el2.style.display = "none";
+        if (el3) el3.style.display = "none";
+        return;
+      }
+
+      var f = getDevFeatures();
+      var activeCount = (f.trapRadar ? 1 : 0) + (f.slideRange ? 1 : 0) + (f.surgicalRedline ? 1 : 0) + (f.semanticGrader ? 1 : 0) + (f.shareableLinks ? 1 : 0);
+      var badge = document.getElementById("dev-active-feature-badge");
+      if (badge) badge.textContent = activeCount === 5 ? "All 5 ON" : (activeCount === 0 ? "All OFF" : activeCount + " Active");
+
+      // Update modal badges & buttons
+      var map = [
+        { key: "trapRadar", b: "badge-f1", t: "toggle-btn-f1" },
+        { key: "slideRange", b: "badge-f2", t: "toggle-btn-f2" },
+        { key: "surgicalRedline", b: "badge-f3", t: "toggle-btn-f3" },
+        { key: "semanticGrader", b: "badge-f4", t: "toggle-btn-f4" },
+        { key: "shareableLinks", b: "badge-f5", t: "toggle-btn-f5" }
+      ];
+      map.forEach(function(item) {
+        var on = !!f[item.key];
+        var badgeEl = document.getElementById(item.b);
+        var btnEl = document.getElementById(item.t);
+        if (badgeEl) {
+          badgeEl.textContent = on ? "Active" : "Disabled";
+          badgeEl.style.color = on ? "#059669" : "var(--text-steel)";
+        }
+        if (btnEl) {
+          btnEl.textContent = on ? "Disable" : "Enable";
+          btnEl.className = on ? "btn-ghost" : "btn-primary";
+        }
+      });
+
+      // Update in-page generator controls
+      var trapRadarEl = document.getElementById("dev-feature-trap-radar");
+      if (trapRadarEl) trapRadarEl.style.display = (isDev && f.trapRadar) ? "block" : "none";
+
+      var slideRangeEl = document.getElementById("dev-feature-slide-range");
+      if (slideRangeEl) slideRangeEl.style.display = (isDev && f.slideRange) ? "block" : "none";
+
+      var projGradeEl = document.getElementById("dev-projected-grade-box");
+      if (projGradeEl && currentEssayData) projGradeEl.style.display = (isDev && f.surgicalRedline) ? "inline-flex" : "none";
+    }
+
+    function toggleDevFeature(featureKey) {
+      var f = getDevFeatures();
+      f[featureKey] = !f[featureKey];
+      saveDevFeatures(f);
+      showToast((f[featureKey] ? "Enabled " : "Disabled ") + featureKey);
+    }
+
+    function setAllDevFeatures(enableAll) {
+      var f = getDevFeatures();
+      f.trapRadar = enableAll;
+      f.slideRange = enableAll;
+      f.surgicalRedline = enableAll;
+      f.semanticGrader = enableAll;
+      f.shareableLinks = enableAll;
+      saveDevFeatures(f);
+      showToast(enableAll ? "All 5 Developer Features Enabled!" : "Standard Student View Active (All Dev Features OFF)");
+    }
+
+    function openDevLabModal() {
+      var m = document.getElementById("dev-lab-modal");
+      if (m) m.style.display = "flex";
+      updateDevLabUI();
+    }
+
+    function closeDevLabModal() {
+      var m = document.getElementById("dev-lab-modal");
+      if (m) m.style.display = "none";
+    }
+
+    function jumpToDevFeature(viewName) {
+      closeDevLabModal();
+      if (viewName === "player") {
+        var list = getSavedArenas();
+        if (list.length > 0) {
+          playSavedArenaById(list[0].id);
+        } else {
+          loadPreloadedMock();
+          playReferenceInModal();
+        }
+        showToast("Testing Mode 4: AI Semantic Grader active in Player");
+        return;
+      }
+      workspaceNavigate(viewName);
+    }
+
+    function selectDevDiscipline(btn, discipline) {
+      var f = getDevFeatures();
+      f.selectedDiscipline = discipline;
+      saveDevFeatures(f);
+      var container = document.getElementById("dev-discipline-chips");
+      if (container) {
+        container.querySelectorAll(".chipbtn").forEach(function(b) { b.classList.remove("on"); });
+        if (btn) btn.classList.add("on");
+      }
+      showToast("Selected discipline: " + discipline);
+    }
+
+    function selectDevTrap(btn, trap) {
+      var f = getDevFeatures();
+      f.selectedTrap = trap;
+      saveDevFeatures(f);
+      var container = document.getElementById("dev-trap-focus-chips");
+      if (container) {
+        container.querySelectorAll(".chipbtn").forEach(function(b) { b.classList.remove("on"); });
+        if (btn) btn.classList.add("on");
+      }
+      showToast("Target trap: " + trap);
+    }
+
+    function selectDevArenaMode(btn, mode) {
+      var f = getDevFeatures();
+      f.selectedArenaMode = mode;
+      saveDevFeatures(f);
+      var container = document.getElementById("dev-arena-mode-chips");
+      if (container) {
+        container.querySelectorAll(".chipbtn").forEach(function(b) { b.classList.remove("on"); });
+        if (btn) btn.classList.add("on");
+      }
+      showToast("Arena mode: " + (mode === "triage" ? "15-Min Emergency Triage (Top 5 Traps)" : mode));
+    }
+
+    function updateSlideRangeFilter() {
+      var s = document.getElementById("dev-range-start");
+      var e = document.getElementById("dev-range-end");
+      var chip = document.getElementById("dev-range-stats-chip");
+      if (s && e && chip) {
+        chip.textContent = "Slides " + s.value + " to " + e.value + " active";
+      }
+    }
+
+    /* FEATURE 3: INLINE SURGICAL REDLINE & LIVE PROJECTED GRADE */
+    var currentEssayRevisedText = "";
+    var currentResolvedAnnCount = 0;
+
+    function applySurgicalRedline(annId) {
+      var pop = document.getElementById("redline-popover-card");
+      if (pop) pop.remove();
+
+      var ann = (currentEssayData && currentEssayData.inline_annotations) ? currentEssayData.inline_annotations.find(function(a) { return (a.id || "") === annId; }) : null;
+      if (!ann || !ann.suggested_rewrite) return;
+
+      var hlSpan = document.getElementById("hl-" + annId);
+      if (hlSpan) {
+        hlSpan.textContent = ann.suggested_rewrite;
+        hlSpan.classList.add("redline-applied");
+      }
+
+      currentResolvedAnnCount++;
+      var baseScore = (currentEssayData.grades && currentEssayData.grades.score_out_of_20) ? Number(currentEssayData.grades.score_out_of_20) : 15.0;
+      var newScore = Math.min(20.0, baseScore + (currentResolvedAnnCount * 0.45));
+      var letter = newScore >= 16 ? "A" : (newScore >= 13 ? "B" : "C");
+
+      var valEl = document.getElementById("dev-projected-grade-val");
+      var boxEl = document.getElementById("dev-projected-grade-box");
+      if (valEl) valEl.textContent = baseScore.toFixed(1) + " → " + newScore.toFixed(1) + " / 20 (" + letter + ")";
+      if (boxEl) boxEl.style.display = "inline-flex";
+
+      showToast("Applied scholarly rewrite! Projected grade increased to " + newScore.toFixed(1) + "/20.");
+    }
+
+    function copyRevisedEssayText() {
+      var container = document.getElementById("res-annotated-text");
+      if (!container) return;
+      var clean = container.innerText || container.textContent;
+      navigator.clipboard.writeText(clean).then(function() {
+        showToast("Copied clean revised essay draft to clipboard!");
+      });
+    }
+
+    /* FEATURE 4: POSTMESSAGE LISTENER FOR PARENT AI SHORT-ANSWER GRADING */
+    window.addEventListener("message", async function(event) {
+      if (event.data && event.data.type === "STUDY_ARENA_GRADE_REQ") {
+        var req = event.data;
+        try {
+          var result = await window.StudyArenaAPI.gradeShortAnswer(req.question, req.rubric, req.studentAnswer);
+          var iframe = document.getElementById("arena-player-iframe");
+          if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.postMessage({
+              type: "STUDY_ARENA_GRADE_RESP",
+              result: result
+            }, "*");
+          }
+        } catch (err) {
+          console.warn("Parent short answer grading error:", err);
+        }
+      }
+    });
+
+    /* FEATURE 5: ZERO-BACKEND COMPRESSED SHAREABLE ARENA LINKS */
+    async function compressCourseData(str) {
+      if (typeof CompressionStream !== "undefined") {
+        var stream = new Blob([str]).stream();
+        var compressedStream = stream.pipeThrough(new CompressionStream("gzip"));
+        var buffer = await new Response(compressedStream).arrayBuffer();
+        var binary = "";
+        var bytes = new Uint8Array(buffer);
+        for (var i = 0; i < bytes.byteLength; i++) {
+          binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+      }
+      return btoa(unescape(encodeURIComponent(str))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+    }
+
+    async function decompressCourseData(base64) {
+      var safe = base64.replace(/-/g, "+").replace(/_/g, "/");
+      while (safe.length % 4) safe += "=";
+      var binary = atob(safe);
+      var bytes = new Uint8Array(binary.length);
+      for (var i = 0; i < binary.length; i++) {
+        bytes[i] = binary.charCodeAt(i);
+      }
+      if (typeof DecompressionStream !== "undefined") {
+        var stream = new Blob([bytes]).stream();
+        var decompressed = stream.pipeThrough(new DecompressionStream("gzip"));
+        var text = await new Response(decompressed).text();
+        return JSON.parse(text);
+      }
+      return JSON.parse(decodeURIComponent(escape(binary)));
+    }
+
+    async function shareArenaLink(id) {
+      var list = getSavedArenas();
+      var arena = list.find(function(a) { return a.id === id; });
+      if (!arena || !arena.courseData) {
+        showToast("Arena data not found.");
+        return;
+      }
+      var devFeatures = getDevFeatures();
+      if (devFeatures.shareableLinks || isDevActive()) {
+        try {
+          showToast("Compressing arena into shareable link...");
+          var jsonStr = JSON.stringify(arena.courseData);
+          var hashStr = await compressCourseData(jsonStr);
+          var link = window.location.origin + window.location.pathname + "#import=" + hashStr;
+          await navigator.clipboard.writeText(link);
+          showToast("✓ Copied Zero-Backend Share Link! Anyone can play this arena in 1 click.");
+          return;
+        } catch (e) {
+          console.warn("Compression link failed:", e);
+        }
+      }
+      var fallbackUrl = window.location.origin + window.location.pathname + "#saved";
+      navigator.clipboard.writeText(fallbackUrl).then(function() {
+        showToast("Copied link to Study Arena!");
+      });
+    }
+
+    function checkImportHash() {
+      var hash = window.location.hash;
+      if (hash && hash.startsWith("#import=")) {
+        var payload = hash.substring(8);
+        decompressCourseData(payload).then(function(courseData) {
+          if (courseData && courseData.config) {
+            var compiled = window.StudyArenaCompiler.compile(courseData);
+            saveArenaToHistory(courseData, compiled);
+            showToast("✓ Successfully imported '" + (courseData.config.title || "Study Arena") + "'!");
+            history.replaceState(null, null, window.location.pathname + "#saved");
+            workspaceNavigate("saved");
+            setTimeout(function() {
+              var list = getSavedArenas();
+              if (list.length > 0) playSavedArenaById(list[0].id);
+            }, 600);
+          }
+        }).catch(function(err) {
+          console.error("Could not import arena:", err);
+          showToast("Could not import arena: link data may be invalid.");
+          workspaceNavigate("saved");
+        });
+      }
+    }
+
+        // MASTER APP ROUTER (Single Execution)
+        (function() {
+          var hash = window.location.hash;
+          var params = new URLSearchParams(window.location.search);
+          if (hash && hash.startsWith("#import=")) {
+            checkImportHash();
+            return;
+          }
+          if (params.get("view") === "saved" || hash === "#saved") {
+            switchMainView("saved");
+          } else if (params.get("view") === "essay" || hash === "#essay") {
+            switchMainView("essay");
+          } else if (params.get("view") === "generator" || params.get("mock") === "ok" || hash === "#generator" || hash === "#create") {
+            switchMainView("generator");
+          } else if (window.StudyArenaAuth && window.StudyArenaAuth.isLoggedIn()) {
+            switchMainView("saved");
+          } else {
+            switchMainView("landing");
+          }
+        })();
+</script>
 
   <!-- MODAL: UPDATE SAVED ARENA WITH NEW MATERIAL -->
   <div class="auth-modal-backdrop" id="update-arena-modal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:9999; align-items:center; justify-content:center; backdrop-filter:blur(4px);" onclick="if(event.target===this)closeUpdateArenaModal()">
@@ -5865,6 +6469,116 @@ function revealTrap(btn, isCorrect, debriefText) {
         <button type="button" class="btn-primary" onclick="submitArenaUpdate()" style="padding:8px 20px; font-size:13px;" id="update-submit-btn">
           Synthesize &amp; Update Arena &rarr;
         </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- ============================================================ -->
+  <!-- MODAL: DEVELOPER FEATURE LAB SWITCHER (ELIAS JABBIE ONLY)    -->
+  <!-- ============================================================ -->
+  <div class="modal-overlay" id="dev-lab-modal" style="display:none;" onclick="if(event.target===this)closeDevLabModal()">
+    <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); width:94%; max-width:680px; padding:28px; box-shadow:var(--shadow-float); position:relative; max-height:92vh; overflow-y:auto;">
+      <button type="button" onclick="closeDevLabModal()" style="position:absolute; top:20px; right:20px; background:transparent; border:none; color:var(--text-steel); cursor:pointer; font-size:22px; line-height:1;">&times;</button>
+
+      <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+        <span class="dev-lab-glow"></span>
+        <span class="mono" style="font-size:11px; font-weight:700; color:#059669; letter-spacing:0.04em;">DEVELOPER EXCLUSIVE</span>
+        <span class="mono" style="font-size:11px; color:var(--text-steel);">Gated to eliasjabbie5@gmail.com</span>
+      </div>
+
+      <h3 style="font-family:var(--f-serif); font-size:24px; margin:0 0 6px; color:var(--text-ink);">Developer Feature Lab</h3>
+      <p style="margin:0 0 20px; font-size:13.5px; color:var(--text-graphite); line-height:1.5;">Test, activate, and switch between experimental features individually. Regular students and guest users are strictly locked out of this lab.</p>
+
+      <!-- MASTER CONTROLS -->
+      <div style="display:flex; gap:10px; margin-bottom:20px; padding:12px 16px; background:var(--surface-2); border-radius:var(--radius-control); border:1px solid var(--line); align-items:center; justify-content:space-between;">
+        <span style="font-size:12.5px; font-weight:600; color:var(--text-ink);">Global Feature State:</span>
+        <div style="display:flex; gap:8px;">
+          <button type="button" class="btn-primary" style="padding:6px 14px; font-size:12px;" onclick="setAllDevFeatures(true)">All 5 Features ON</button>
+          <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="setAllDevFeatures(false)">Standard Student View (All OFF)</button>
+        </div>
+      </div>
+
+      <!-- 5 FEATURE CARDS -->
+      <div style="display:grid; gap:12px; margin-bottom:20px;">
+        <!-- FEATURE 1 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 1: Professor Trap Radar</strong>
+              <span class="dev-active-badge" id="badge-f1">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Multi-discipline selector &amp; cognitive trap anatomy tags.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f1" onclick="toggleDevFeature('trapRadar')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('generator')">Open &rarr;</button>
+          </div>
+        </div>
+
+        <!-- FEATURE 2 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 2: Slide-Range &amp; 15-Min Triage</strong>
+              <span class="dev-active-badge" id="badge-f2">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Select slide bounds on PDFs &amp; run emergency 5-trap triage drills.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f2" onclick="toggleDevFeature('slideRange')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('generator')">Open &rarr;</button>
+          </div>
+        </div>
+
+        <!-- FEATURE 3 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 3: 1-Click Surgical Redline</strong>
+              <span class="dev-active-badge" id="badge-f3">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Click highlighted sentences for inline floating rewrite popover &amp; live grade boost.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f3" onclick="toggleDevFeature('surgicalRedline')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('essay')">Open &rarr;</button>
+          </div>
+        </div>
+
+        <!-- FEATURE 4 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 4: AI Semantic Short-Answer Grader</strong>
+              <span class="dev-active-badge" id="badge-f4">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Replaces regex matching with calibrated Gemini partial-credit grading &amp; Socratic hints.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f4" onclick="toggleDevFeature('semanticGrader')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('player')">Launch &rarr;</button>
+          </div>
+        </div>
+
+        <!-- FEATURE 5 -->
+        <div style="padding:14px 16px; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-control); display:flex; justify-content:space-between; align-items:center; gap:12px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:4px;">
+              <strong style="font-size:13.5px; color:var(--text-ink);">Mode 5: Zero-Backend Shareable Links</strong>
+              <span class="dev-active-badge" id="badge-f5">Active</span>
+            </div>
+            <div style="font-size:12px; color:var(--text-graphite); line-height:1.4;">Compresses entire arena into #import=&lt;payload&gt; URL hash for viral peer sharing.</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:11.5px;" id="toggle-btn-f5" onclick="toggleDevFeature('shareableLinks')">Disable</button>
+            <button type="button" class="btn-primary" style="padding:5px 12px; font-size:11.5px;" onclick="jumpToDevFeature('saved')">Open &rarr;</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex; justify-content:flex-end;">
+        <button type="button" class="btn-ghost" onclick="closeDevLabModal()" style="padding:8px 20px; font-size:13px;">Close Lab</button>
       </div>
     </div>
   </div>
