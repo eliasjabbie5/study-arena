@@ -411,7 +411,7 @@ CRITICAL: Keep all body text concise and compact so the full output completes we
                  localStorage.getItem("sa_api_key_openai") || "";
 
     if (!apiKey) {
-      throw new Error("Missing API Key for " + provider.toUpperCase() + ". Click 'AI Settings' to connect your free Google Gemini key (1,500 free generations/day, zero credit card) or supply a Claude/OpenAI key.");
+      throw new Error("Missing API Key for " + provider.toUpperCase() + ". Click 'Settings' (top-right gear icon) to connect your free Google Gemini key (1,500 free generations/day, zero credit card) or supply a Claude/OpenAI key.");
     }
 
     onProgress("Reading syllabus & lecture notes...", 15);
