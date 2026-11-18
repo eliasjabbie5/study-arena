@@ -192,7 +192,7 @@ window.StudyArenaAPI = {
     throw (lastErr || new Error("All Google Gemini candidate models were busy or unavailable. Please retry in a few moments."));
   },
 
-  DEFAULT_GEMINI_KEY: "AQ.Ab8RN6JCOQNgo0Rf8CphejiVWEhrLJDY0FTdph9IUCdhzyPboQ",
+  DEFAULT_GEMINI_KEY: "",
   DEFAULT_GEMINI_MODEL: "gemini-3.1-flash-lite",
   MASTER_PROMPT: `You are an exacting university course instructor and exam architect preparing practice exam materials across academic disciplines (including Business, STEM, Computer Science, Medicine, Law, and Humanities).
 
