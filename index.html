@@ -2083,6 +2083,7 @@
 
     /* ---------- GSAP CHOREOGRAPHED MULTI-SCREEN TRANSITIONS ---------- */
     function switchMainView(viewName) {
+      window.scrollTo(0, 0);
       if (viewName === "create") viewName = "generator";
 
       var viewLanding = document.getElementById("view-landing");
