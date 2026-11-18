@@ -4670,18 +4670,14 @@ function revealTrap(btn, isCorrect, debriefText) {
       }
     }
 
-    function handleGoogleSignIn() {
+        function handleGoogleSignIn() {
       if (!window.StudyArenaAuth) return;
       window.StudyArenaAuth.signInWithGoogle().then(function(user) {
         closeAuthModal();
       }).catch(function(err) {
         if (err && err.code === 'NO_CLIENT_ID') {
-          var inputId = prompt(
-            "Please enter your Google OAuth Web Client ID (from Google Cloud Console):
-
-" +
-            "Example: xxxxxxxx.apps.googleusercontent.com"
-          );
+          var inputId = prompt("Please enter your Google OAuth Web Client ID (from Google Cloud Console):
+Example: xxxxxxxx.apps.googleusercontent.com");
           if (inputId && inputId.trim()) {
             window.StudyArenaAuth.setGoogleClientId(inputId.trim());
             handleGoogleSignIn();
