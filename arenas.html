@@ -19,6 +19,7 @@
   <script src="generator/engine_bundle.js?v=3.6.0"></script>
   <script src="generator/compiler.js?v=3.6.0"></script>
   <script src="generator/api.js?v=3.6.0"></script>
+  <script src="auth/auth.js?v=1.0.0"></script>
 
   <style>
 
@@ -1779,12 +1780,513 @@
       white-space: pre-wrap;
     }
 
+
+    /* ==========================================================================
+       AUTHENTICATION & AI-STYLE SIDEBAR WORKSPACE
+       ========================================================================== */
+
+    /* Public navigation anchor links */
+    .public-nav-anchors {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    .public-nav-link {
+      color: var(--text-graphite);
+      font-size: 13.5px;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+    .public-nav-link:hover {
+      color: var(--text-ink);
+    }
+    @media (max-width: 720px) {
+      .public-nav-anchors {
+        display: none;
+      }
+    }
+
+    /* Auth Gateway Modal */
+    .auth-dialog-card {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      max-width: 420px;
+      width: 92%;
+      padding: 32px 28px;
+      position: relative;
+      box-shadow: 0 24px 64px rgba(0,0,0,0.36);
+      text-align: center;
+      margin: auto;
+    }
+    .auth-close-btn {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text-steel);
+      cursor: pointer;
+      font-size: 18px;
+      line-height: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+    .auth-close-btn:hover {
+      color: var(--text-ink);
+      border-color: var(--accent-cta);
+    }
+    .btn-google-auth {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+      padding: 12px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-control);
+      background: #ffffff;
+      color: #1f1f1f;
+      font-size: 14.5px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+      transition: background 0.15s ease, box-shadow 0.15s ease, transform 0.1s ease;
+    }
+    .btn-google-auth:hover {
+      background: #f8f9fa;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.12);
+      transform: translateY(-1px);
+    }
+    .btn-google-auth:active {
+      transform: translateY(0);
+    }
+    .auth-divider {
+      display: flex;
+      align-items: center;
+      text-align: center;
+      margin: 18px 0;
+      color: var(--text-steel);
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-family: var(--f-mono);
+    }
+    .auth-divider::before, .auth-divider::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px solid var(--line);
+    }
+    .auth-divider span {
+      padding: 0 12px;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 10px 14px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--line);
+      background: var(--surface-2);
+      color: var(--text-ink);
+      font-size: 13.5px;
+      outline: none;
+      box-sizing: border-box;
+      transition: border-color 0.15s ease;
+    }
+    .auth-input:focus {
+      border-color: var(--accent-cta);
+    }
+    .btn-link-guest {
+      background: transparent;
+      border: none;
+      color: var(--text-steel);
+      font-size: 12.5px;
+      cursor: pointer;
+      text-decoration: underline;
+      padding: 4px;
+      transition: color 0.15s ease;
+    }
+    .btn-link-guest:hover {
+      color: var(--accent-cta);
+    }
+    .auth-privacy-notice {
+      margin-top: 16px;
+      font-size: 11px;
+      color: var(--text-steel);
+      line-height: 1.45;
+    }
+
+    /* Full-Screen Workspace Shell */
+    .workspace-shell {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      background: var(--bg);
+      z-index: 50;
+      overflow: hidden;
+    }
+
+    /* AI Collapsible Left Sidebar */
+    .ai-sidebar {
+      width: 260px;
+      min-width: 260px;
+      height: 100%;
+      background: var(--surface);
+      border-right: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      z-index: 100;
+      transition: width 0.22s cubic-bezier(0.16, 1, 0.3, 1), transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+      box-sizing: border-box;
+    }
+    .ai-sidebar.collapsed {
+      width: 68px;
+      min-width: 68px;
+    }
+    .ai-sidebar.collapsed .sidebar-brand-text,
+    .ai-sidebar.collapsed .sidebar-new-btn span,
+    .ai-sidebar.collapsed .sidebar-section-header,
+    .ai-sidebar.collapsed .sidebar-nav-label,
+    .ai-sidebar.collapsed .sidebar-count,
+    .ai-sidebar.collapsed .sidebar-user-meta,
+    .ai-sidebar.collapsed .sidebar-courses-group {
+      display: none !important;
+    }
+    .ai-sidebar.collapsed .sidebar-nav-link {
+      justify-content: center;
+      padding: 12px;
+    }
+    .ai-sidebar.collapsed .sidebar-new-btn {
+      padding: 10px;
+      justify-content: center;
+    }
+
+    .sidebar-top {
+      padding: 16px 14px 12px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .sidebar-brand-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .sidebar-collapse-btn {
+      width: 28px;
+      height: 28px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-steel);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.14s ease;
+    }
+    .sidebar-collapse-btn:hover {
+      background: var(--surface-2);
+      color: var(--text-ink);
+    }
+    .sidebar-new-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      padding: 10px 14px;
+      background: var(--accent-cta);
+      color: #ffffff;
+      border: none;
+      border-radius: var(--radius-control);
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: opacity 0.15s ease, transform 0.1s ease;
+    }
+    .sidebar-new-btn:hover {
+      opacity: 0.92;
+      transform: translateY(-1px);
+    }
+
+    .sidebar-nav-scroll {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 14px 10px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+    .sidebar-section-header {
+      font-family: var(--f-mono);
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-steel);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 8px 10px 4px;
+    }
+    .sidebar-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 12px;
+      border-radius: var(--radius-control);
+      background: transparent;
+      border: none;
+      color: var(--text-ink);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.12s ease, color 0.12s ease;
+    }
+    .sidebar-nav-link:hover {
+      background: var(--surface-2);
+    }
+    .sidebar-nav-link.active {
+      background: var(--surface-2);
+      color: var(--accent-cta);
+      font-weight: 600;
+    }
+    .sidebar-count {
+      margin-left: auto;
+      font-family: var(--f-mono);
+      font-size: 11px;
+      padding: 2px 7px;
+      border-radius: 10px;
+      background: var(--line);
+      color: var(--text-steel);
+    }
+    .sidebar-courses-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      margin-top: 4px;
+    }
+    .sidebar-course-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--text-graphite);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      transition: all 0.12s ease;
+    }
+    .sidebar-course-item:hover {
+      background: var(--surface-2);
+      color: var(--text-ink);
+    }
+
+    /* Sidebar Footer & User Profile */
+    .sidebar-footer {
+      padding: 12px 14px;
+      border-top: 1px solid var(--line);
+      position: relative;
+      background: var(--surface);
+    }
+    .sidebar-user-pill {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 6px 8px;
+      border-radius: var(--radius-control);
+      cursor: pointer;
+      user-select: none;
+      transition: background 0.14s ease;
+    }
+    .sidebar-user-pill:hover {
+      background: var(--surface-2);
+    }
+    .sidebar-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--accent-cta);
+      color: #ffffff;
+      font-weight: 600;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+    .sidebar-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .sidebar-user-meta {
+      flex: 1;
+      min-width: 0;
+      overflow: hidden;
+      text-align: left;
+    }
+    .sidebar-user-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-ink);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .sidebar-user-sub {
+      font-size: 11px;
+      color: var(--text-steel);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-family: var(--f-mono);
+    }
+    .sidebar-user-menu {
+      position: absolute;
+      bottom: calc(100% + 8px);
+      left: 14px;
+      right: 14px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-card);
+      box-shadow: 0 16px 40px rgba(0,0,0,0.25);
+      padding: 6px;
+      z-index: 300;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .user-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      width: 100%;
+      padding: 8px 10px;
+      border: none;
+      border-radius: 6px;
+      background: transparent;
+      font-size: 13px;
+      color: var(--text-ink);
+      cursor: pointer;
+      text-align: left;
+      transition: background 0.12s ease;
+    }
+    .user-menu-item:hover {
+      background: var(--surface-2);
+    }
+    .user-menu-item.danger {
+      color: #e5484d;
+    }
+    .user-menu-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 0;
+    }
+
+    /* Main Workspace Canvas */
+    .workspace-main-area {
+      flex: 1;
+      min-width: 0;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      background: var(--bg);
+    }
+    .workspace-top-bar {
+      height: 52px;
+      min-height: 52px;
+      border-bottom: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      background: var(--surface);
+    }
+    .workspace-mobile-toggle {
+      display: none;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-control);
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--text-steel);
+      cursor: pointer;
+      align-items: center;
+      justify-content: center;
+    }
+    .workspace-view-heading {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-ink);
+    }
+    .workspace-content-canvas {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 0;
+    }
+
+    /* Mobile Responsive Sidebar Drawer */
+    .sidebar-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 150;
+      display: none;
+    }
+    .sidebar-backdrop.active {
+      display: block;
+    }
+    @media (max-width: 768px) {
+      .ai-sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        min-width: 280px;
+        transform: translateX(-100%);
+        box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+      }
+      .ai-sidebar.mobile-open {
+        transform: translateX(0);
+      }
+      .workspace-mobile-toggle {
+        display: flex;
+      }
+      .sidebar-collapse-btn {
+        display: none;
+      }
+      .workspace-top-bar {
+        padding: 0 16px;
+      }
+    }
+
 </style>
 </head>
 <body>
 
-  <!-- COMPACT 48PX EDITORIAL TOP NAV -->
-  <nav class="editorial-nav">
+  <!-- COMPACT PUBLIC TOP NAV (UNAUTHENTICATED) -->
+  <nav class="editorial-nav" id="public-nav">
     <div class="container nav-inner">
       <div style="display:flex; align-items:center; gap:16px;">
         <a href="index.html" class="brand-mark" onclick="switchMainView('landing'); return false;">
@@ -1793,31 +2295,28 @@
         </a>
       </div>
 
-      <div class="nav-tabs-group">
-        <button type="button" class="nav-tab active" id="nav-landing" onclick="switchMainView('landing')">Overview</button>
-        <button type="button" class="nav-tab" id="nav-generator" onclick="switchMainView('generator')"><span class="tab-label-desktop">Practice Exams</span><span class="tab-label-mobile">Exams</span></button>
-        <button type="button" class="nav-tab" id="nav-essay" onclick="switchMainView('essay')">
-          <span class="tab-label-desktop">Essay Reviewer</span><span class="tab-label-mobile">Review</span>
-        </button>
-        <button type="button" class="nav-tab" id="nav-saved" onclick="switchMainView('saved')">
-          <span class="tab-label-desktop">Saved Exams</span><span class="tab-label-mobile">Saved</span> <span id="saved-count-badge" class="tnum" style="opacity:0.75">(0)</span>
-        </button>
+      <div class="public-nav-anchors">
+        <a href="#how-it-works" class="public-nav-link">How It Works</a>
+        <a href="#interactive-demo" class="public-nav-link">Sample Questions</a>
+        <a href="#product-features" class="public-nav-link">Features</a>
       </div>
 
       <div class="nav-right-actions">
-        <button type="button" class="settings-cog-btn" id="settings-btn" onclick="openSettingsModal()" aria-label="Settings and Preferences">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <circle cx="12" cy="12" r="3"></circle>
-            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
-          </svg>
-          <span class="settings-cog-dot" id="key-ind"></span>
+        <button type="button" class="btn-ghost" style="padding:7px 16px; font-size:13px; font-weight:600;" onclick="openAuthModal('saved')" id="public-signin-btn">
+          Sign In
+        </button>
+        <button type="button" class="btn-primary" style="padding:8px 18px; font-size:13px;" onclick="handleLaunchClick()" id="public-launch-btn">
+          Launch &rarr;
+        </button>
+        <button type="button" class="btn-primary" style="padding:8px 18px; font-size:13px; display:none;" onclick="restoreWorkspaceView()" id="public-return-workspace-btn">
+          Back to Workspace &rarr;
         </button>
       </div>
     </div>
   </nav>
 
 
-  <main>
+  <main id="public-main">
     <!-- SCREEN 1: THE PRODUCT GALLERY (LANDING VIEW) -->
     <div id="view-landing" class="main-view active">
       <!-- HERO LAUNCH STAGE -->
@@ -1834,7 +2333,7 @@
           </p>
 
           <div class="hero-action-cluster" style="margin-bottom: 20px;">
-            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="handleProtectedAction('generator')">
               Create Practice Exam &rarr;
             </button>
             <a href="#interactive-demo" class="btn-ghost" style="padding:14px 28px; font-size:15px;">
@@ -1942,7 +2441,7 @@
       </section>
 
       <!-- PRODUCT BLUEPRINT / FEATURE BAND (STUDIO MIST FULL-WIDTH BAND) -->
-      <section class="feature-band">
+      <section class="feature-band" id="product-features">
         <div class="container">
           <div class="feature-band-head">
             <div class="mono" style="color:var(--text-steel); margin-bottom:8px;">How It Works</div>
@@ -1976,94 +2475,13 @@
           <div class="cta-banner-card">
             <h2>Ready to simulate your course?</h2>
             <p>Generate an interactive practice exam in under 60 seconds with no setup required.</p>
-            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="switchMainView('generator')">
+            <button type="button" class="btn-primary" style="padding:14px 34px; font-size:15px;" onclick="handleProtectedAction('generator')">
               Create Practice Exam &rarr;
             </button>
           </div>
         </div>
       </section>
     </div>
-
-
-    <!-- SCREEN 2: THE GENERATION CONSOLE -->
-    <div id="view-generator" class="main-view" style="display:none; padding: 48px 0 80px;">
-      <div class="container">
-        <div class="back-nav-bar">
-          <button type="button" class="back-btn" onclick="switchMainView('landing')">
-            &larr; Back to Overview
-          </button>
-        </div>
-
-        <section class="console-section" id="generator-console">
-          <div class="console-header">
-            <div class="console-title-group">
-              <h2>Arena Generator</h2>
-              <p>Compile syllabi and lecture slides into an interactive, offline exam simulator.</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadPreloadedMock()">
-                Load Sample Notes
-              </button>
-            </div>
-          </div>
-
-          <!-- UNIFIED MULTI-DOCUMENT & LECTURE NOTES WORKSPACE -->
-          <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()" style="cursor:pointer;">
-            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="display:none" onchange="handleFileSelect(event)">
-            <div style="font-size:28px; margin-bottom:8px; color:var(--accent-cta);">&uarr;</div>
-            <div style="font-weight:600; font-size:16px; margin-bottom:4px; color:var(--text-ink);">Drop course PDFs, slide decks, or past exams here</div>
-            <div style="font-size:13px; color:var(--text-steel);">Upload multiple files simultaneously. Extracted directly in browser memory.</div>
-            <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
-          </div>
-
-          <!-- ATTACHED DOCUMENTS LIST -->
-          <div id="attached-docs-container" style="display:none; margin-top:14px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span class="mono" style="font-size:11px; color:var(--text-steel); font-weight:600;">ATTACHED COURSE MATERIALS</span>
-              <span class="mono" id="attached-stats-badge" style="font-size:11px; color:var(--accent-cta);">0 documents</span>
-            </div>
-            <div id="attached-docs-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
-          </div>
-
-          <!-- SIMULTANEOUS LECTURE NOTES & TRANSCRIPTS TEXTBOX -->
-          <div style="margin-top:20px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <label for="notes-input" style="font-weight:600; font-size:13px; color:var(--text-ink);">
-                Paste Lecture Notes, Transcripts, or Focus Areas (Optional)
-              </label>
-              <span class="mono" id="notes-word-count" style="font-size:11px; color:var(--text-steel);">0 words</span>
-            </div>
-            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide notes, professor exam hints, study guides, or topic rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
-          </div>
-
-          <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
-          <div style="margin-top:14px;">
-            <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
-              <span>+ Add Professor Hints &middot; Exam Weighting (Optional)</span>
-              <span id="annals-arrow">&darr;</span>
-            </button>
-            <div class="annals-content" id="annals-box">
-              <textarea class="notes-textarea" id="annals-input" style="min-height:90px;" placeholder="e.g. Professor repeatedly stressed that Miller-Modigliani Proposition II with corporate taxes ignores financial distress costs. Focus heavily on WACC calculations."></textarea>
-            </div>
-          </div>
-
-          <!-- CONTROLS ROW -->
-          <div class="console-controls-bar" style="display:flex; justify-content:flex-end; align-items:center;">
-            <input type="hidden" id="model-select" value="gemini-3.5-flash-lite">
-            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-              <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
-                Generate Practice Exam &rarr;
-              </button>
-              <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
-                <span class="thinking-text" id="thinking-status-text">Thinking</span>
-                <span class="thinking-dots" id="thinking-dots" aria-hidden="true">
-                  <span></span>
-                  <span></span>
-                  <span></span>
-                </span>
-              </div>
-            </div>
-          </div>
 
           <!-- TELEMETRY STEPPER -->
           <div class="stepper-card" id="stepper">
@@ -2104,120 +2522,6 @@
         </section>
       </div>
     </div>
-
-
-    <!-- SCREEN 3: SAVED ARENAS VIEW -->
-    <div id="view-saved" style="display:none; padding: 48px 0 96px;">
-      <div class="container">
-        <div class="saved-header">
-          <div>
-            <h2>Saved Practice Exams</h2>
-            <p>All previously generated exams stored locally on this device.</p>
-          </div>
-          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
-            <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
-              &uarr; Import Shared Arena
-            </button>
-            <input type="file" id="import-arena-file" accept=".json,.html" style="display:none" onchange="handleImportArenaFile(event)">
-            <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
-              + Create New Arena
-            </button>
-          </div>
-        </div>
-
-        <div id="saved-arenas-container">
-          <!-- Rendered dynamically by renderSavedArenasList() -->
-        </div>
-      </div>
-    </div>
-
-
-    <!-- SCREEN 4: ESSAY & RESEARCH PAPER REVIEWER VIEW -->
-    <div id="view-essay" class="main-view" style="display:none; padding: 48px 0 96px;">
-      <div class="container" style="max-width:960px;">
-
-        <!-- CONSOLE INPUT STAGE -->
-        <div class="console-section" style="margin-bottom:28px;">
-          <div class="console-header">
-            <div class="console-title-group">
-              <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-cta); margin-bottom:4px; font-weight:600;">ACADEMIC ESSAY &amp; PAPER CHECKER</div>
-              <h2>Professor Essay &amp; Paper Reviewer</h2>
-              <p style="font-size:13px; color:var(--text-graphite); margin:4px 0 0; line-height:1.45;">Get friendly, expert feedback on your writing. Check your grammar, improve your tone, strengthen your arguments, and see your estimated college grade.</p>
-            </div>
-            <div style="display:flex; align-items:center; gap:8px;">
-              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadSampleEssay()">
-                Load Sample Essay
-              </button>
-            </div>
-          </div>
-
-          <!-- INPUT FORM -->
-          <div id="essay-input-container">
-            <div style="margin-bottom:16px;">
-              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-                <label for="essay-text-input" style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink);">
-                  Your Essay or Paper Draft
-                </label>
-                <span id="essay-word-count" class="mono" style="font-size:11px; color:var(--text-steel);">0 words &middot; 0 chars</span>
-              </div>
-              <textarea id="essay-text-input" class="textarea-field" style="width:100%; min-height:220px; font-family:var(--f-serif); font-size:15px; line-height:1.6; padding:16px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="Paste your essay or research paper here... (Or click 'Load Sample Essay' above to see how it works!)" oninput="updateEssayStats()"></textarea>
-            </div>
-
-            <div style="margin-bottom:20px;">
-              <label for="essay-rubric-input" style="display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; color:var(--text-graphite);">
-                Assignment Prompt, Topic, or Teacher Instructions (Optional)
-              </label>
-              <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Argumentative essay on clean energy policy, history term paper, sociology study...">
-            </div>
-
-            <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
-              <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
-              <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
-                Grade &amp; Review My Essay &rarr;
-              </button>
-            </div>
-          </div>
-
-          <!-- AI THINKING & PROGRESS INDICATOR -->
-          <div id="essay-progress-container" style="display:none; padding:48px 16px; text-align:center;">
-            <div class="thinking-cluster" style="display:inline-flex; align-items:center; gap:8px; margin-bottom:16px;">
-              <span class="thinking-text" id="essay-thinking-text" style="font-size:16px;">Evaluating thesis &amp; argument flow</span>
-              <span class="thinking-dots" aria-hidden="true">
-                <span></span>
-                <span></span>
-                <span></span>
-              </span>
-            </div>
-            <div style="max-width:320px; height:5px; background:var(--surface-2); border-radius:99px; margin:0 auto 12px; overflow:hidden;">
-              <div id="essay-progress-bar" style="width:20%; height:100%; background:var(--accent-cta); border-radius:99px; transition:width 0.35s ease;"></div>
-            </div>
-            <div id="essay-progress-step" style="font-size:12.5px; color:var(--text-steel);">
-              Reviewing your draft with college faculty standards...
-            </div>
-          </div>
-
-          <!-- ERROR ALERT -->
-          <div id="essay-error-alert" style="display:none; margin-top:16px; padding:12px 16px; border-radius:var(--radius-control); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#dc2626; font-size:13px;"></div>
-        </div>
-
-        <!-- RESULTS DASHBOARD -->
-        <div id="essay-results-dashboard" style="display:none;">
-
-          <!-- TOP BANNER: DUAL GRADE & DOCUMENT INTEL -->
-          <div class="console-section" style="margin-bottom:24px;">
-            <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px; padding-bottom:20px; border-bottom:1px solid var(--line);">
-              <div style="display:flex; align-items:center; gap:20px;">
-                <div id="res-grade-circle" class="grade-badge-circle grade-a">A-</div>
-                <div>
-                  <div style="display:flex; align-items:baseline; gap:8px;">
-                    <span id="res-score-number" class="mono" style="font-size:32px; font-weight:700; color:var(--text-ink);">16.5</span>
-                    <span class="mono" style="font-size:16px; color:var(--text-steel);">/ 20.0</span>
-                  </div>
-                  <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-top:2px;">
-                    Standard 20-Point Scale
-                  </div>
-                </div>
-              </div>
 
               <!-- DOCUMENT INTEL TAGS -->
               <div style="display:flex; flex-direction:column; gap:6px; align-items:flex-start;">
@@ -2357,6 +2661,360 @@
       </div>
     </div>
   </footer>
+
+  <!-- =========================================================================
+       WORKSPACE SHELL (AUTHENTICATED AI APP LAYOUT)
+       ========================================================================= -->
+  <div id="workspace-shell" class="workspace-shell" style="display:none;">
+    <!-- BACKDROP FOR MOBILE SIDEBAR -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" onclick="closeMobileSidebar()"></div>
+
+    <!-- COLLAPSIBLE LEFT SIDEBAR -->
+    <aside class="ai-sidebar" id="app-sidebar">
+      <!-- SIDEBAR TOP -->
+      <div class="sidebar-top">
+        <div class="sidebar-brand-row">
+          <div class="brand-mark" style="cursor:pointer;" onclick="workspaceNavigate('saved')">
+            <div class="brand-logo-sq">SA</div>
+            <span class="brand-text sidebar-brand-text">Study Arena</span>
+          </div>
+          <button type="button" class="sidebar-collapse-btn" onclick="toggleSidebarCollapse()" title="Toggle sidebar (Ctrl+B)" aria-label="Toggle sidebar">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+          </button>
+        </div>
+
+        <button type="button" class="sidebar-new-btn" onclick="workspaceNavigate('generator')">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          <span>+ New Study Arena</span>
+        </button>
+      </div>
+
+      <!-- SIDEBAR NAV ITEMS -->
+      <div class="sidebar-nav-scroll">
+        <div class="sidebar-section-header">WORKSPACE</div>
+        <button type="button" class="sidebar-nav-link active" id="slink-saved" onclick="workspaceNavigate('saved')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+          <span class="sidebar-nav-label">My Arenas</span>
+          <span class="sidebar-count" id="sidebar-saved-count">0</span>
+        </button>
+        <button type="button" class="sidebar-nav-link" id="slink-generator" onclick="workspaceNavigate('generator')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+          <span class="sidebar-nav-label">Practice Exams</span>
+        </button>
+        <button type="button" class="sidebar-nav-link" id="slink-essay" onclick="workspaceNavigate('essay')">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+          <span class="sidebar-nav-label">Essay Reviewer</span>
+        </button>
+
+        <div class="sidebar-section-header" style="margin-top:20px;">YOUR COURSES</div>
+        <div id="sidebar-courses-container" class="sidebar-courses-group">
+          <!-- Dynamically populated from saved arenas -->
+        </div>
+      </div>
+
+      <!-- SIDEBAR FOOTER -->
+      <div class="sidebar-footer">
+        <div class="sidebar-user-pill" onclick="toggleUserDropdown(event)" id="sidebar-user-pill" title="Account settings & Sign Out">
+          <div class="sidebar-avatar" id="sidebar-avatar-img">U</div>
+          <div class="sidebar-user-meta">
+            <div class="sidebar-user-name" id="sidebar-user-name">User Name</div>
+            <div class="sidebar-user-sub" id="sidebar-user-email">user@gmail.com</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="12" cy="5" r="1.5"></circle><circle cx="12" cy="19" r="1.5"></circle></svg>
+        </div>
+
+        <!-- POPUP MENU -->
+        <div class="sidebar-user-menu" id="sidebar-user-menu" style="display:none;">
+          <button type="button" class="user-menu-item" onclick="openSettingsModal()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+            <span>AI &amp; API Settings</span>
+          </button>
+          <button type="button" class="user-menu-item" onclick="switchToPublicLanding()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>View Public Page</span>
+          </button>
+          <div class="user-menu-divider"></div>
+          <button type="button" class="user-menu-item danger" onclick="handleSignOut()">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Sign Out</span>
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN WORKSPACE VIEWPORT -->
+    <div class="workspace-main-area" id="workspace-main-area">
+      <!-- TOP WORKSPACE HEADER -->
+      <div class="workspace-top-bar">
+        <div style="display:flex; align-items:center; gap:12px;">
+          <button type="button" class="workspace-mobile-toggle" onclick="toggleMobileSidebar()" aria-label="Open sidebar">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+          </button>
+          <span class="workspace-view-heading" id="workspace-view-heading">My Arenas</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px;">
+          <button type="button" class="btn-primary" style="padding:8px 16px; font-size:13px;" onclick="workspaceNavigate('generator')">
+            + Create Arena
+          </button>
+        </div>
+      </div>
+
+      <!-- WORKSPACE CONTENT CANVAS -->
+      <div class="workspace-content-canvas" id="workspace-content-canvas">
+        
+
+
+    <!-- SCREEN 2: THE GENERATION CONSOLE -->
+    <div id="view-generator" class="main-view" style="display:none; padding: 48px 0 80px;">
+      <div class="container">
+        <div class="back-nav-bar">
+          <button type="button" class="back-btn" onclick="switchMainView('landing')">
+            &larr; Back to Overview
+          </button>
+        </div>
+
+        <section class="console-section" id="generator-console">
+          <div class="console-header">
+            <div class="console-title-group">
+              <h2>Arena Generator</h2>
+              <p>Compile syllabi and lecture slides into an interactive, offline exam simulator.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadPreloadedMock()">
+                Load Sample Notes
+              </button>
+            </div>
+          </div>
+
+          <!-- UNIFIED MULTI-DOCUMENT & LECTURE NOTES WORKSPACE -->
+          <div class="dropzone-box" id="dropzone" onclick="document.getElementById('file-input').click()" style="cursor:pointer;">
+            <input type="file" id="file-input" accept=".pdf,.txt,.md" multiple style="display:none" onchange="handleFileSelect(event)">
+            <div style="font-size:28px; margin-bottom:8px; color:var(--accent-cta);">&uarr;</div>
+            <div style="font-weight:600; font-size:16px; margin-bottom:4px; color:var(--text-ink);">Drop course PDFs, slide decks, or past exams here</div>
+            <div style="font-size:13px; color:var(--text-steel);">Upload multiple files simultaneously. Extracted directly in browser memory.</div>
+            <div id="dz-filename" class="mono" style="margin-top:12px; color:var(--accent-cta); display:none;"></div>
+          </div>
+
+          <!-- ATTACHED DOCUMENTS LIST -->
+          <div id="attached-docs-container" style="display:none; margin-top:14px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; color:var(--text-steel); font-weight:600;">ATTACHED COURSE MATERIALS</span>
+              <span class="mono" id="attached-stats-badge" style="font-size:11px; color:var(--accent-cta);">0 documents</span>
+            </div>
+            <div id="attached-docs-list" style="display:flex; flex-wrap:wrap; gap:8px;"></div>
+          </div>
+
+          <!-- SIMULTANEOUS LECTURE NOTES & TRANSCRIPTS TEXTBOX -->
+          <div style="margin-top:20px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+              <label for="notes-input" style="font-weight:600; font-size:13px; color:var(--text-ink);">
+                Paste Lecture Notes, Transcripts, or Focus Areas (Optional)
+              </label>
+              <span class="mono" id="notes-word-count" style="font-size:11px; color:var(--text-steel);">0 words</span>
+            </div>
+            <textarea class="notes-textarea" id="notes-input" style="min-height:120px;" placeholder="Paste lecture slide notes, professor exam hints, study guides, or topic rubrics here. These will be synthesized alongside any attached PDFs above..."></textarea>
+          </div>
+
+          <!-- OPTIONAL SYLLABUS ANNALS ACCORDION -->
+          <div style="margin-top:14px;">
+            <button type="button" class="annals-toggle-btn" id="annals-toggle-btn" onclick="toggleAnnals()">
+              <span>+ Add Professor Hints &middot; Exam Weighting (Optional)</span>
+              <span id="annals-arrow">&darr;</span>
+            </button>
+            <div class="annals-content" id="annals-box">
+              <textarea class="notes-textarea" id="annals-input" style="min-height:90px;" placeholder="e.g. Professor repeatedly stressed that Miller-Modigliani Proposition II with corporate taxes ignores financial distress costs. Focus heavily on WACC calculations."></textarea>
+            </div>
+          </div>
+
+          <!-- CONTROLS ROW -->
+          <div class="console-controls-bar" style="display:flex; justify-content:flex-end; align-items:center;">
+            <input type="hidden" id="model-select" value="gemini-3.5-flash-lite">
+            <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
+              <button type="button" class="btn-primary" id="gen-btn" style="padding:12px 28px; font-size:14px;" onclick="generateArena()">
+                Generate Practice Exam &rarr;
+              </button>
+              <div id="gen-thinking-cluster" class="thinking-cluster" style="display:none;">
+                <span class="thinking-text" id="thinking-status-text">Thinking</span>
+                <span class="thinking-dots" id="thinking-dots" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
+                </span>
+              </div>
+            </div>
+          </div>
+
+
+
+
+    <!-- SCREEN 3: SAVED ARENAS VIEW -->
+    <div id="view-saved" style="display:none; padding: 48px 0 96px;">
+      <div class="container">
+        <div class="saved-header">
+          <div>
+            <h2>Saved Practice Exams</h2>
+            <p>All previously generated exams stored locally on this device.</p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" style="padding:8px 16px; font-size:13px;" onclick="document.getElementById('import-arena-file').click()">
+              &uarr; Import Shared Arena
+            </button>
+            <input type="file" id="import-arena-file" accept=".json,.html" style="display:none" onchange="handleImportArenaFile(event)">
+            <button type="button" class="btn-primary" style="white-space:nowrap; flex-shrink:0;" onclick="switchMainView('generator')">
+              + Create New Arena
+            </button>
+          </div>
+        </div>
+
+        <div id="saved-arenas-container">
+          <!-- Rendered dynamically by renderSavedArenasList() -->
+        </div>
+      </div>
+    </div>
+
+
+
+
+    <!-- SCREEN 4: ESSAY & RESEARCH PAPER REVIEWER VIEW -->
+    <div id="view-essay" class="main-view" style="display:none; padding: 48px 0 96px;">
+      <div class="container" style="max-width:960px;">
+
+        <!-- CONSOLE INPUT STAGE -->
+        <div class="console-section" style="margin-bottom:28px;">
+          <div class="console-header">
+            <div class="console-title-group">
+              <div class="mono" style="font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--accent-cta); margin-bottom:4px; font-weight:600;">ACADEMIC ESSAY &amp; PAPER CHECKER</div>
+              <h2>Professor Essay &amp; Paper Reviewer</h2>
+              <p style="font-size:13px; color:var(--text-graphite); margin:4px 0 0; line-height:1.45;">Get friendly, expert feedback on your writing. Check your grammar, improve your tone, strengthen your arguments, and see your estimated college grade.</p>
+            </div>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <button type="button" class="btn-ghost" style="padding:6px 14px; font-size:12px;" onclick="loadSampleEssay()">
+                Load Sample Essay
+              </button>
+            </div>
+          </div>
+
+          <!-- INPUT FORM -->
+          <div id="essay-input-container">
+            <div style="margin-bottom:16px;">
+              <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                <label for="essay-text-input" style="font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-ink);">
+                  Your Essay or Paper Draft
+                </label>
+                <span id="essay-word-count" class="mono" style="font-size:11px; color:var(--text-steel);">0 words &middot; 0 chars</span>
+              </div>
+              <textarea id="essay-text-input" class="textarea-field" style="width:100%; min-height:220px; font-family:var(--f-serif); font-size:15px; line-height:1.6; padding:16px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="Paste your essay or research paper here... (Or click 'Load Sample Essay' above to see how it works!)" oninput="updateEssayStats()"></textarea>
+            </div>
+
+            <div style="margin-bottom:20px;">
+              <label for="essay-rubric-input" style="display:block; font-size:12px; font-weight:600; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:6px; color:var(--text-graphite);">
+                Assignment Prompt, Topic, or Teacher Instructions (Optional)
+              </label>
+              <input type="text" id="essay-rubric-input" style="width:100%; padding:10px 14px; font-size:13px; border-radius:var(--radius-control); border:1px solid var(--line); background:var(--surface-2); color:var(--text-ink);" placeholder="e.g. Argumentative essay on clean energy policy, history term paper, sociology study...">
+            </div>
+
+            <div style="display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+              <button type="button" class="btn-ghost" style="padding:10px 18px; font-size:13px;" onclick="clearEssayInput()">Clear</button>
+              <button type="button" id="btn-submit-essay" class="btn-primary" style="padding:10px 24px; font-size:14px;" onclick="startEssayReview()">
+                Grade &amp; Review My Essay &rarr;
+              </button>
+            </div>
+          </div>
+
+          <!-- AI THINKING & PROGRESS INDICATOR -->
+          <div id="essay-progress-container" style="display:none; padding:48px 16px; text-align:center;">
+            <div class="thinking-cluster" style="display:inline-flex; align-items:center; gap:8px; margin-bottom:16px;">
+              <span class="thinking-text" id="essay-thinking-text" style="font-size:16px;">Evaluating thesis &amp; argument flow</span>
+              <span class="thinking-dots" aria-hidden="true">
+                <span></span>
+                <span></span>
+                <span></span>
+              </span>
+            </div>
+            <div style="max-width:320px; height:5px; background:var(--surface-2); border-radius:99px; margin:0 auto 12px; overflow:hidden;">
+              <div id="essay-progress-bar" style="width:20%; height:100%; background:var(--accent-cta); border-radius:99px; transition:width 0.35s ease;"></div>
+            </div>
+            <div id="essay-progress-step" style="font-size:12.5px; color:var(--text-steel);">
+              Reviewing your draft with college faculty standards...
+            </div>
+          </div>
+
+          <!-- ERROR ALERT -->
+          <div id="essay-error-alert" style="display:none; margin-top:16px; padding:12px 16px; border-radius:var(--radius-control); background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#dc2626; font-size:13px;"></div>
+        </div>
+
+        <!-- RESULTS DASHBOARD -->
+        <div id="essay-results-dashboard" style="display:none;">
+
+          <!-- TOP BANNER: DUAL GRADE & DOCUMENT INTEL -->
+          <div class="console-section" style="margin-bottom:24px;">
+            <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:20px; padding-bottom:20px; border-bottom:1px solid var(--line);">
+              <div style="display:flex; align-items:center; gap:20px;">
+                <div id="res-grade-circle" class="grade-badge-circle grade-a">A-</div>
+                <div>
+                  <div style="display:flex; align-items:baseline; gap:8px;">
+                    <span id="res-score-number" class="mono" style="font-size:32px; font-weight:700; color:var(--text-ink);">16.5</span>
+                    <span class="mono" style="font-size:16px; color:var(--text-steel);">/ 20.0</span>
+                  </div>
+                  <div class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.04em; color:var(--text-graphite); margin-top:2px;">
+                    Standard 20-Point Scale
+                  </div>
+                </div>
+              </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+  <!-- AUTH GATEWAY MODAL -->
+  <div class="modal-overlay" id="auth-modal" style="display:none;" onclick="if(event.target===this)closeAuthModal()">
+    <div class="auth-dialog-card">
+      <button type="button" class="auth-close-btn" onclick="closeAuthModal()" aria-label="Close modal">&times;</button>
+      
+      <div style="margin-bottom:18px;">
+        <div class="brand-logo-sq" style="width:38px; height:38px; font-size:14px; margin:0 auto 12px;">SA</div>
+        <h2 style="font-size:22px; margin:0 0 6px; font-family:var(--f-serif);">Welcome to Study Arena</h2>
+        <p style="font-size:13.5px; color:var(--text-graphite); margin:0; line-height:1.45;">Log in to generate exams, review essays with professors, and track your course progress.</p>
+      </div>
+
+      <!-- GOOGLE BUTTON -->
+      <button type="button" class="btn-google-auth" onclick="handleGoogleSignIn()">
+        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/></svg>
+        <span>Continue with Google</span>
+      </button>
+
+      <div class="auth-divider">
+        <span>or continue with email</span>
+      </div>
+
+      <!-- EMAIL / PASSWORD FORM -->
+      <form id="auth-email-form" onsubmit="handleEmailAuth(event)">
+        <div style="margin-bottom:12px; text-align:left;">
+          <label for="auth-email" style="display:block; font-size:12px; font-weight:600; margin-bottom:5px; color:var(--text-ink);">Email Address</label>
+          <input type="email" id="auth-email" required placeholder="student@university.edu" class="auth-input">
+        </div>
+        <div style="margin-bottom:16px; text-align:left;">
+          <label for="auth-password" style="display:block; font-size:12px; font-weight:600; margin-bottom:5px; color:var(--text-ink);">Password</label>
+          <input type="password" id="auth-password" required placeholder="Enter password..." class="auth-input">
+        </div>
+        <button type="submit" class="btn-primary" style="width:100%; padding:11px; font-size:14px;" id="auth-submit-btn">
+          Sign In with Email
+        </button>
+      </form>
+
+      <!-- GUEST / DEMO BYPASS -->
+      <div style="margin-top:14px; text-align:center;">
+        <button type="button" class="btn-link-guest" onclick="handleGuestSignIn()">
+          Continue as Guest Student &rarr;
+        </button>
+      </div>
+
+      <div class="auth-privacy-notice">
+        By continuing, your data remains 100% private and stored in your browser session.
+      </div>
+    </div>
+  </div>
 
   <!-- API KEY MODAL -->
   <div class="modal-overlay" id="key-modal" onclick="if(event.target===this)closeKeyModal()">
@@ -3589,6 +4247,301 @@ function revealTrap(btn, isCorrect, debriefText) {
     }
   }
 }
+
+    
+    /* ==========================================================================
+       AUTHENTICATION & WORKSPACE LOGIC
+       ========================================================================== */
+    var pendingAuthRoute = null;
+
+    function initAuthIntegration() {
+      if (!window.StudyArenaAuth) return;
+      window.StudyArenaAuth.onAuthStateChanged(function(user) {
+        updateWorkspaceAuthState(user);
+      });
+    }
+
+    function updateWorkspaceAuthState(user) {
+      var publicNav = document.getElementById("public-nav");
+      var publicMain = document.getElementById("public-main");
+      var publicFooter = document.querySelector(".editorial-footer");
+      var workspaceShell = document.getElementById("workspace-shell");
+      var publicReturnBtn = document.getElementById("public-return-workspace-btn");
+      var publicSigninBtn = document.getElementById("public-signin-btn");
+      var publicLaunchBtn = document.getElementById("public-launch-btn");
+
+      if (user) {
+        // Authenticated State
+        if (publicNav) publicNav.style.display = "none";
+        if (publicMain) publicMain.style.display = "none";
+        if (publicFooter) publicFooter.style.display = "none";
+        if (workspaceShell) workspaceShell.style.display = "flex";
+        if (publicReturnBtn) publicReturnBtn.style.display = "inline-flex";
+        if (publicSigninBtn) publicSigninBtn.style.display = "none";
+        if (publicLaunchBtn) publicLaunchBtn.style.display = "none";
+
+        // Update User info in sidebar
+        var userNameEl = document.getElementById("sidebar-user-name");
+        var userEmailEl = document.getElementById("sidebar-user-email");
+        var userAvatarEl = document.getElementById("sidebar-avatar-img");
+
+        if (userNameEl) userNameEl.textContent = user.displayName || "Student";
+        if (userEmailEl) userEmailEl.textContent = user.email || "";
+        if (userAvatarEl) {
+          if (user.photoURL) {
+            userAvatarEl.innerHTML = '<img src="' + user.photoURL + '" alt="' + (user.displayName || '') + '">';
+          } else {
+            var initial = (user.displayName || user.email || 'U').charAt(0).toUpperCase();
+            userAvatarEl.textContent = initial;
+          }
+        }
+
+        // Navigate to target view or default to saved
+        var target = pendingAuthRoute || "saved";
+        pendingAuthRoute = null;
+        workspaceNavigate(target);
+        renderSidebarCourses();
+      } else {
+        // Unauthenticated State
+        if (publicNav) publicNav.style.display = "block";
+        if (publicMain) publicMain.style.display = "block";
+        if (publicFooter) publicFooter.style.display = "block";
+        if (workspaceShell) workspaceShell.style.display = "none";
+        if (publicReturnBtn) publicReturnBtn.style.display = "none";
+        if (publicSigninBtn) publicSigninBtn.style.display = "inline-flex";
+        if (publicLaunchBtn) publicLaunchBtn.style.display = "inline-flex";
+
+        switchMainView("landing");
+      }
+    }
+
+    function openAuthModal(targetView) {
+      pendingAuthRoute = targetView || "saved";
+      var m = document.getElementById("auth-modal");
+      if (m) m.style.display = "flex";
+    }
+
+    function closeAuthModal() {
+      var m = document.getElementById("auth-modal");
+      if (m) m.style.display = "none";
+    }
+
+    function handleLaunchClick() {
+      if (window.StudyArenaAuth && window.StudyArenaAuth.isLoggedIn()) {
+        workspaceNavigate("saved");
+      } else {
+        openAuthModal("saved");
+      }
+    }
+
+    function handleProtectedAction(targetView) {
+      if (window.StudyArenaAuth && window.StudyArenaAuth.isLoggedIn()) {
+        workspaceNavigate(targetView);
+      } else {
+        openAuthModal(targetView);
+      }
+    }
+
+    function handleGoogleSignIn() {
+      if (!window.StudyArenaAuth) return;
+      window.StudyArenaAuth.signInWithGoogle().then(function(user) {
+        closeAuthModal();
+      }).catch(function(err) {
+        alert("Google Sign-In: " + (err.message || err));
+      });
+    }
+
+    function handleEmailAuth(event) {
+      if (event) event.preventDefault();
+      var emailEl = document.getElementById("auth-email");
+      var passEl = document.getElementById("auth-password");
+      if (!emailEl || !passEl || !window.StudyArenaAuth) return;
+
+      window.StudyArenaAuth.signInWithEmail(emailEl.value, passEl.value).then(function(user) {
+        closeAuthModal();
+      }).catch(function(err) {
+        alert("Email Sign-In: " + err.message);
+      });
+    }
+
+    function handleGuestSignIn() {
+      if (!window.StudyArenaAuth) return;
+      window.StudyArenaAuth.signInAsGuest().then(function(user) {
+        closeAuthModal();
+      });
+    }
+
+    function handleSignOut() {
+      closeUserDropdown();
+      if (window.StudyArenaAuth) {
+        window.StudyArenaAuth.signOut().then(function() {
+          updateWorkspaceAuthState(null);
+        });
+      }
+    }
+
+    function workspaceNavigate(viewName) {
+      if (viewName === "create") viewName = "generator";
+
+      var viewSaved = document.getElementById("view-saved");
+      var viewGenerator = document.getElementById("view-generator");
+      var viewEssay = document.getElementById("view-essay");
+
+      var slinkSaved = document.getElementById("slink-saved");
+      var slinkGenerator = document.getElementById("slink-generator");
+      var slinkEssay = document.getElementById("slink-essay");
+
+      var heading = document.getElementById("workspace-view-heading");
+
+      // Hide all workspace views
+      if (viewSaved) viewSaved.style.display = (viewName === "saved") ? "block" : "none";
+      if (viewGenerator) viewGenerator.style.display = (viewName === "generator") ? "block" : "none";
+      if (viewEssay) viewEssay.style.display = (viewName === "essay") ? "block" : "none";
+
+      // Update Sidebar links
+      if (slinkSaved) slinkSaved.classList.toggle("active", viewName === "saved");
+      if (slinkGenerator) slinkGenerator.classList.toggle("active", viewName === "generator");
+      if (slinkEssay) slinkEssay.classList.toggle("active", viewName === "essay");
+
+      // Update Title
+      if (heading) {
+        if (viewName === "saved") heading.textContent = "My Arenas";
+        else if (viewName === "generator") heading.textContent = "Practice Exam Generator";
+        else if (viewName === "essay") heading.textContent = "Professor Essay & Paper Reviewer";
+      }
+
+      // Close mobile drawer if open
+      closeMobileSidebar();
+      closeUserDropdown();
+
+      // Trigger view-specific refreshes
+      if (viewName === "saved") {
+        renderSavedArenasList();
+        renderSidebarCourses();
+        if (history.replaceState) history.replaceState(null, "", "#saved");
+      } else if (viewName === "generator") {
+        if (history.replaceState) history.replaceState(null, "", "#generator");
+      } else if (viewName === "essay") {
+        if (history.replaceState) history.replaceState(null, "", "#essay");
+      }
+
+      var canvas = document.getElementById("workspace-content-canvas");
+      if (canvas) canvas.scrollTop = 0;
+    }
+
+    function toggleSidebarCollapse() {
+      var sidebar = document.getElementById("app-sidebar");
+      if (sidebar) sidebar.classList.toggle("collapsed");
+    }
+
+    function toggleMobileSidebar() {
+      var sidebar = document.getElementById("app-sidebar");
+      var backdrop = document.getElementById("sidebar-backdrop");
+      if (sidebar) sidebar.classList.toggle("mobile-open");
+      if (backdrop) backdrop.classList.toggle("active");
+    }
+
+    function closeMobileSidebar() {
+      var sidebar = document.getElementById("app-sidebar");
+      var backdrop = document.getElementById("sidebar-backdrop");
+      if (sidebar) sidebar.classList.remove("mobile-open");
+      if (backdrop) backdrop.classList.remove("active");
+    }
+
+    function toggleUserDropdown(event) {
+      if (event) event.stopPropagation();
+      var menu = document.getElementById("sidebar-user-menu");
+      if (menu) {
+        menu.style.display = (menu.style.display === "none" || !menu.style.display) ? "flex" : "none";
+      }
+    }
+
+    function closeUserDropdown() {
+      var menu = document.getElementById("sidebar-user-menu");
+      if (menu) menu.style.display = "none";
+    }
+
+    function switchToPublicLanding() {
+      closeUserDropdown();
+      var publicNav = document.getElementById("public-nav");
+      var publicMain = document.getElementById("public-main");
+      var publicFooter = document.querySelector(".editorial-footer");
+      var workspaceShell = document.getElementById("workspace-shell");
+
+      if (workspaceShell) workspaceShell.style.display = "none";
+      if (publicNav) publicNav.style.display = "block";
+      if (publicMain) publicMain.style.display = "block";
+      if (publicFooter) publicFooter.style.display = "block";
+
+      var returnBtn = document.getElementById("public-return-workspace-btn");
+      if (returnBtn) returnBtn.style.display = "inline-flex";
+
+      switchMainView("landing");
+    }
+
+    function restoreWorkspaceView() {
+      var publicNav = document.getElementById("public-nav");
+      var publicMain = document.getElementById("public-main");
+      var publicFooter = document.querySelector(".editorial-footer");
+      var workspaceShell = document.getElementById("workspace-shell");
+
+      if (publicNav) publicNav.style.display = "none";
+      if (publicMain) publicMain.style.display = "none";
+      if (publicFooter) publicFooter.style.display = "none";
+      if (workspaceShell) workspaceShell.style.display = "flex";
+
+      workspaceNavigate("saved");
+    }
+
+    function renderSidebarCourses() {
+      var container = document.getElementById("sidebar-courses-container");
+      var countBadge = document.getElementById("sidebar-saved-count");
+      var arenas = getSavedArenas();
+
+      if (countBadge) countBadge.textContent = arenas.length;
+      if (!container) return;
+
+      if (!arenas || arenas.length === 0) {
+        container.innerHTML = '<div style="font-size:11.5px; color:var(--text-steel); padding:6px 10px; font-style:italic;">No arenas yet</div>';
+        return;
+      }
+
+      var html = '';
+      arenas.slice(0, 8).forEach(function(item) {
+        var title = (item.courseData && item.courseData.course_name) || item.title || "Study Arena";
+        html += '<button type="button" class="sidebar-course-item" onclick="launchSavedArenaById(\'' + item.id + '\')" title="' + escapeHtml(title) + '">';
+        html += '<span style="color:var(--accent-cta); font-size:10px;">&bull;</span> ';
+        html += '<span style="overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">' + escapeHtml(title) + '</span>';
+        html += '</button>';
+      });
+      container.innerHTML = html;
+    }
+
+    // Close dropdowns on outside click
+    document.addEventListener("click", function(e) {
+      if (!e.target.closest("#sidebar-user-pill") && !e.target.closest("#sidebar-user-menu")) {
+        closeUserDropdown();
+      }
+    });
+
+    // Keyboard shortcuts
+    document.addEventListener("keydown", function(e) {
+      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') {
+        e.preventDefault();
+        toggleSidebarCollapse();
+      }
+      if (e.key === "Escape") {
+        closeAuthModal();
+        closeUserDropdown();
+        closeMobileSidebar();
+      }
+    });
+
+    // Initialize Auth listener on DOM load
+    window.addEventListener("DOMContentLoaded", function() {
+      initAuthIntegration();
+    });
+
 
     // Aliases and bridge handlers for editorial UI
     function generateArena() {
