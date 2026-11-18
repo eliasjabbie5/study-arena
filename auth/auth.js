@@ -11,6 +11,9 @@
   var CLIENT_ID_KEY = 'sa_google_client_id';
   var DEFAULT_CLIENT_ID = '473457918792-rs6lb669qkstj4ed717vro61mp930ita.apps.googleusercontent.com';
   var USERS_DB_KEY = 'sa_registered_users_v1';
+  var DEVELOPER_EMAIL = 'eliasjabbie5@gmail.com';
+  var TELEMETRY_KEY = 'sa_telemetry_events_v1';
+
   var listeners = [];
 
   function getStoredUsers() {
@@ -47,13 +50,167 @@
       return this.getUser() !== null;
     },
 
+    DEVELOPER_EMAIL: DEVELOPER_EMAIL,
+
+    isDeveloper: function(user) {
+      var u = user || this.getUser();
+      if (!u || !u.email) return false;
+      return u.email.toLowerCase().trim() === DEVELOPER_EMAIL.toLowerCase();
+    },
+
     setUser: function(user) {
       if (user) {
+        if (this.isDeveloper(user)) {
+          user.role = 'developer';
+          user.developerMode = true;
+        } else if (!user.role) {
+          user.role = user.isGuest ? 'guest' : 'student';
+        }
         localStorage.setItem(STORAGE_KEY, JSON.stringify(user));
+
+        // Auto-record / sync into registered users database
+        if (user.email && !user.isGuest) {
+          try {
+            var db = getStoredUsers();
+            var key = user.email.toLowerCase().trim();
+            var isDev = (key === DEVELOPER_EMAIL.toLowerCase());
+            if (!db[key]) {
+              db[key] = {
+                email: user.email,
+                displayName: user.displayName || user.name || (isDev ? 'Elias Jabbie' : 'Student'),
+                photoURL: user.photoURL || '',
+                provider: user.provider || 'google',
+                role: isDev ? 'developer' : 'student',
+                createdAt: user.createdAt || new Date().toISOString(),
+                lastLogin: new Date().toISOString(),
+                loginCount: 1
+              };
+            } else {
+              db[key].lastLogin = new Date().toISOString();
+              db[key].loginCount = (db[key].loginCount || 1) + 1;
+              if (user.displayName) db[key].displayName = user.displayName;
+              if (user.photoURL) db[key].photoURL = user.photoURL;
+              if (isDev) db[key].role = 'developer';
+            }
+            saveStoredUsers(db);
+          } catch (e) {
+            console.warn('[Auth] Error syncing user to database:', e);
+          }
+        }
+
+        this.logTelemetry('USER_SIGN_IN', { email: user.email, provider: user.provider, role: user.role });
       } else {
         localStorage.removeItem(STORAGE_KEY);
       }
       this.notifyListeners(user);
+    },
+
+    getAllUsers: function() {
+      var db = getStoredUsers();
+      var devKey = DEVELOPER_EMAIL.toLowerCase();
+      // Ensure developer record exists
+      if (!db[devKey]) {
+        db[devKey] = {
+          email: DEVELOPER_EMAIL,
+          displayName: 'Elias Jabbie',
+          photoURL: '',
+          provider: 'google',
+          role: 'developer',
+          createdAt: new Date().toISOString(),
+          lastLogin: new Date().toISOString(),
+          loginCount: 1
+        };
+        saveStoredUsers(db);
+      }
+      var list = [];
+      for (var k in db) {
+        if (Object.prototype.hasOwnProperty.call(db, k)) {
+          list.push(db[k]);
+        }
+      }
+      list.sort(function(a, b) {
+        var ta = new Date(a.lastLogin || a.createdAt || 0).getTime();
+        var tb = new Date(b.lastLogin || b.createdAt || 0).getTime();
+        return tb - ta;
+      });
+      return list;
+    },
+
+    addMockUser: function(name, email, provider) {
+      var db = getStoredUsers();
+      var cleanEmail = (email || ('student_' + Math.floor(Math.random() * 900 + 100) + '@university.edu')).toLowerCase().trim();
+      db[cleanEmail] = {
+        email: cleanEmail,
+        displayName: name || 'Student ' + cleanEmail.split('@')[0],
+        photoURL: '',
+        provider: provider || 'email',
+        role: (cleanEmail === DEVELOPER_EMAIL.toLowerCase()) ? 'developer' : 'student',
+        createdAt: new Date(Date.now() - Math.floor(Math.random() * 86400000 * 7)).toISOString(),
+        lastLogin: new Date().toISOString(),
+        loginCount: Math.floor(Math.random() * 5 + 1)
+      };
+      saveStoredUsers(db);
+      this.logTelemetry('MOCK_USER_ADDED', { email: cleanEmail, name: db[cleanEmail].displayName });
+      return db[cleanEmail];
+    },
+
+    deleteUser: function(email) {
+      if (!email) return false;
+      var cleanEmail = email.toLowerCase().trim();
+      if (cleanEmail === DEVELOPER_EMAIL.toLowerCase()) {
+        throw new Error('Cannot delete developer account.');
+      }
+      var db = getStoredUsers();
+      if (db[cleanEmail]) {
+        delete db[cleanEmail];
+        saveStoredUsers(db);
+        this.logTelemetry('USER_REMOVED', { email: cleanEmail });
+        return true;
+      }
+      return false;
+    },
+
+    logTelemetry: function(event, metadata) {
+      try {
+        var raw = localStorage.getItem(TELEMETRY_KEY);
+        var events = raw ? JSON.parse(raw) : [];
+        events.unshift({
+          id: 'ev_' + Date.now() + '_' + Math.random().toString(36).substr(2, 4),
+          event: event,
+          meta: metadata || {},
+          timestamp: new Date().toISOString()
+        });
+        if (events.length > 100) events = events.slice(0, 100);
+        localStorage.setItem(TELEMETRY_KEY, JSON.stringify(events));
+      } catch (e) {}
+    },
+
+    getTelemetryEvents: function() {
+      try {
+        var raw = localStorage.getItem(TELEMETRY_KEY);
+        var ev = raw ? JSON.parse(raw) : [];
+        if (ev.length === 0) {
+          // Add default welcome telemetry
+          ev = [
+            {
+              id: 'ev_init_1',
+              event: 'SYSTEM_INITIALIZED',
+              meta: { engine: 'Gemini 2.5 Flash', developer: DEVELOPER_EMAIL },
+              timestamp: new Date().toISOString()
+            }
+          ];
+          localStorage.setItem(TELEMETRY_KEY, JSON.stringify(ev));
+        }
+        return ev;
+      } catch (e) {
+        return [];
+      }
+    },
+
+    clearTelemetry: function() {
+      try {
+        localStorage.removeItem(TELEMETRY_KEY);
+      } catch (e) {}
     },
 
     getGoogleClientId: function() {

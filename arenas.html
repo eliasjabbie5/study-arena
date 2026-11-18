@@ -2512,7 +2512,10 @@
         <button type="button" class="btn-primary" style="padding:8px 18px; font-size:13px;" onclick="handleLaunchClick()" id="public-launch-btn">
           Launch &rarr;
         </button>
-        <button type="button" class="btn-primary" style="padding:8px 18px; font-size:13px; display:none;" onclick="restoreWorkspaceView()" id="public-return-workspace-btn">
+                <button type="button" class="btn-ghost" style="padding:7px 14px; font-size:12px; font-weight:700; color:#10b981; border:1px solid rgba(16,185,129,0.3); background:rgba(16,185,129,0.08); border-radius:20px; display:none;" onclick="workspaceNavigate('dev-dashboard')" id="public-dev-badge-btn">
+          <span style="display:inline-block; width:7px; height:7px; background:#10b981; border-radius:50%; margin-right:6px; box-shadow:0 0 8px #10b981;"></span> DEV MODE
+        </button>
+<button type="button" class="btn-primary" style="padding:8px 18px; font-size:13px; display:none;" onclick="restoreWorkspaceView()" id="public-return-workspace-btn">
           Back to Workspace &rarr;
         </button>
       </div>
@@ -2558,6 +2561,12 @@
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
         <span class="sidebar-nav-label">Essay Reviewer</span>
       </button>
+      <button type="button" class="sidebar-nav-link" id="slink-dev-dashboard" onclick="workspaceNavigate('dev-dashboard')" style="display:none;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        <span class="sidebar-nav-label">Developer Console</span>
+        <span style="font-size:10px; font-weight:700; background:#10b981; color:#fff; padding:2px 7px; border-radius:10px; margin-left:auto;">DEV</span>
+      </button>
+
 
       <div class="sidebar-section-header" style="margin-top:20px;">YOUR COURSES</div>
       <div id="sidebar-courses-container" class="sidebar-courses-group">
@@ -2578,7 +2587,11 @@
 
       <!-- POPUP MENU -->
       <div class="sidebar-user-menu" id="sidebar-user-menu" style="display:none;">
-        <button type="button" class="user-menu-item" onclick="openSettingsModal()">
+                <button type="button" class="user-menu-item" id="user-menu-dev-dashboard" onclick="workspaceNavigate('dev-dashboard')" style="display:none;">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+          <span>Developer Console</span>
+        </button>
+<button type="button" class="user-menu-item" onclick="openSettingsModal()">
           <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
           <span>AI &amp; API Settings</span>
         </button>
@@ -3211,7 +3224,152 @@
       </div>
     </div>
 
-  </main>
+  
+    <!-- SCREEN 5: DEVELOPER & OPERATIONS DASHBOARD (RESTRICTED TO eliasjabbie5@gmail.com) -->
+    <div id="view-dev-dashboard" class="main-view" style="display:none; padding: 36px 0 96px;">
+      <div class="container" style="max-width:1180px;">
+        <!-- DEV BANNER -->
+        <div style="background:linear-gradient(135deg, rgba(16,185,129,0.08) 0%, rgba(6,78,59,0.04) 100%); border:1px solid rgba(16,185,129,0.25); border-radius:var(--radius-card); padding:24px 28px; margin-bottom:28px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:16px;">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;">
+              <span style="display:inline-flex; align-items:center; gap:6px; font-size:11px; font-weight:700; color:#059669; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:2px 8px; border-radius:12px; letter-spacing:0.04em;">
+                <span style="width:6px; height:6px; background:#10b981; border-radius:50%; box-shadow:0 0 6px #10b981;"></span>
+                DEVELOPER MODE ACTIVE
+              </span>
+              <span class="mono" style="font-size:12px; color:var(--text-muted);">Study Arena v2.4 Admin</span>
+            </div>
+            <h2 style="font-family:var(--f-serif); font-size:26px; margin:0 0 4px; color:var(--text-ink);">Developer &amp; Operations Console</h2>
+            <p style="margin:0; font-size:14px; color:var(--text-muted);">Restricted operational telemetry and account directory for <b style="color:var(--text-ink);">eliasjabbie5@gmail.com</b></p>
+          </div>
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <button type="button" class="btn-ghost" style="padding:8px 14px; font-size:12.5px;" onclick="handleCreateMockUserClick()">
+              + Mock Account
+            </button>
+            <button type="button" class="btn-ghost" style="padding:8px 14px; font-size:12.5px;" onclick="exportDeveloperDataJSON()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right:5px; vertical-align:-2px;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+              Export JSON
+            </button>
+            <button type="button" class="btn-primary" style="padding:8px 16px; font-size:12.5px;" onclick="renderDeveloperDashboard()">
+              Refresh Metrics
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI METRICS CARDS -->
+        <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(240px, 1fr)); gap:18px; margin-bottom:32px;">
+          <!-- CARD 1: ACCOUNTS -->
+          <div class="dev-stat-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:20px; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:600;">REGISTERED ACCOUNTS</span>
+              <div style="width:32px; height:32px; border-radius:8px; background:rgba(59,130,246,0.1); color:#2563eb; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+              </div>
+            </div>
+            <div id="dev-stat-accounts-total" style="font-size:32px; font-weight:700; color:var(--text-ink); font-family:var(--f-serif); line-height:1.1; margin-bottom:6px;">1</div>
+            <div id="dev-stat-accounts-sub" style="font-size:12px; color:var(--text-muted);">1 Google OAuth &middot; 0 Email</div>
+          </div>
+
+          <!-- CARD 2: ARENAS GENERATED -->
+          <div class="dev-stat-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:20px; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:600;">PRACTICE ARENAS</span>
+              <div style="width:32px; height:32px; border-radius:8px; background:rgba(16,185,129,0.1); color:#059669; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+              </div>
+            </div>
+            <div id="dev-stat-arenas-total" style="font-size:32px; font-weight:700; color:var(--text-ink); font-family:var(--f-serif); line-height:1.1; margin-bottom:6px;">0</div>
+            <div id="dev-stat-arenas-sub" style="font-size:12px; color:var(--text-muted);">Practice sets created &amp; saved</div>
+          </div>
+
+          <!-- CARD 3: ESSAYS EVALUATED -->
+          <div class="dev-stat-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:20px; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:600;">ESSAYS EVALUATED</span>
+              <div style="width:32px; height:32px; border-radius:8px; background:rgba(217,119,6,0.1); color:#d97706; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+              </div>
+            </div>
+            <div id="dev-stat-essays-total" style="font-size:32px; font-weight:700; color:var(--text-ink); font-family:var(--f-serif); line-height:1.1; margin-bottom:6px;">0</div>
+            <div id="dev-stat-essays-sub" style="font-size:12px; color:var(--text-muted);">Objective academic reviews</div>
+          </div>
+
+          <!-- CARD 4: AI GATEWAY & PLATFORM HEALTH -->
+          <div class="dev-stat-card" style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:20px; box-shadow:var(--shadow-sm);">
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:8px;">
+              <span class="mono" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color:var(--text-muted); font-weight:600;">AI GATEWAY STATUS</span>
+              <div style="width:32px; height:32px; border-radius:8px; background:rgba(139,92,246,0.1); color:#7c3aed; display:flex; align-items:center; justify-content:center;">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+              </div>
+            </div>
+            <div id="dev-stat-engine" style="font-size:20px; font-weight:700; color:#059669; font-family:var(--f-sans); line-height:1.3; margin-bottom:4px; display:flex; align-items:center; gap:6px;">
+              <span style="width:8px; height:8px; background:#10b981; border-radius:50%; box-shadow:0 0 6px #10b981;"></span>
+              Operational
+            </div>
+            <div id="dev-stat-engine-sub" style="font-size:12px; color:var(--text-muted);">Gemini 2.5 Flash &middot; Free Tier ($0 Cost)</div>
+          </div>
+        </div>
+
+        <!-- USER DIRECTORY TABLE SECTION -->
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:24px; margin-bottom:32px; box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:14px; margin-bottom:20px;">
+            <div>
+              <h3 style="font-family:var(--f-serif); font-size:20px; margin:0 0 4px; color:var(--text-ink);">Registered User Accounts Directory</h3>
+              <p style="margin:0; font-size:13px; color:var(--text-muted);">Live database of all users registered via Google OAuth or Email credentials.</p>
+            </div>
+            <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+              <div style="display:flex; background:var(--surface-2); border:1px solid var(--line); border-radius:6px; padding:2px;">
+                <button type="button" class="dev-filter-btn active" id="dev-filter-all" onclick="setDevUserFilter('all', this)" style="padding:5px 12px; font-size:12px; font-weight:600; border:none; background:var(--surface); color:var(--text-ink); cursor:pointer; border-radius:4px; box-shadow:0 1px 2px rgba(0,0,0,0.06);">All</button>
+                <button type="button" class="dev-filter-btn" id="dev-filter-google" onclick="setDevUserFilter('google', this)" style="padding:5px 12px; font-size:12px; font-weight:600; border:none; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:4px;">Google</button>
+                <button type="button" class="dev-filter-btn" id="dev-filter-email" onclick="setDevUserFilter('email', this)" style="padding:5px 12px; font-size:12px; font-weight:600; border:none; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:4px;">Email</button>
+                <button type="button" class="dev-filter-btn" id="dev-filter-dev" onclick="setDevUserFilter('developer', this)" style="padding:5px 12px; font-size:12px; font-weight:600; border:none; background:transparent; color:var(--text-muted); cursor:pointer; border-radius:4px;">Devs</button>
+              </div>
+              <input type="text" id="dev-user-search-input" placeholder="Search name or email..." oninput="handleDevUserSearch(this.value)" style="padding:6px 12px; font-size:12.5px; border:1px solid var(--line); border-radius:6px; background:var(--surface-2); color:var(--text-ink); width:210px;">
+            </div>
+          </div>
+
+          <!-- TABLE -->
+          <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; font-size:13px; text-align:left;">
+              <thead>
+                <tr style="border-bottom:1px solid var(--line); color:var(--text-muted); font-size:11.5px; text-transform:uppercase; letter-spacing:0.05em;">
+                  <th style="padding:10px 14px;">User / Identity</th>
+                  <th style="padding:10px 14px;">Email Address</th>
+                  <th style="padding:10px 14px;">Provider</th>
+                  <th style="padding:10px 14px;">Role</th>
+                  <th style="padding:10px 14px;">Registered</th>
+                  <th style="padding:10px 14px;">Last Login</th>
+                  <th style="padding:10px 14px; text-align:right;">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="dev-users-table-body">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+          </div>
+          <div id="dev-users-empty" style="display:none; text-align:center; padding:32px; color:var(--text-muted); font-size:13.5px;">
+            No registered users match your search criteria.
+          </div>
+        </div>
+
+        <!-- TELEMETRY AUDIT LOG -->
+        <div style="background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-card); padding:24px; box-shadow:var(--shadow-sm);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:16px;">
+            <div>
+              <h3 style="font-family:var(--f-serif); font-size:20px; margin:0 0 4px; color:var(--text-ink);">System Telemetry &amp; Event Audit Log</h3>
+              <p style="margin:0; font-size:13px; color:var(--text-muted);">Real-time audit log of authenticated sessions, quiz generations, and model invocations.</p>
+            </div>
+            <button type="button" class="btn-ghost" style="padding:5px 12px; font-size:12px;" onclick="clearTelemetryAuditLog()">
+              Clear Audit Log
+            </button>
+          </div>
+          <div id="dev-telemetry-container" style="max-height:280px; overflow-y:auto; border:1px solid var(--line); border-radius:6px; background:var(--surface-2); padding:12px; font-family:monospace; font-size:12px; line-height:1.6;">
+            <!-- Rendered dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    </main>
 
 
   <!-- EDITORIAL FOOTER -->
@@ -3457,8 +3615,9 @@
       var navSaved = document.getElementById("nav-saved");
       var navTryBtn = document.getElementById("nav-try-btn");
 
-      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : (viewName === "essay") ? viewEssay : viewSaved;
-      var otherViews = [viewLanding, viewGenerator, viewEssay, viewSaved].filter(function(v) { return v && v !== targetView; });
+      var viewDev = document.getElementById("view-dev-dashboard");
+      var targetView = (viewName === "landing") ? viewLanding : (viewName === "generator") ? viewGenerator : (viewName === "essay") ? viewEssay : (viewName === "dev-dashboard") ? viewDev : viewSaved;
+      var otherViews = [viewLanding, viewGenerator, viewEssay, viewSaved, viewDev].filter(function(v) { return v && v !== targetView; });
 
       if (navLanding) navLanding.classList.toggle("active", viewName === "landing");
       if (navGenerator) navGenerator.classList.toggle("active", viewName === "generator");
@@ -3475,6 +3634,8 @@
       if (slinkSaved) slinkSaved.classList.toggle("active", viewName === "saved");
       if (slinkGenerator) slinkGenerator.classList.toggle("active", viewName === "generator");
       if (slinkEssay) slinkEssay.classList.toggle("active", viewName === "essay");
+      var slinkDev = document.getElementById("slink-dev-dashboard");
+      if (slinkDev) slinkDev.classList.toggle("active", viewName === "dev-dashboard");
 
       if (wsHeading) {
         if (viewName === "saved") wsHeading.textContent = "My Arenas";
@@ -4596,7 +4757,18 @@ function revealTrap(btn, isCorrect, debriefText) {
         if (publicSigninBtn) publicSigninBtn.style.display = "none";
         if (publicLaunchBtn) publicLaunchBtn.style.display = "none";
 
-        if (userNameEl) userNameEl.textContent = user.displayName || "Student";
+        var isDev = window.StudyArenaAuth && window.StudyArenaAuth.isDeveloper(user);
+        var devSidebarLink = document.getElementById("slink-dev-dashboard");
+        var devMenuItem = document.getElementById("user-menu-dev-dashboard");
+        var devPublicBadge = document.getElementById("public-dev-badge-btn");
+
+        if (devSidebarLink) devSidebarLink.style.display = isDev ? "flex" : "none";
+        if (devMenuItem) devMenuItem.style.display = isDev ? "flex" : "none";
+        if (devPublicBadge) devPublicBadge.style.display = isDev ? "inline-flex" : "none";
+
+        if (userNameEl) {
+          userNameEl.innerHTML = (user.displayName || "Student") + (isDev ? ' <span style="font-size:10px; font-weight:700; color:#059669; background:rgba(16,185,129,0.15); border:1px solid rgba(16,185,129,0.3); padding:1px 6px; border-radius:4px; margin-left:4px;">DEV</span>' : '');
+        }
         if (userEmailEl) userEmailEl.textContent = user.email || "";
         if (userAvatarEl) {
           if (user.photoURL) {
@@ -4732,17 +4904,23 @@ function revealTrap(btn, isCorrect, debriefText) {
       if (slinkSaved) slinkSaved.classList.toggle("active", viewName === "saved");
       if (slinkGenerator) slinkGenerator.classList.toggle("active", viewName === "generator");
       if (slinkEssay) slinkEssay.classList.toggle("active", viewName === "essay");
+      var slinkDev = document.getElementById("slink-dev-dashboard");
+      if (slinkDev) slinkDev.classList.toggle("active", viewName === "dev-dashboard");
 
       if (heading) {
         if (viewName === "saved") heading.textContent = "My Arenas";
         else if (viewName === "generator") heading.textContent = "Generator";
-        else if (viewName === "essay") heading.textContent = "Professor Essay & Paper Reviewer";
+        else if (viewName === "essay") heading.textContent = "Evaluator Critique & Analysis";
+        else if (viewName === "dev-dashboard") heading.textContent = "Developer Console & Operations";
       }
 
       closeMobileSidebar();
       closeUserDropdown();
 
       switchMainView(viewName);
+      if (viewName === "dev-dashboard" && typeof renderDeveloperDashboard === "function") {
+        renderDeveloperDashboard();
+      }
       renderSidebarCourses();
     }
 
