@@ -137,15 +137,36 @@ window.StudyArenaAPI = {
     }
   },
 
-  callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
+  // Calls Gemini and parses JSON; on parse failure retries with the next model (rotated) up to 3 times.
+  callGeminiParsed: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
+    var lastErr = null;
+    for (var attempt = 0; attempt < 3; attempt++) {
+      try {
+        if (attempt > 0 && typeof onProgress === "function") {
+          onProgress("Response was malformed, retrying (attempt " + (attempt + 1) + " of 3)...", 50);
+        }
+        var raw = await this.callGeminiWithFallback(apiKey, systemPrompt, userContent, signal, onProgress, attempt);
+        return this.cleanJsonResponse(raw);
+      } catch (err) {
+        if (err && (err.name === "AbortError" || (err.message && err.message.indexOf("API key is invalid") > -1))) throw err;
+        lastErr = err;
+      }
+    }
+    throw lastErr || new Error("Gemini returned unparseable output.");
+  },
+
+  callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress, rotate) {
     var candidateModels = [
       "gemini-flash-lite-latest",
       "gemini-2.5-flash-lite",
       "gemini-2.5-flash",
       "gemini-3.1-flash-lite",
       "gemini-flash-latest",
-      "gemini-3.5-flash-lite"
     ];
+    if (rotate) {
+      var rot = rotate % candidateModels.length;
+      candidateModels = candidateModels.slice(rot).concat(candidateModels.slice(0, rot));
+    }
     var lastErr = null;
 
     for (var i = 0; i < candidateModels.length; i++) {
@@ -1246,8 +1267,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
             "- Focus in-depth on the topics, formulas, models, and self-test problems in THIS part.\n" +
             "- Generate 2 to 3 rich Chapters and 4 to 6 high-yield questions for this specific section.\n" +
             "- Ensure pure JSON syntax: all keys double-quoted, no trailing commas.";
-          var chunkRaw = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, chunkUserContent, signal, onProgress);
-          var chunkParsed = this.cleanJsonResponse(chunkRaw);
+          var chunkParsed = await this.callGeminiParsed(apiKey, this.MASTER_PROMPT, chunkUserContent, signal, onProgress);
           if (chunkParsed) {
             if (!mergedData) {
               mergedData = chunkParsed;
@@ -1276,7 +1296,7 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         var courseData = mergedData || {};
       } else {
         onProgress("Creating tools & distractor traps...", 45);
-        rawResponse = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, userContent, signal, onProgress);
+        var courseData = await this.callGeminiParsed(apiKey, this.MASTER_PROMPT, userContent, signal, onProgress);
       }
     }
 
