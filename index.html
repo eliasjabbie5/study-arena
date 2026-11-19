@@ -21,11 +21,11 @@
       return JSON.stringify(obj).replace(/<\//g, '<\\/');
     };
   </script>
-  <script src="generator/engine_bundle.js?v=5.2.2"></script>
-  <script src="generator/compiler.js?v=5.2.2"></script>
-  <script src="generator/api.js?v=5.2.2"></script>
-  <script src="auth/auth.js?v=5.2.2"></script>
-  <script src="auth/sync.js?v=5.2.2"></script>
+  <script src="generator/engine_bundle.js?v=5.2.3"></script>
+  <script src="generator/compiler.js?v=5.2.3"></script>
+  <script src="generator/api.js?v=5.2.3"></script>
+  <script src="auth/auth.js?v=5.2.3"></script>
+  <script src="auth/sync.js?v=5.2.3"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 
   <style>
@@ -4891,6 +4891,17 @@
     async function startGeneration() {
       var combinedSyllabus = "";
       if (typeof uploadedFiles !== "undefined" && uploadedFiles && uploadedFiles.length > 0) {
+        // Chronological sort by session/chapter/module number before ingestion
+        uploadedFiles.sort(function(a, b) {
+          var getNum = function(name) {
+            var m = String(name || "").match(/(?:Session|Chapter|Lecture|Week|Module|Part)\s*[-_]?\s*(\d+)/i);
+            return m ? parseInt(m[1], 10) : 9999;
+          };
+          var numA = getNum(a.name);
+          var numB = getNum(b.name);
+          if (numA !== numB) return numA - numB;
+          return String(a.name || "").localeCompare(String(b.name || ""));
+        });
         for (var f = 0; f < uploadedFiles.length; f++) {
           combinedSyllabus += "\n\n=== SOURCE DOCUMENT " + (f + 1) + ": " + uploadedFiles[f].name + " ===\n" + uploadedFiles[f].text;
         }

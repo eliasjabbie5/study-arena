@@ -243,13 +243,15 @@ Your mission is to transform raw student course materials (slides, readings, tra
 
 1. MANDATORY STRUCTURAL DECOMPOSITION & HIERARCHICAL GROUPING (SESSIONS / MODULES / TOPICS):
    Uploaded student documents frequently span multiple course sessions or weeks (e.g., "Session 6", "Session 7", "Session 8", "Chapter 4", "Lecture 5", "Week 3", "Module 2"). You MUST actively inspect the material for these structural signposts:
-   - ZONE ARCHITECTURE (One Zone per Session / Module):
-     Every distinct Session, Chapter, Lecture, or Week identified in the source text MUST be mapped to its own dedicated Zone in the "zones" array!
-     * Example: If the student provides material from Sessions 6, 7, and 8, you MUST output at least 3 distinct Zones:
+   - ZONE ARCHITECTURE (EXACTLY One Zone per Session / Module):
+     Every distinct Session, Chapter, Lecture, or Week identified in the source text MUST be mapped to EXACTLY ONE dedicated Zone in the "zones" array!
+     * NEVER create multiple zones for the same session! (e.g. Do NOT create "Session 8: Goods Market" and "Session 8: Money Market" as separate zones; create ONE unified zone "Session 8: The Goods & Money Markets (IS-LM)" with id: "session-8").
+     * CHRONOLOGICAL CURRICULUM ORDER: Always arrange zones, chapters, and questions in strict ascending chronological order (Session 1 before Session 2, Session 6 before Session 7, Session 7 before Session 8).
+     * Example: If the material spans Sessions 6, 7, and 8, you MUST output exactly 3 Zones in this exact order:
        - Zone 1: id: "session-6", name: "Session 6: Aggregate Expenditure & GDP Measurement", sess: "Session 6", blurb: "National output accounting, expenditure components, and circular flow."
        - Zone 2: id: "session-7", name: "Session 7: Money Creation, Banking & The Money Multiplier", sess: "Session 7", blurb: "Fractional reserve banking, balance sheet mechanics, and money supply."
-       - Zone 3: id: "session-8", name: "Session 8: Central Banking & Monetary Policy Transmission", sess: "Session 8", blurb: "Policy rates, open market operations, and macroeconomic stabilization."
-     * NEVER collapse multiple distinct sessions into a single generic bucket.
+       - Zone 3: id: "session-8", name: "Session 8: Central Banking & IS-LM Framework", sess: "Session 8", blurb: "Policy rates, open market operations, and macroeconomic stabilization."
+     * QUESTION DISTRIBUTION GUARANTEE: Every session zone MUST have at least 4 to 6 questions attached to it (zone: "session-6", zone: "session-7", zone: "session-8"). NO zone may ever have 0 questions or only 1 question!
    - CHAPTER ARCHITECTURE (Multiple In-Depth Concepts per Session):
      Inside EACH Session Zone, do NOT output just 1 high-level summary card! Identify all the outstanding concepts, models, and analytical tools taught in that session, and generate MULTIPLE distinct, comprehensive Chapters under that Zone (typically 2 to 3 distinct Chapters per Session).
      * Set each chapter's "section" to match the full Session Name (e.g. "Session 6: Aggregate Expenditure & GDP Measurement") so the student study guide groups them into clean, logical collapsible rubrics.
@@ -606,6 +608,17 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     }
 
     if (pieces.length > 1) {
+      // Sort pieces by session/chapter number so passes synthesize in chronological order
+      pieces.sort(function(a, b) {
+        var extractNum = function(s) {
+          var m = String(s).match(/(?:Session|Chapter|Lecture|Week|Module|Part)\s*[-_]?\s*(\d+)/i);
+          return m ? parseInt(m[1], 10) : 9999;
+        };
+        var nA = extractNum(a);
+        var nB = extractNum(b);
+        return nA - nB;
+      });
+
       var chunks = [];
       var curChunk = "";
       for (var k = 0; k < pieces.length; k++) {
@@ -1406,6 +1419,10 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         }
       }
     });
+
+    if (window.StudyArenaCompiler && typeof window.StudyArenaCompiler.normalizeAndConsolidateSessions === "function") {
+      courseData = window.StudyArenaCompiler.normalizeAndConsolidateSessions(courseData);
+    }
 
     onProgress("Compiling offline Study Arena...", 92);
     var compiledHtml = window.StudyArenaCompiler.compile(courseData);

@@ -36,11 +36,152 @@ window.StudyArenaCompiler = {
     };
   },
 
+  normalizeAndConsolidateSessions: function(courseData) {
+    if (!courseData) return courseData;
+    var zones = courseData.zones || [];
+    var chapters = courseData.chapters || [];
+    var questions = courseData.questions || [];
+
+    var extractSessionNumber = function(s) {
+      if (!s) return 9999;
+      var m = String(s).match(/(?:Session|Chapter|Lecture|Week|Module|Part)\s*[-_]?\s*(\d+)/i);
+      return m ? parseInt(m[1], 10) : 9999;
+    };
+
+    var sessionGroups = {};
+    var unmatchedZones = [];
+
+    zones.forEach(function(z) {
+      var num = extractSessionNumber((z.name || '') + ' ' + (z.sess || '') + ' ' + (z.id || ''));
+      if (num !== 9999) {
+        if (!sessionGroups[num]) {
+          sessionGroups[num] = {
+            num: num,
+            sess: 'Session ' + num,
+            id: 'session-' + num,
+            names: [z.name || ('Session ' + num)],
+            blurbs: [z.blurb || ''],
+            origIds: [z.id]
+          };
+        } else {
+          sessionGroups[num].names.push(z.name || '');
+          sessionGroups[num].blurbs.push(z.blurb || '');
+          sessionGroups[num].origIds.push(z.id);
+        }
+      } else {
+        unmatchedZones.push(z);
+      }
+    });
+
+    var idRemap = {};
+    var consolidatedZones = [];
+    var sortedNums = Object.keys(sessionGroups).map(Number).sort(function(a, b) { return a - b; });
+
+    sortedNums.forEach(function(num) {
+      var grp = sessionGroups[num];
+      var newId = grp.id;
+      grp.origIds.forEach(function(oid) {
+        idRemap[oid] = newId;
+      });
+
+      var cleanTopics = [];
+      grp.names.forEach(function(n) {
+        var t = String(n || '').replace(/^(?:Session|Chapter|Lecture|Week|Module|Part)\s*[-_]?\s*\d+\s*[:\.\-]\s*/i, '').trim();
+        if (t && cleanTopics.indexOf(t) === -1) {
+          cleanTopics.push(t);
+        }
+      });
+
+      var combinedTitle = 'Session ' + num;
+      if (cleanTopics.length === 1) {
+        combinedTitle += ': ' + cleanTopics[0];
+      } else if (cleanTopics.length > 1 && cleanTopics.length <= 3) {
+        combinedTitle += ': ' + cleanTopics.join(' & ');
+      } else if (cleanTopics.length > 3) {
+        combinedTitle += ': ' + cleanTopics[0] + ' & Related Frameworks';
+      }
+
+      var validBlurbs = grp.blurbs.filter(Boolean);
+      var blurb = validBlurbs.join(' \u00b7 ');
+      if (blurb.length > 160) blurb = blurb.substring(0, 157) + '...';
+
+      consolidatedZones.push({
+        id: newId,
+        sess: grp.sess,
+        name: combinedTitle,
+        blurb: blurb || ('Core analytical models and problem-solving methods for Session ' + num + '.')
+      });
+    });
+
+    unmatchedZones.forEach(function(uz) { consolidatedZones.push(uz); });
+
+    // Update chapters
+    chapters.forEach(function(ch) {
+      var oldZ = ch.zone;
+      if (idRemap[oldZ]) {
+        ch.zone = idRemap[oldZ];
+      } else {
+        var cNum = extractSessionNumber((ch.title || '') + ' ' + (ch.section || '') + ' ' + (ch.id || ''));
+        if (sessionGroups[cNum]) {
+          ch.zone = sessionGroups[cNum].id;
+        }
+      }
+      var matchingZ = consolidatedZones.find(function(z) { return z.id === ch.zone; });
+      if (matchingZ) {
+        ch.section = matchingZ.name;
+      }
+    });
+
+    // Chronological sorting for chapters
+    chapters.sort(function(a, b) {
+      var nA = extractSessionNumber((a.section || '') + ' ' + (a.title || '') + ' ' + (a.zone || ''));
+      var nB = extractSessionNumber((b.section || '') + ' ' + (b.title || '') + ' ' + (b.zone || ''));
+      if (nA !== nB) return nA - nB;
+      return String(a.title || '').localeCompare(String(b.title || ''));
+    });
+
+    // Update questions
+    questions.forEach(function(q) {
+      var oldQz = q.zone;
+      if (idRemap[oldQz]) {
+        q.zone = idRemap[oldQz];
+      } else {
+        var qNum = extractSessionNumber((q.question || '') + ' ' + (q.topic || '') + ' ' + (oldQz || ''));
+        if (sessionGroups[qNum]) {
+          q.zone = sessionGroups[qNum].id;
+        }
+      }
+    });
+
+    // Chronological sorting for questions
+    questions.sort(function(a, b) {
+      var qnA = extractSessionNumber((a.zone || '') + ' ' + (a.topic || ''));
+      var qnB = extractSessionNumber((b.zone || '') + ' ' + (b.topic || ''));
+      if (qnA !== qnB) return qnA - qnB;
+      return String(a.type || '').localeCompare(String(b.type || ''));
+    });
+
+    courseData.zones = consolidatedZones;
+    courseData.chapters = chapters;
+    courseData.questions = questions;
+
+    if (!courseData.config) courseData.config = {};
+    if (!courseData.config.zshort) courseData.config.zshort = {};
+    consolidatedZones.forEach(function(z) {
+      courseData.config.zshort[z.id] = z.sess;
+    });
+
+    return courseData;
+  },
+
   compile: function(data) {
     if (!data) throw new Error("No course data provided to compiler.");
     data.questions = data.questions || [];
     data.chapters = data.chapters || [];
     data.zones = data.zones || [];
+
+    // Consolidate zones into 1 box per session & sort chronologically
+    data = this.normalizeAndConsolidateSessions(data);
 
     // Safety auto-supplement: If AI returned 1-4 questions due to API token clipping,
     // generate companion scenario questions from chapters so validation passes seamlessly
