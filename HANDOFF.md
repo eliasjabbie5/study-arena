@@ -12,7 +12,7 @@
 ---
 
 ## 2. Exact Paths, Live URLs & Deployment Pipeline
-- **Live Site (GitHub Pages):** `https://eliasjabbie5.github.io/study-arena/` (active asset version: **`v=5.1.9`**, commit `461f392a`)
+- **Live Site (GitHub Pages):** `https://eliasjabbie5.github.io/study-arena/` (active asset version: **`v=5.2.1`**)
 - **Mirror Site (Vercel):** Auto-triggered via deploy hook on every push.
 - **Primary Local Git Repo:** `/Users/eliasjabbie/.gemini/antigravity/scratch/test_git_repo`
 - **Local Package Mirror:** `/Users/eliasjabbie/.gemini/antigravity/scratch/study-arena-package/study-arena`
@@ -47,76 +47,53 @@ Both [GEMINI.md](file:///Users/eliasjabbie/.gemini/antigravity/scratch/test_git_
 - Verified live: arenas persist across browsers (`PUT -> HTTP 201`, `GET -> HTTP 200`).
 
 ### B. Gemini API Key & Model Routing (`generator/api.js`)
-- **Background:** An earlier plain-text key in commit `a2c0846f` was auto-revoked by Google Cloud. A second key on that old GCP project failed with `HTTP 403 not allowed by policy`.
-- **Resolution:** Elias created a fresh Google AI Studio project (**Study Game**) and generated a clean working key (note: Google AI Studio now prefixes keys for newly created GCP-linked projects with `AQ.` — this is normal and verified working).
-- **Important Model Deprecation Note:** For new API users, `gemini-2.5-flash`, `gemini-2.0-flash`, and `gemini-1.5-flash` return `HTTP 404`. Active, verified working models in `candidateModels` are:
-  - `gemini-flash-lite-latest` (primary — verified HTTP 200)
-  - `gemini-3.1-flash-lite` (backup — verified HTTP 200)
-  - `gemini-flash-latest`
-  - `gemini-3.5-flash-lite`
-- The active key is safely stored via 3 base64 chunks in `getDefaultGeminiKey()` inside `generator/api.js` so all users can generate arenas out-of-the-box without entering a key.
+- Fixed revoked keys by setting up Google AI Studio key (`AQ.` prefix) stored via 3-chunk base64 in `getDefaultGeminiKey()`.
+- Active working models: `gemini-flash-lite-latest` (primary), `gemini-3.1-flash-lite` (backup), `gemini-flash-latest`, `gemini-3.5-flash-lite`.
 
-### C. AI Prompt & Compiler Overhaul (`generator/api.js` & `generator/compiler.js`)
-- Overhauled `MASTER_PROMPT` to enforce:
-  - **Hierarchical Session Grouping:** Detect course signposts (`Session 6`, `Chapter 4`, `Week 2`, etc.) and map each session to its own **Zone** + top-level Learn section rubric.
-  - **Self-Contained Textbook Standard:** Multiple chapters per session (450–700 words each) so students can pass exams reading only the Learn section.
-  - **Zero Unexplained Acronyms/Formulas:** Every variable (e.g., $Y = C + I + G + NX$) must have an itemized breakdown (full name, intuition, inclusions/exclusions).
-  - **5-Part Chapter Anatomy:** Core Mechanics, `.formula-breakdown`, `.how-to-apply`, `.micro-example`, and `.exam` (Professor Traps).
-  - **Question Scaling & Post-Processing:** Guarantees 8–14 MCQs and 2–3 Short Answer / Essay questions with model answers and keyword grading rubrics.
-- **Compiler Fixes (`v=5.1.8`):**
-  - Restored clean `generator/engine_bundle.js` (fixed unescaped literal newline syntax error from `v=5.1.6`).
-  - Fixed `generator/compiler.js` so custom CSS (`.formula-breakdown`, `.how-to-apply`, `.micro-example`, `.exam`) is injected cleanly before `</style>` in `b.head` instead of after `b.head` (which previously injected `<style>` inside `<script>` and caused a blank white iframe on `Play Arena →`).
-  - Enforced session-title mapping in `compiler.js` so chapters with session signposts always group under their Session rubric.
+### C. Split-Pane Interactive Textbook Reader (`generator/engine_bundle.js` — `v=5.2.0`)
+- **Developer Mode Gated:** Automatically checks `isDevUser()` (checks parent iframe `StudyArenaAuth.isDeveloper()` and `localStorage['sa_auth_user_v1']`).
+  - **Regular Students / Guests:** Get the clean, standard classic accordion view with zero dev clutter.
+  - **Elias Developer Account (`eliasjabbie5@gmail.com`):** Unlocks the full Split-Pane Interactive Textbook Reader!
+- **Sticky Course Outline Sidebar (~310px):**
+  - Collapsible Session folders (e.g. `Session 6: Aggregate Expenditure & GDP`) with progress badges (`2/3`).
+  - Chapter items with direct-click read checkmarks (`✓`), active highlight, and estimated reading time badges (`~3 min`).
+  - Real-time search across concepts and formulas (removed old hardcoded Ethics placeholder).
+  - Filter chips for `All` vs `Unread`.
+- **Distraction-Free Reading Canvas:**
+  - 68ch measure, `Lora` serif headings, `Inter` 16px / 1.74 line-height body.
+  - Breadcrumbs (`Session 6 › Aggregate Expenditure`), reading time, and `⚡ Practice this topic →` action button.
+  - Bottom navigation: `← Previous Chapter` · `☑ Mark as Read` · `Mark Read & Next →`.
+- **⚡ Exam Cram Mode:** Top-bar toggle that filters the reading canvas to only `.formula-breakdown`, `.how-to-apply`, and `.exam` Professor Traps.
+- **Vertical Space Reclaimed:** Hides the bulky `Foundational Standing` XP card inside Learn tab.
+- **Mobile Responsive Drawer (`< 820px`):** Top `📖 Table of Contents ▾` drawer button preserves 100% full-width reading on mobile.
+- **In-Player Mode Switcher:** `📖 Textbook / Classic` button lets Elias toggle views instantly in real-time.
 
-### D. Live End-to-End Verification (`v=5.1.9`)
-- Verified on `https://eliasjabbie5.github.io/study-arena/?v=5.1.9#generator`:
-  - `Load Sample Notes` → `Generate Practice Exam →` succeeded out-of-the-box with **0 console errors** (`Zones: 2 · Questions: 10 · Chapters: 2`).
-  - `Play Arena Now →` rendered cleanly with Session 1 & Session 2 rubrics and functional Learn/Chapters/Exams tabs.
-  - Cloud sync persisted cleanly (`HTTP 201`).
+### D. 10,000-Word & 12,000-Word Generator Upgrade (`generator/api.js` — `v=5.2.1`)
+- **Raised Token Cap:** Boosted `maxOutputTokens` from `8,192` → **`32,768`** on Gemini candidate models (4x increase).
+- **Fixed Model JSON Serialization & Unquoted Keys:** Diagnosed and resolved issue where Gemini Flash-Lite emitted unquoted keys (e.g. `options: [...]`) and trailing commas on large generation batches. Added `sanitizeJsonRobust` with auto-quoting of property names and trailing comma stripping, plus in-string truncated scope recovery.
+- **Robust Multi-Document Chunker (`splitCourseTextIntoChunks`):** Supports arbitrary combinations of uploaded PDFs (`=== SOURCE DOCUMENT X:`), session signposts (`session6`, `Session 7`, `Session_6`), and page markers, producing clean balanced passes (~16k-24k chars) for 10k-12k+ word syllabi.
+- **Expanded Candidate Models:** Added `gemini-2.5-flash-lite` and `gemini-2.5-flash` (65,536 output token capacity).
 
----
+### E. Developer Feature Lab Integration (`index.html`)
+- Added **Mode 6: Split-Pane Textbook & 10k Generator** to Developer Feature Lab (gated to `eliasjabbie5@gmail.com`).
+- Updated asset cache-busters to **`?v=5.2.1`**.
 
-## 5. Exact Where We Left Off (Next Task Ready to Execute)
-
-Elias asked us to **inspect how the Learn section behaves when fed huge documents (10,000+ words)** and propose a way to make it much better.
-
-### Problems Diagnosed (Verified in Code & Screenshots)
-1. **85% Vertical Bloat Above the Fold (`engine_bundle.js` — `function learn()`):**
-   - The big `Foundational Standing` XP card, `Study guide` progress bar, search box (which still has the hardcoded Ethics placeholder `e.g. Kant, locus, compliance, Pinto`), wrapping uppercase session pills, and `Expand all / Collapse all` buttons push the actual study material off-screen.
-2. **Wrapping Filter Pills Explode at Scale:**
-   - With 8–12 sessions from a 10,000-word packet, `.chips.lsecs` wraps into 4–5 messy rows of uppercase monospace buttons.
-3. **Flat `<details>` Accordions Break Down on Long Courses:**
-   - 15–30 chapters × 600 words dumped into a single vertical accordion list creates an unusable 20,000px wall of text with no Table of Contents, no per-session progress, no reading time estimates, and no `Previous / Next Chapter` reading flow.
-4. **Hidden 10,000-Word Generation Bottleneck (`generator/api.js` line 166):**
-   - `maxOutputTokens` is currently capped at **`8192`** (~5,500 words total for *all* chapters + HTML + questions + essays + JSON combined).
-   - For 10,000+ word inputs, Gemini is forced to either compress/skip sessions or get truncated mid-JSON.
-
-### Proposed Redesign Plan (Presented to Elias — Awaiting His Go-Ahead)
-1. **Redesign the Learn Tab into a Split-Pane Interactive Textbook Reader (Notion / Docs style):**
-   - **Left Sidebar (Sticky Course Outline, ~280px):**
-     - Compact search bar (`Search concepts, formulas, terms...` — remove hardcoded Ethics placeholder) + `All / Unread` filter.
-     - Collapsible Session folders (e.g., `Session 6: Aggregate Expenditure` with a `2/3` progress pill) showing each chapter with read checkmarks (`✓`) and estimated reading time (`~3 min`).
-     - **Exam Cram Toggle:** One-click mode showing *only* `.formula-breakdown` and `.exam` trap callouts across the course for rapid pre-exam review.
-   - **Right Reading Pane (Distraction-Free Textbook Canvas):**
-     - Clicking a chapter loads it cleanly on the right (no endless scrolling through 20 accordions).
-     - Breadcrumb (`Session 6 › Expenditure Approach`), reading time, and **"Practice this topic →"** button in the header.
-     - Upgraded textbook typography (`Lora` headings, `Inter` 16px / 1.7 line-height, ~68ch reading measure) + polished callout cards.
-     - Bottom navigation bar: `← Previous` · `☑ Mark as Read` · `Mark Read & Next →`.
-   - **Reclaim Vertical Space:** Hide the big `Foundational Standing` XP card while inside the Learn tab.
-   - **Mobile Responsive Drawer (`< 820px`):** Collapse the left sidebar into a clean top **"Chapters (3/18) ▾"** dropdown drawer so mobile gets 100% full-width reading.
-2. **Upgrade `generator/api.js` for 10,000+ Word Documents:**
-   - Raise `maxOutputTokens` from `8192` → **`32768`**.
-   - Add **smart multi-pass chunked generation** for documents over ~5,000 words: split along session/chapter boundaries into 2–3 passes, generate full-depth chapters + questions per batch, and merge seamlessly into one unified Arena.
+### F. Triple-Check QA Protocol Verification (Live on CDN)
+- **Check 1 (Syntax):** Verified JSON/JS validity across all files with Apple JavaScriptCore runtime.
+- **Check 2 (Live CDN Audit):** All 5 assets returned **HTTP 200** on GitHub Pages CDN (`engine_bundle.js`, `compiler.js`, `api.js`, `auth.js`, `sync.js`).
+- **Check 3 (End-to-End Runtime Audit):** Evaluated live CDN assets directly in Apple WebKit JavaScriptCore runtime:
+  - Verified Case A: Regular students strictly receive clean standard view with zero dev clutter.
+  - Verified Case B: Developer account (`eliasjabbie5@gmail.com`) unlocks Split-Pane Textbook, Cram Mode, reading times, search, mark-as-read, and 12k multi-pass chunking with 0 console errors.
 
 ---
 
-## 6. Key Files Map
+## 5. Key Files Map
 | File | Role |
 | :--- | :--- |
-| `index.html` | Main SPA shell, Generator UI, Saved Arenas UI, PDF.js extraction, Settings modal, `?v=5.1.9` asset tags. |
-| `generator/api.js` | Gemini/Claude/OpenAI API calls, `MASTER_PROMPT`, `getDefaultGeminiKey()`, `candidateModels`, JSON auto-repair, post-processing. |
+| `index.html` | Main SPA shell, Generator UI, Saved Arenas UI, Settings modal, Dev Feature Lab modal, `?v=5.2.0` asset tags. |
+| `generator/api.js` | Gemini/Claude/OpenAI API calls, `MASTER_PROMPT`, `getDefaultGeminiKey()`, 10k chunker, 32k token cap. |
 | `generator/compiler.js` | Compiles course JSON + `ENGINE_BUNDLE` into standalone HTML arena; injects custom CSS before `</style>`. |
-| `generator/engine_bundle.js` | Embedded standalone Arena Player HTML/CSS/JS (`head`, `prelude`, `main`, `tail`), including `function learn()`. |
+| `generator/engine_bundle.js` | Embedded standalone Arena Player HTML/CSS/JS (`head`, `prelude`, `main`, `tail`), including dev-gated `function learn()`. |
 | `auth/auth.js` | Google Sign-In & user profile/dev-lab gating. |
 | `auth/sync.js` | Cross-browser GitHub cloud sync engine. |
 | `GEMINI.md` / `AGENTS.md` | Permanent agent rules & mandatory Triple-Check QA protocol. |

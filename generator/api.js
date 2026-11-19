@@ -140,6 +140,8 @@ window.StudyArenaAPI = {
   callGeminiWithFallback: async function(apiKey, systemPrompt, userContent, signal, onProgress) {
     var candidateModels = [
       "gemini-flash-lite-latest",
+      "gemini-2.5-flash-lite",
+      "gemini-2.5-flash",
       "gemini-3.1-flash-lite",
       "gemini-flash-latest",
       "gemini-3.5-flash-lite"
@@ -282,7 +284,8 @@ Your mission is to transform raw student course materials (slides, readings, tra
 
 ### OUTPUT SCHEMA REQUIREMENT
 
-You must output PURE, VALID JSON with no markdown wrapping and no code fences, matching this exact schema:
+You must output PURE, VALID JSON with no markdown wrapping and no code fences, matching this exact schema.
+CRITICAL JSON SYNTAX RULE: Every single object property name MUST be wrapped in double quotes (e.g. "options": [...], "question": "...", "type": "mcq", "zone": "..."). NEVER output unquoted keys. NEVER leave trailing commas before } or ].
 
 {
   "config": {
@@ -521,42 +524,96 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
   splitCourseTextIntoChunks: function(text) {
     if (!text || text.length < 18000) return [text];
-    var sessionRegex = /(?:^|\n)(?=(?:Session|Chapter|Lecture|Week|Module|Part)\s+\d+[:\.\s\-\–])/gi;
-    var sections = text.split(sessionRegex).map(function(s) { return s.trim(); }).filter(Boolean);
-    if (sections.length >= 2) {
-      var chunks = [];
-      var cur = "";
-      for (var i = 0; i < sections.length; i++) {
-        if (cur.length + sections[i].length > 15000 && cur.length > 5000) {
-          chunks.push(cur);
-          cur = sections[i];
+
+    // Step 1: Detect explicit demarcation boundaries in student notes
+    // Matches:
+    // 1. === SOURCE DOCUMENT X: ... ===
+    // 2. Session 6, session7, Session_6, Chapter 3, Lecture 4, Week 2, Module 5
+    // 3. PDF page markers: --- doc.pdf (Page X) ---
+    var docPattern = /(?:^|\n)(?====\s*SOURCE\s+DOCUMENT\s+\d+[:\s\-])/i;
+    var docSections = text.split(docPattern).map(function(s) { return s.trim(); }).filter(Boolean);
+
+    var pieces = [];
+    if (docSections.length >= 2) {
+      for (var d = 0; d < docSections.length; d++) {
+        var ds = docSections[d];
+        if (ds.length > 22000) {
+          var pagePattern = /(?:^|\n)(?=---\s*.+?\s*\(Page\s+\d+\)\s*---)/i;
+          var pages = ds.split(pagePattern).map(function(p) { return p.trim(); }).filter(Boolean);
+          var curPage = "";
+          for (var p = 0; p < pages.length; p++) {
+            if (curPage.length + pages[p].length > 18000 && curPage.length > 6000) {
+              pieces.push(curPage);
+              curPage = pages[p];
+            } else {
+              curPage = curPage ? (curPage + "\n\n" + pages[p]) : pages[p];
+            }
+          }
+          if (curPage) pieces.push(curPage);
         } else {
-          cur = cur ? (cur + "\n\n" + sections[i]) : sections[i];
+          pieces.push(ds);
         }
       }
-      if (cur) chunks.push(cur);
+    } else {
+      var sessionPattern = /(?:^|\n)(?=(?:Session|Chapter|Lecture|Week|Module|Part)\s*[-_]?\s*\d+[:\.\s\-\–\n])/i;
+      var sections = text.split(sessionPattern).map(function(s) { return s.trim(); }).filter(Boolean);
+      if (sections.length >= 2) {
+        var curSess = "";
+        for (var s = 0; s < sections.length; s++) {
+          if (curSess.length + sections[s].length > 18000 && curSess.length > 6000) {
+            pieces.push(curSess);
+            curSess = sections[s];
+          } else {
+            curSess = curSess ? (curSess + "\n\n" + sections[s]) : sections[s];
+          }
+        }
+        if (curSess) pieces.push(curSess);
+      } else {
+        var fallbackPattern = /(?:^|\n)(?=---\s*.+?\s*\(Page\s+\d+\)\s*---|\n{2,})/i;
+        var subparts = text.split(fallbackPattern).map(function(sp) { return sp.trim(); }).filter(Boolean);
+        var curPart = "";
+        for (var sp = 0; sp < subparts.length; sp++) {
+          if (curPart.length + subparts[sp].length > 18000 && curPart.length > 6000) {
+            pieces.push(curPart);
+            curPart = subparts[sp];
+          } else {
+            curPart = curPart ? (curPart + "\n\n" + subparts[sp]) : subparts[sp];
+          }
+        }
+        if (curPart) pieces.push(curPart);
+      }
+    }
+
+    if (pieces.length > 1) {
+      var chunks = [];
+      var curChunk = "";
+      for (var k = 0; k < pieces.length; k++) {
+        if (curChunk.length + pieces[k].length > 24000 && curChunk.length > 8000) {
+          chunks.push(curChunk);
+          curChunk = pieces[k];
+        } else {
+          curChunk = curChunk ? (curChunk + "\n\n" + pieces[k]) : pieces[k];
+        }
+      }
+      if (curChunk) chunks.push(curChunk);
       if (chunks.length > 1) return chunks;
     }
-    if (text.length > 22000) {
-      var paragraphs = text.split(/\n{2,}/);
-      var pchunks = [];
-      var pcur = "";
-      for (var j = 0; j < paragraphs.length; j++) {
-        if (pcur.length + paragraphs[j].length > 15000 && pcur.length > 5000) {
-          pchunks.push(pcur);
-          pcur = paragraphs[j];
-        } else {
-          pcur = pcur ? (pcur + "\n\n" + paragraphs[j]) : paragraphs[j];
-        }
-      }
-      if (pcur) pchunks.push(pcur);
-      if (pchunks.length > 1) return pchunks;
-    }
+
     return [text];
   },
 
+  sanitizeJsonRobust: function(text) {
+    if (!text) return "{}";
+    text = this.sanitizeJsonControlChars(text);
+    // Auto-quote unquoted object property names (e.g. options: -> "options":)
+    text = text.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$-]*)\s*:/g, '$1"$2":');
+    // Strip illegal trailing commas before closing braces or brackets
+    text = text.replace(/,\s*([}\]])/g, '$1');
+    return text;
+  },
+
   cleanJsonResponse: function(raw) {
-    if (!raw || typeof raw !== "string" && !raw.trim) {
+    if (!raw || (typeof raw !== "string" && !raw.trim)) {
       throw new Error("Empty response received from AI model. Please retry.");
     }
     var text = String(raw).trim();
@@ -573,23 +630,20 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
     if (firstOpen !== -1) {
       text = text.substring(firstOpen);
     }
-    var lastClose = text.lastIndexOf("}");
-    if (lastClose !== -1 && lastClose > 0) {
-      text = text.substring(0, lastClose + 1);
-    }
 
-    // Step 1: Sanitize literal unescaped newlines/tabs inside string values
-    text = this.sanitizeJsonControlChars(text);
+    text = this.sanitizeJsonRobust(text);
 
     // Step 2: Try direct parse
     try {
       return JSON.parse(text);
     } catch (initialErr) {
-      console.warn("Direct JSON.parse failed, attempting auto-repair:", initialErr.message);
+      if (typeof console !== "undefined" && console.warn) {
+        console.warn("Direct JSON.parse failed, attempting auto-repair:", initialErr.message);
+      }
     }
 
     // Step 3: Resilient Stack-Based Auto-Repair for truncated JSON
-    var maxLookback = Math.min(text.length, 6000);
+    var maxLookback = Math.min(text.length, 8000);
     for (var i = text.length; i >= text.length - maxLookback; i--) {
       var candidate = text.substring(0, i).trimEnd();
       if (candidate.endsWith(",") || candidate.endsWith(":")) {
@@ -630,15 +684,18 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
         }
       }
 
-      if (valid && !inString && stack.length > 0) {
-        var repaired = candidate;
+      if (valid && stack.length > 0) {
+        var repaired = inString ? (candidate + '"') : candidate;
         // Close all unclosed scopes in exact reverse order
         for (var s = stack.length - 1; s >= 0; s--) {
           repaired += stack[s];
         }
+        repaired = repaired.replace(/,\s*([}\]])/g, "$1");
         try {
           var parsed = JSON.parse(repaired);
-          console.log("JSON auto-repaired successfully! Rescued by trimming " + (text.length - i) + " chars.");
+          if (typeof console !== "undefined" && console.log) {
+            console.log("JSON auto-repaired successfully! Rescued by trimming " + (text.length - i) + " chars (inString=" + inString + ").");
+          }
           return parsed;
         } catch (e) {
           // continue searching backwards
@@ -1158,9 +1215,20 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
 
     } else if (provider === "gemini") {
       var isDev = (window.StudyArenaAuth && typeof window.StudyArenaAuth.isDeveloper === "function" && window.StudyArenaAuth.isDeveloper());
-      var chunks = isDev ? this.splitCourseTextIntoChunks(courseText) : [courseText];
+      if (!isDev) {
+        try {
+          var uRaw = localStorage.getItem("sa_auth_user_v1");
+          if (uRaw) {
+            var u = JSON.parse(uRaw);
+            if (u && (u.developerMode || u.role === "developer" || (u.email && u.email.toLowerCase().indexOf("eliasjabbie") > -1))) {
+              isDev = true;
+            }
+          }
+        } catch (e) {}
+      }
+      var chunks = (courseText.length >= 18000 || isDev) ? this.splitCourseTextIntoChunks(courseText) : [courseText];
       if (chunks.length > 1) {
-        onProgress("Large course document detected (~" + Math.round(courseText.length / 5) + " words). Running smart multi-pass synthesis...", 25);
+        onProgress("Large course document detected (~" + Math.round(courseText.length / 5) + " words). Running smart multi-pass synthesis across " + chunks.length + " parts...", 25);
         var mergedData = null;
         for (var p = 0; p < chunks.length; p++) {
           var pctBase = Math.round(25 + (p / chunks.length) * 50);
@@ -1174,6 +1242,10 @@ You must return ONLY a valid, parseable JSON object with NO markdown code blocks
               mergedData.zones.map(function(z) { return z.id + " (" + z.name + ")"; }).join(", ") +
               "\nContinue the course curriculum with NEW distinct zones, chapters, and questions for Part " + (p + 1) + ".";
           }
+          chunkUserContent += "\n\n[SYNTHESIS SCOPE FOR PART " + (p + 1) + " OF " + chunks.length + "]:\n" +
+            "- Focus in-depth on the topics, formulas, models, and self-test problems in THIS part.\n" +
+            "- Generate 2 to 3 rich Chapters and 4 to 6 high-yield questions for this specific section.\n" +
+            "- Ensure pure JSON syntax: all keys double-quoted, no trailing commas.";
           var chunkRaw = await this.callGeminiWithFallback(apiKey, this.MASTER_PROMPT, chunkUserContent, signal, onProgress);
           var chunkParsed = this.cleanJsonResponse(chunkRaw);
           if (chunkParsed) {
